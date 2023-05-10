@@ -1,23 +1,15 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, unused_field, prefer_const_constructors
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
-import 'package:mandeladrawing/utils/mycolors.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:mandeladrawing/view/authview/forgotpassword.dart';
-import 'package:mandeladrawing/view/authview/signup.dart';
-import 'package:mandeladrawing/view/dashboard.dart';
-import 'package:mandeladrawing/widgets/mybutton.dart';
-import 'package:mandeladrawing/widgets/textformfield.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../controllers/authenticationmodels.dart';
-import '../../controllers/logincontroller.dart';
-import '../../controllers/signupcontroller.dart';
-import '../../methods/authmodels.dart';
-import '../../models/loginviewmodel.dart';
+import '../Models/loginviewmodel.dart';
+import '../widgets/myColors.dart';
+import '../widgets/myTextField.dart';
+import '../widgets/mybutton.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -71,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(LoginController());
+  
 
     return GestureDetector(
       onTap: () {
@@ -162,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Get.to(() => ForgitPassword());
+                       
                       },
                       child: Text(
                         "Forgot Password?",
@@ -206,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                         //     controller.pass.text.trim());
                         // if (loggedIn) {
                         print("ok");
-                        Get.to(() => Home());
+                     
                         //   _showetoast("Sigin Successfully");
                         // } else {
                         //   _showetoast(loginVM.message);
@@ -282,7 +274,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Get.to(() => SignupPage());
+                    
                         },
                         child: Text(
                           "Create new one",

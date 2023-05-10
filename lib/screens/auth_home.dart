@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '/utils/mycolors.dart';
+import '../widgets/myColors.dart';
+import '../widgets/mybutton.dart';
 import './login.dart';
-import '/widgets/mybutton.dart';
-
 import 'signup.dart';
 
 class AuthHome extends StatefulWidget {

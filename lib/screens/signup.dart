@@ -6,20 +6,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:in_driver_app/Models/registeruserviewmodel.dart';
-import 'package:mandeladrawing/models/usermodel.dart';
-import 'package:mandeladrawing/view/dashboard.dart';
-import 'package:mandeladrawing/widgets/pickimages.dart';
-import 'package:mandeladrawing/widgets/textformfield.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
-import '../../controllers/signupcontroller.dart';
-import '../../methods/authmodels.dart';
-import '../../models/registeruserviewmodel.dart';
-import '../../utils/mycolors.dart';
 import '../../widgets/mybutton.dart';
+import '../models/registerviewmodel.dart';
+import '../widgets/myColors.dart';
+import '../widgets/myTextField.dart';
+import '../widgets/pickimages.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -87,7 +80,7 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SignupController());
+   
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -145,7 +138,7 @@ class _SignupPageState extends State<SignupPage> {
                     },
                     //textEditingController: controller.fname,
 
-                    textEditingController: controller.fname,
+                    textEditingController:_fnameController,
                     hintText: "First Name*",
                     textInputType: TextInputType.emailAddress,
                     action: TextInputAction.next,
@@ -160,7 +153,7 @@ class _SignupPageState extends State<SignupPage> {
                       }
                       return null;
                     },
-                    textEditingController: controller.lname,
+                    textEditingController: _lastnameController,
                     hintText: "Last Name*",
                     textInputType: TextInputType.emailAddress,
                     action: TextInputAction.next,
@@ -177,7 +170,7 @@ class _SignupPageState extends State<SignupPage> {
                       }
                       return null;
                     },
-                    textEditingController: controller.email,
+                    textEditingController: _emailController,
                     hintText: "Email Address*",
                     textInputType: TextInputType.emailAddress,
                     action: TextInputAction.next,
@@ -192,7 +185,7 @@ class _SignupPageState extends State<SignupPage> {
                       }
                       return null;
                     },
-                    textEditingController: controller.phone,
+                    textEditingController: _passController,
                     hintText: "Mobile Number*",
                     textInputType: TextInputType.number,
                     action: TextInputAction.next,
@@ -207,7 +200,7 @@ class _SignupPageState extends State<SignupPage> {
                       }
                       return null;
                     },
-                    textEditingController: controller.pass,
+                    textEditingController: _passController,
                     hintText: "Password",
                     textInputType: TextInputType.emailAddress,
                     action: TextInputAction.next,
@@ -329,45 +322,43 @@ class _SignupPageState extends State<SignupPage> {
                       onaction: () async {
                         if (formGlobalKey.currentState!.validate()) {
                           if (_isChecked == true) {
-                            final user = UserModel(
-                                email: controller.email.text.trim(),
-                                fname: controller.fname.text.toString(),
-                                lname: controller.lname.text.trim(),
-                                pass: controller.pass.text.trim(),
-                                phone: controller.phone.text.trim());
                             bool isRegistered = false;
                             isRegistered = await registerVM.register(
-                                controller.phone.text.trim(),
-                                controller.email.text.trim(),
-                                controller.pass.text.trim(),
-                                controller.fname.text.toString(),
-                                controller.lname.text.trim());
+                                _mobilecontroller.text.trim(),
+                              _emailController.text.trim(),
+                                _passController.text.trim(),
+                                _fnameController.text.toString(),
+                                _lastnameController.text.trim());
                             if (isRegistered) {
                               final userId =
                                   FirebaseAuth.instance.currentUser!.uid;
                               await FirebaseFirestore.instance
                                   .collection('users')
                                   .doc(userId)
-                                  .set(user.toJson())
-                                  .whenComplete(() => Get.snackbar("Success",
-                                      "Your Account has been successfuly created",
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      backgroundColor:
-                                          Colors.green.withOpacity(0.6),
-                                      colorText: Colors.white))
-                                  .catchError((error, stackTrace) {
-                                Get.snackbar("Error",
-                                    "Something went wrong. Please try again",
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor:
-                                        Colors.red.withOpacity(0.1),
-                                    colorText: Colors.white);
+                                  .set({})
+                                  .whenComplete(() => Fluttertoast.showToast(
+        msg: "Authenticated",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0
+    )).catchError((error, stackTrace) {
+                               Fluttertoast.showToast(
+        msg: "Error",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
                               });
                             }
 
-                            Get.to(() => Home());
+                            // Get.to(() => Home());
                           }
-                          print(controller.email);
                         }
                       },
                       //     FirebaseAuthMethod().signupUser(
@@ -438,31 +429,31 @@ class _SignupPageState extends State<SignupPage> {
                           // }
 
                           // FirebaseAuthMethod().signInWithGoogle();
-                          final googleSignIn = GoogleSignIn();
-                          final googleUser = await googleSignIn.signIn();
-                          final googleAuth = await googleUser!.authentication;
+                         // final googleSignIn = GoogleSignIn();
+                         // final googleUser = await googleSignIn.signIn();
+                        //  final googleAuth = await googleUser!.authentication;
 
-                          final credential = GoogleAuthProvider.credential(
-                            accessToken: googleAuth.accessToken,
-                            idToken: googleAuth.idToken,
-                          );
+                          // final credential = GoogleAuthProvider.credential(
+                          //   accessToken: googleAuth.accessToken,
+                          //   idToken: googleAuth.idToken,
+                          // );
 
-                          final userCredential = await FirebaseAuth.instance
-                              .signInWithCredential(credential);
+                          // final userCredential = await FirebaseAuth.instance
+                          //     .signInWithCredential(credential);
 
-                          final user = userCredential.user;
-                          final displayName = user!.displayName;
-                          final email = user.email;
+                          // final user = userCredential.user;
+                          // final displayName = user!.displayName;
+                          // final email = user.email;
 
                           // Save user data to Firestore
-                          FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.uid)
-                              .set({
-                            'First Name': displayName,
-                            'Email': email,
-                            // Add more fields as needed
-                          });
+                          // FirebaseFirestore.instance
+                          //     .collection('users')
+                          //     .doc(user.uid)
+                          //     .set({
+                          //   'First Name': displayName,
+                          //   'Email': email,
+                          //   // Add more fields as needed
+                          // });
                         },
                         child: Image(
                             fit: BoxFit.cover,
