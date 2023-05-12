@@ -8,8 +8,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:in_driver_app/auth/auth_verifiy.dart';
+import 'package:get/get.dart';
+import 'package:in_driver_app/screens/home.dart';
 
 import '../../widgets/mybutton.dart';
+import '../Models/usermodel.dart';
 import '../models/registerviewmodel.dart';
 import '../widgets/myColors.dart';
 import '../widgets/myTextField.dart';
@@ -77,6 +80,46 @@ class _SignupPageState extends State<SignupPage> {
     setState(() {
       _image = img;
     });
+  }
+
+  Future<void> signUp(String email, String password, String First_Name,
+      String Last_Name, String Phone) async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Create a new document in the "users" collection with the user's data
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user?.uid)
+          .set({
+        'email': email,
+        'First Name': First_Name,
+        'Last Name': Last_Name,
+        'phone': Phone
+      });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void _submitForm() {
+    String email = _emailController.text;
+    String password = _passController.text;
+    String Fname = _fnameController.text;
+    String phone = _mobilecontroller.text;
+    String lname = _lastnameController.text;
+
+    signUp(email, password, Fname, phone, lname);
   }
 
   @override
@@ -223,54 +266,28 @@ class _SignupPageState extends State<SignupPage> {
                       onaction: () async {
                         if (formGlobalKey.currentState!.validate()) {
                           if (_isChecked == true) {
-                            bool isRegistered = false;
-                            isRegistered = await registerVM.register(
-                                _mobilecontroller.text.trim(),
-                                _emailController.text.trim(),
-                                _passController.text.trim(),
-                                _fnameController.text.toString(),
-                                _lastnameController.text.trim());
-                            if (isRegistered) {
-                              final userId =
-                                  FirebaseAuth.instance.currentUser!.uid;
-                              await FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(userId)
-                                  .set({
-                                    'Email': _emailController,
-                                    'First Name': _fnameController,
-                                    'Last Name': _lastnameController,
-                                    'Phone': _mobilecontroller,
-                                  })
-                                  .whenComplete(
-                                    () => Fluttertoast.showToast(
-                                        msg: "Authenticated",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.CENTER,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: Colors.green,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0),
-                                  )
-                                  .catchError((error, stackTrace) {
-                                    Fluttertoast.showToast(
-                                        msg: "Error",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.CENTER,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: Colors.red,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0);
-                                  });
-                            }
-
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EmailVerification()));
+                            _submitForm();
                           }
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage()));
                         }
                       },
+                      //     FirebaseAuthMethod().signupUser(
+                      //         email: _emailController.text,
+                      //         fname: _fnameController.text,
+                      //         lname: _lastnameController.text,
+                      //         mobilenum: _mobilecontroller.text,
+                      //         pass: _passController.text,
+                      //         //     file: _image!);
+                      //         Get.to(() => Home()));
+                      //     _showetoast("Signup Successfully");
+                      //   } else
+                      //     _showetoast(
+                      //         "Please Accept our terms and conditions");
+                      // }
+
                       color1: gd2,
                       color2: gd1,
                       width: MediaQuery.of(context).size.width - 40),
