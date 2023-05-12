@@ -4,12 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:in_driver_app/auth/signup.dart';
 
 import '../Models/loginviewmodel.dart';
 import '../widgets/myColors.dart';
 import '../widgets/myTextField.dart';
 import '../widgets/mybutton.dart';
-
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -63,8 +63,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-  
-
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -153,9 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     GestureDetector(
-                      onTap: () {
-                       
-                      },
+                      onTap: () {},
                       child: Text(
                         "Forgot Password?",
                         style: TextStyle(
@@ -198,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                         //     controller.pass.text.trim());
                         // if (loggedIn) {
                         print("ok");
-                     
+
                         //   _showetoast("Sigin Successfully");
                         // } else {
                         //   _showetoast(loginVM.message);
@@ -240,24 +236,6 @@ class _LoginPageState extends State<LoginPage> {
                   height: 20,
                 ),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image(
-                        fit: BoxFit.cover,
-                        height: 50,
-                        width: 50,
-                        image: AssetImage('assets/facebook.png')),
-                    SizedBox(
-                      width: 50,
-                    ),
-                    Image(
-                        fit: BoxFit.cover,
-                        height: 60,
-                        width: 60,
-                        image: AssetImage('assets/google.png'))
-                  ],
-                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 60),
                   child: Row(
@@ -274,7 +252,10 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                    
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignupPage()));
                         },
                         child: Text(
                           "Create new one",

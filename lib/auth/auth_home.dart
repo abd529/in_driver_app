@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/myColors.dart';
 import '../widgets/mybutton.dart';
-import './login.dart';
+import 'login.dart';
 import 'signup.dart';
 
 class AuthHome extends StatefulWidget {
@@ -28,8 +28,7 @@ class _AuthHomeState extends State<AuthHome> {
               width: MediaQuery.of(context).size.width - 70,
               title: "Sign Up",
               borderrad: 25,
-              onaction: () {
-              },
+              onaction: () {},
               color1: gd2,
               color2: gd1),
           const SizedBox(
@@ -40,7 +39,7 @@ class _AuthHomeState extends State<AuthHome> {
               title: "Sign In",
               borderrad: 25,
               onaction: () {
-             //   Get.to(() => LoginPage());
+                //   Get.to(() => LoginPage());
               },
               color1: green,
               color2: green),
