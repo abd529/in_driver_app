@@ -2,6 +2,7 @@
 
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -101,13 +102,22 @@ class _SignupPageState extends State<SignupPage> {
         'Last Name': Last_Name,
         'phone': Phone
       });
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => EmailVerification()));
+      Get.snackbar("Message", "You have been SIgnup");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
+        Get.snackbar("Message", e.code);
+
         print('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
+        Get.snackbar("Message", e.code);
+
         print('The account already exists for that email.');
       }
     } catch (e) {
+      Get.snackbar("Message", e.toString());
+
       print(e);
     }
   }
@@ -152,20 +162,10 @@ class _SignupPageState extends State<SignupPage> {
                               backgroundImage: MemoryImage(_image!),
                             )
                           : CircleAvatar(
-                              radius: 60,
-                              child: Icon(Icons.person),
+                              backgroundColor: Colors.grey.shade200,
+                              radius: 50,
+                              child: Icon(CupertinoIcons.person_alt_circle),
                             ),
-                      Positioned(
-                          bottom: -10,
-                          left: 75,
-                          child: IconButton(
-                              onPressed: () {
-                                selectimage();
-                              },
-                              icon: Icon(
-                                Icons.add_a_photo_outlined,
-                                size: 30,
-                              )))
                     ]),
                   ),
                   SizedBox(
@@ -268,10 +268,6 @@ class _SignupPageState extends State<SignupPage> {
                           if (_isChecked == true) {
                             _submitForm();
                           }
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage()));
                         }
                       },
                       //     FirebaseAuthMethod().signupUser(

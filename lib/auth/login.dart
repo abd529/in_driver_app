@@ -5,11 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_driver_app/auth/signup.dart';
+import 'package:get/get.dart';
 
 import '../Models/loginviewmodel.dart';
 import '../widgets/myColors.dart';
 import '../widgets/myTextField.dart';
 import '../widgets/mybutton.dart';
+import 'forgot.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -151,7 +153,12 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgitPassword()));
+                      },
                       child: Text(
                         "Forgot Password?",
                         style: TextStyle(
@@ -179,11 +186,15 @@ class _LoginPageState extends State<LoginPage> {
                             email: _emailController.text.trim(),
                             password: _passController.text.trim(),
                           );
+
+                          Get.snackbar("Message", "You have been logged in");
                           // User is signed in
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'user-not-found') {
+                            Get.snackbar("Message", e.code);
                             print('No user found for that email.');
                           } else if (e.code == 'wrong-password') {
+                            Get.snackbar("Message", e.code);
                             print('Wrong password provided for that user.');
                           }
                         }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:in_driver_app/auth/login.dart';
+import 'package:in_driver_app/screens/bottom_menu_bar.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/profileview.dart';
 import 'firebase_options.dart';
@@ -25,8 +26,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: FirebaseAuth.instance.currentUser != null
-          ? ProfileView()
-          : LoginPage(),
+          ? BottomMenu()
+          : BottomMenu(),
     );
   }
 }
