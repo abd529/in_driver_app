@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../screens/home.dart';
 
 class EmailVerification extends StatefulWidget {
+  static const String idScreen = 'verification';
+
   const EmailVerification({super.key});
 
   @override

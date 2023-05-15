@@ -14,6 +14,8 @@ import '../widgets/mybutton.dart';
 import 'forgot.dart';
 
 class LoginPage extends StatefulWidget {
+  static const String idScreen = 'login';
+
   const LoginPage({super.key});
 
   @override
@@ -154,10 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ForgitPassword()));
+                        Navigator.pushNamed(context, ForgitPassword.idScreen);
                       },
                       child: Text(
                         "Forgot Password?",
@@ -263,10 +262,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignupPage()));
+                          Navigator.pushNamed(context, SignupPage.idScreen);
                         },
                         child: Text(
                           "Create new one",

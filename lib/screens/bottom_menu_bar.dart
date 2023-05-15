@@ -5,6 +5,7 @@ import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/profileview.dart';
 
 class BottomMenu extends StatefulWidget {
+  static const String idScreen = 'bottombar';
   const BottomMenu({super.key});
 
   @override

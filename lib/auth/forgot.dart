@@ -9,6 +9,8 @@ import '../widgets/myTextField.dart';
 import '../widgets/mybutton.dart';
 
 class ForgitPassword extends StatefulWidget {
+  static const String idScreen = 'forgotpass';
+
   const ForgitPassword({super.key});
 
   @override

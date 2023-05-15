@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:in_driver_app/auth/auth_home.dart';
+import 'package:in_driver_app/auth/auth_verifiy.dart';
+import 'package:in_driver_app/auth/forgot.dart';
 import 'package:in_driver_app/auth/login.dart';
+import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/screens/bottom_menu_bar.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/profileview.dart';
@@ -26,8 +30,17 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: FirebaseAuth.instance.currentUser != null
-          ? BottomMenu()
-          : LoginPage(),
+          ? const BottomMenu()
+          : const LoginPage(),
+      initialRoute: LoginPage.idScreen,
+      routes: {
+        AuthHome.idScreen: (context) => const AuthHome(),
+        SignupPage.idScreen: (context) => const SignupPage(),
+        LoginPage.idScreen: (context) => const LoginPage(),
+        HomePage.idScreen: (context) => const HomePage(),
+        ForgitPassword.idScreen: (context) => const ForgitPassword(),
+        EmailVerification.idScreen: (context) => const EmailVerification(),
+      },
     );
   }
 }

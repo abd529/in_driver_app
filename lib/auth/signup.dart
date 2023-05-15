@@ -19,6 +19,8 @@ import '../widgets/myColors.dart';
 import '../widgets/myTextField.dart';
 
 class SignupPage extends StatefulWidget {
+  static const String idScreen = 'signup';
+
   const SignupPage({super.key});
 
   @override
@@ -278,26 +280,6 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   SizedBox(
                     height: 20,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text("Or"),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
                   ),
                   SizedBox(
                     height: 20,
