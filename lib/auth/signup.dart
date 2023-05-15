@@ -17,7 +17,6 @@ import '../Models/usermodel.dart';
 import '../models/registerviewmodel.dart';
 import '../widgets/myColors.dart';
 import '../widgets/myTextField.dart';
-import '../widgets/pickimages.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -76,12 +75,6 @@ class _SignupPageState extends State<SignupPage> {
   String ErrorMessage = "";
 
 //function to select image of user
-  void selectimage() async {
-    Uint8List img = await pickImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-    });
-  }
 
   Future<void> signUp(String email, String password, String First_Name,
       String Last_Name, String Phone) async {
@@ -164,7 +157,10 @@ class _SignupPageState extends State<SignupPage> {
                           : CircleAvatar(
                               backgroundColor: Colors.grey.shade200,
                               radius: 50,
-                              child: Icon(CupertinoIcons.person_alt_circle),
+                              child: Icon(
+                                CupertinoIcons.person_alt_circle,
+                                size: 60,
+                              ),
                             ),
                     ]),
                   ),
@@ -268,22 +264,12 @@ class _SignupPageState extends State<SignupPage> {
                           if (_isChecked == true) {
                             _submitForm();
                           }
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage()));
                         }
                       },
-                      //     FirebaseAuthMethod().signupUser(
-                      //         email: _emailController.text,
-                      //         fname: _fnameController.text,
-                      //         lname: _lastnameController.text,
-                      //         mobilenum: _mobilecontroller.text,
-                      //         pass: _passController.text,
-                      //         //     file: _image!);
-                      //         Get.to(() => Home()));
-                      //     _showetoast("Signup Successfully");
-                      //   } else
-                      //     _showetoast(
-                      //         "Please Accept our terms and conditions");
-                      // }
-
                       color1: gd2,
                       color2: gd1,
                       width: MediaQuery.of(context).size.width - 40),

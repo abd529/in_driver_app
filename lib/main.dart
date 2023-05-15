@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       ),
       home: FirebaseAuth.instance.currentUser != null
           ? BottomMenu()
-          : BottomMenu(),
+          : LoginPage(),
     );
   }
 }

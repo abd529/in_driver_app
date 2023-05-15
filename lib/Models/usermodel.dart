@@ -6,12 +6,10 @@ class UserModel {
   final String lname;
   final String pass;
   final String phone;
-  final String? photourl;
   final String email;
   const UserModel(
       {this.id,
       required this.email,
-      this.photourl,
       required this.fname,
       required this.lname,
       required this.pass,
@@ -24,7 +22,6 @@ class UserModel {
       'Email': email,
       'Password': pass,
       'Phone': phone,
-      'photo ': photourl
     };
   }
 
