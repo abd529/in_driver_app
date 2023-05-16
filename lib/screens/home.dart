@@ -2,8 +2,11 @@
 
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../widgets/divider_widget.dart';
 
 class HomePage extends StatefulWidget {
   static const String idScreen = 'home';
@@ -26,93 +29,230 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(
-      children: [
-        GoogleMap(
-          mapType: MapType.normal,
-          myLocationButtonEnabled: true,
-          initialCameraPosition: _kGooglePlex,
-          onMapCreated: (GoogleMapController controller) {
-            _controllerGoogleMap.complete(controller);
-            _secondGoogleMap = controller;
-          },
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: Container(
-            height: 250,
-            decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(18),
-                    topRight: Radius.circular(18)),
-                boxShadow: [
-                  BoxShadow(
-                      blurRadius: 0.5,
-                      spreadRadius: 0.5,
-                      color: Colors.black,
-                      offset: Offset(0.7, 0.7))
-                ]),
-            child: Padding(
+        appBar: AppBar(
+          actions: [
+            Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 6.0,
-                  ),
-                  const Text(
-                    "Hi,there",
-                    style: TextStyle(fontSize: 12),
-                  ),
-                  const Text(
-                    "Where to",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 6.0,
-                          spreadRadius: 0.3,
-                          color: Colors.black54,
-                          offset: Offset(0.7, 0.7),
-                        ),
-                      ],
+              child: Icon(Icons.settings),
+            )
+          ],
+          backgroundColor: Colors.blueGrey,
+        ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CircleAvatar(
+                      radius: 30,
+                      child: Icon(CupertinoIcons.person_alt_circle),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
+                    const SizedBox(height: 10),
+                    const Text(
+                      'John Doe',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const Text(
+                      'john.doe@example.com',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.home),
+                title: const Text('Home'),
+                onTap: () {
+                  // Handle Home button tap
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Profile'),
+                onTap: () {
+                  // Handle Profile button tap
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  // Handle Settings button tap
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Logout'),
+                onTap: () {
+                  // Handle Logout button tap
+                },
+              ),
+            ],
+          ),
+        ),
+        body: Stack(
+          children: [
+            GoogleMap(
+              mapType: MapType.normal,
+              myLocationButtonEnabled: true,
+              initialCameraPosition: _kGooglePlex,
+              onMapCreated: (GoogleMapController controller) {
+                _controllerGoogleMap.complete(controller);
+                _secondGoogleMap = controller;
+              },
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                height: 320,
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(18),
+                        topRight: Radius.circular(18)),
+                    boxShadow: [
+                      BoxShadow(
+                          blurRadius: 0.5,
+                          spreadRadius: 0.5,
+                          color: Colors.black,
+                          offset: Offset(0.7, 0.7))
+                    ]),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 6.0,
+                      ),
+                      const Text(
+                        "Hi,there",
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      const Text(
+                        "Where to?",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      const SizedBox(
+                        height: 20.0,
+                      ),
+                      Container(
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                          boxShadow: [
+                            const BoxShadow(
+                              blurRadius: 6.0,
+                              spreadRadius: 0.3,
+                              color: Colors.black54,
+                              offset: Offset(0.7, 0.7),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.search,
+                                color: Colors.red,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              const Text(
+                                "Search Drop off",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      //home row
+                      Row(
                         children: [
                           const Icon(
-                            Icons.search,
-                            color: Colors.yellowAccent,
+                            Icons.home,
+                            color: Colors.grey,
                           ),
                           const SizedBox(
-                            width: 10,
+                            width: 12,
                           ),
-                          const Text(
-                            "Search Drop off",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Home"),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              const Text(
+                                "Your resedential address",
+                                style:
+                                    TextStyle(fontSize: 13, color: Colors.grey),
+                              ),
+                            ],
                           )
                         ],
                       ),
-                    ),
-                  )
-                ],
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const DividerWidget(),
+                      //work row
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.work,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Work"),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              const Text(
+                                "Your office addres",
+                                style:
+                                    TextStyle(fontSize: 13, color: Colors.grey),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-        )
-      ],
-    ));
+            )
+          ],
+        ));
   }
 }
