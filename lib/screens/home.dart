@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:in_driver_app/assistants/assistantmethods.dart';
 
 import '../widgets/divider_widget.dart';
 import 'package:geolocator/geolocator.dart';
@@ -31,33 +32,21 @@ class _HomePageState extends State<HomePage> {
   final geolocator =
       Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
   void locatePosition() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location is disabled');
-    }
     LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      Position positon = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      currentPosition = positon;
+
+    Position positon = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    currentPosition = positon;
 //use to get current latitude of user location
-      LatLng latitudePosition = LatLng(positon.latitude, positon.longitude);
+    LatLng latitudePosition = LatLng(positon.latitude, positon.longitude);
 
-      //camera movement
-      CameraPosition cameraPosition =
-          CameraPosition(target: latitudePosition, zoom: 14);
+    //camera movement
+    CameraPosition cameraPosition =
+        CameraPosition(target: latitudePosition, zoom: 14);
 
-      CameraUpdate.newCameraPosition(cameraPosition);
-
-      if (permission == LocationPermission.denied) {
-        return Future.error("permission for location is denied");
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      Future.error(
-          "Sorry we can't lauch currently location because permission is denied permanently");
-    }
+    CameraUpdate.newCameraPosition(cameraPosition);
+    String address = await AssitantMethods.searchCordinatesAddress(positon);
+    print("This is your address ::" + address);
   }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
