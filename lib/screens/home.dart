@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../widgets/divider_widget.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatefulWidget {
   static const String idScreen = 'home';
@@ -21,6 +22,43 @@ class _HomePageState extends State<HomePage> {
   final Completer<GoogleMapController> _controllerGoogleMap =
       Completer<GoogleMapController>();
   GoogleMapController? _secondGoogleMap;
+  //use to get current position on map
+  Position? currentPosition;
+  //instance of geo locator
+  var geoLocator = Geolocator();
+  double bottomPadding = 0;
+  //function for getting user current location
+  final geolocator =
+      Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
+  void locatePosition() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location is disabled');
+    }
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      Position positon = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      currentPosition = positon;
+//use to get current latitude of user location
+      LatLng latitudePosition = LatLng(positon.latitude, positon.longitude);
+
+      //camera movement
+      CameraPosition cameraPosition =
+          CameraPosition(target: latitudePosition, zoom: 14);
+
+      CameraUpdate.newCameraPosition(cameraPosition);
+
+      if (permission == LocationPermission.denied) {
+        return Future.error("permission for location is denied");
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      Future.error(
+          "Sorry we can't lauch currently location because permission is denied permanently");
+    }
+  }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
@@ -106,12 +144,21 @@ class _HomePageState extends State<HomePage> {
         body: Stack(
           children: [
             GoogleMap(
+              myLocationEnabled: true,
+              zoomControlsEnabled: true,
+              zoomGesturesEnabled: true,
+              padding: EdgeInsets.only(bottom: bottomPadding),
+              //  minMaxZoomPreference: MinMaxZoomPreference(14, 2),
               mapType: MapType.normal,
               myLocationButtonEnabled: true,
               initialCameraPosition: _kGooglePlex,
               onMapCreated: (GoogleMapController controller) {
                 _controllerGoogleMap.complete(controller);
                 _secondGoogleMap = controller;
+                locatePosition();
+                setState(() {
+                  bottomPadding = 300;
+                });
               },
             ),
             Positioned(
@@ -119,7 +166,7 @@ class _HomePageState extends State<HomePage> {
               right: 0,
               bottom: 0,
               child: Container(
-                height: 320,
+                height: 300,
                 decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
