@@ -6,20 +6,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:in_driver_app/assistants/assistantmethods.dart';
+import 'package:in_driver_app/controllers/appDataprovider.dart';
 
+import '../Models/addressModel.dart';
 import '../widgets/divider_widget.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   static const String idScreen = 'home';
-
-  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  Address fetchaddress = Address();
+
   final Completer<GoogleMapController> _controllerGoogleMap =
       Completer<GoogleMapController>();
   GoogleMapController? _secondGoogleMap;
@@ -45,8 +48,13 @@ class _HomePageState extends State<HomePage> {
         CameraPosition(target: latitudePosition, zoom: 14);
 
     CameraUpdate.newCameraPosition(cameraPosition);
-    String address = await AssitantMethods.searchCordinatesAddress(positon);
+
+    String address =
+        await AssitantMethods.searchCordinatesAddress(positon, context);
     print("This is your address ::" + address);
+    setState(() {
+      fetchaddress = Address(placeName: address);
+    });
   }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -241,8 +249,14 @@ class _HomePageState extends State<HomePage> {
                               const SizedBox(
                                 height: 4,
                               ),
-                              const Text(
-                                "Your resedential address",
+                              Text(
+                                //fetchaddress.placeName,
+                                Provider.of<AppData>(context).pickuplocation !=
+                                        null
+                                    ? Provider.of<AppData>(context)
+                                        .pickuplocation
+                                        .placeName
+                                    : "Add Home Address",
                                 style:
                                     TextStyle(fontSize: 13, color: Colors.grey),
                               ),

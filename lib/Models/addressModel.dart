@@ -1,10 +1,17 @@
-class Address {
-  final String placeFormattedAddress;
-  final String placeName;
-  final String placeId;
-  final double lattitude;
-  final double longitude;
+// ignore_for_file: file_names
 
-  Address(this.placeFormattedAddress, this.placeName, this.placeId,
-      this.lattitude, this.longitude);
+class Address {
+  String placeFormattedAddress;
+  String placeName;
+  String placeId;
+  double lattitude;
+  double longitude;
+
+  Address({
+    this.placeId = "",
+    this.placeName = "kk",
+    this.placeFormattedAddress = "ll",
+    this.lattitude = 0.0,
+    this.longitude = 0.0,
+  });
 }
