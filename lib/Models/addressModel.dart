@@ -9,7 +9,7 @@ class Address {
 
   Address({
     this.placeId = "",
-    this.placeName = "kk",
+    this.placeName = "loading...",
     this.placeFormattedAddress = "ll",
     this.lattitude = 0.0,
     this.longitude = 0.0,

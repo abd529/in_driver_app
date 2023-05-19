@@ -7,6 +7,7 @@ import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/screens/bottom_menu_bar.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/profileview.dart';
+import 'package:in_driver_app/screens/searchscreen.dart';
 import 'controllers/appDataprovider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
           HomePage.idScreen: (context) => HomePage(),
           ForgitPassword.idScreen: (context) => const ForgitPassword(),
           EmailVerification.idScreen: (context) => const EmailVerification(),
+          SearchScreen.idScreen: (context) => const SearchScreen()
         },
       ),
     );

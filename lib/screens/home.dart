@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:in_driver_app/assistants/assistantmethods.dart';
 import 'package:in_driver_app/controllers/appDataprovider.dart';
+import 'package:in_driver_app/screens/searchscreen.dart';
 
 import '../Models/addressModel.dart';
 import '../widgets/divider_widget.dart';
@@ -196,36 +197,41 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(
                         height: 20.0,
                       ),
-                      Container(
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                          boxShadow: [
-                            const BoxShadow(
-                              blurRadius: 6.0,
-                              spreadRadius: 0.3,
-                              color: Colors.black54,
-                              offset: Offset(0.7, 0.7),
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.search,
-                                color: Colors.red,
+                      InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, SearchScreen.idScreen);
+                        },
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                            boxShadow: [
+                              const BoxShadow(
+                                blurRadius: 6.0,
+                                spreadRadius: 0.3,
+                                color: Colors.black54,
+                                offset: Offset(0.7, 0.7),
                               ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              const Text(
-                                "Search Drop off",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )
                             ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.search,
+                                  color: Colors.red,
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                const Text(
+                                  "Search Drop off",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -257,8 +263,10 @@ class _HomePageState extends State<HomePage> {
                                         .pickuplocation
                                         .placeName
                                     : "Add Home Address",
-                                style:
-                                    TextStyle(fontSize: 13, color: Colors.grey),
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey,
+                                    overflow: TextOverflow.visible),
                               ),
                             ],
                           )
