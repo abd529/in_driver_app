@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:in_driver_app/assistants/assistantmethods.dart';
-import 'package:in_driver_app/controllers/appDataprovider.dart';
+import 'package:in_driver_app/providers/appDataprovider.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
 
 import '../Models/addressModel.dart';
@@ -312,5 +312,33 @@ class _HomePageState extends State<HomePage> {
             )
           ],
         ));
+  }
+
+  Future<void> getPlaceDirectins() async {
+    var init_pos = Provider.of<AppData>(context).pickuplocation;
+    var fin_pos = Provider.of<AppData>(context).dropofflocation;
+    var pickupLatLang = LatLng(init_pos.lattitude, init_pos.longitude);
+
+    var dropoffLatLang = LatLng(fin_pos.lattitude, fin_pos.longitude);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          //title: Text('Dialog Title'),
+          content: Container(
+            height: 50,
+            child: Column(
+              children: [Text('loading....'), LinearProgressIndicator()],
+            ),
+          ),
+        );
+      },
+    );
+    var details = await AssitantMethods.obtainDirectionDetails(
+        pickupLatLang, dropoffLatLang);
+    Navigator.pop(context);
+
+    print("This is encoded points");
+    print(details.endcodedpoints);
   }
 }

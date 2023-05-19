@@ -1,8 +1,9 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:in_driver_app/Models/addressModel.dart';
+import 'package:in_driver_app/Models/direction_details_model.dart';
 import 'package:in_driver_app/assistants/requestassistant.dart';
-import 'package:in_driver_app/controllers/appDataprovider.dart';
-
+import 'package:in_driver_app/providers/appDataprovider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../constants.dart';
 import 'package:provider/provider.dart';
 
@@ -30,5 +31,24 @@ class AssitantMethods {
           .updatePickupLocatio(userpickupAddress);
     }
     return placeAddress;
+  }
+
+  static Future<DirectionDetails> obtainDirectionDetails(
+      LatLng initialPosition, LatLng finalPosition) async {
+    String directionUrl =
+        "https://maps.googleapis.com/maps/api/directions/json?destination=${finalPosition.latitude},${finalPosition.longitude}&origin=${initialPosition.latitude},${initialPosition.longitude}&key=YOUR_API_KEY";
+    var res = await RequestAssistant.getRequest(directionUrl);
+    if (res == "Failed") {
+      return Future.value(null);
+    }
+    DirectionDetails directionDetails = DirectionDetails();
+    directionDetails.endcodedpoints =
+        res["routes"][0]["overview_polyline"]["points"];
+
+    directionDetails.distanceText = res["routes"][0]["distance"]["text"];
+    directionDetails.distanceValue = res["routes"][0]["distance"]["value"];
+    directionDetails.durationText = res["routes"][0]["duration"]["text"];
+    directionDetails.durationValue = res["routes"][0]["duration"]["value"];
+    return directionDetails;
   }
 }

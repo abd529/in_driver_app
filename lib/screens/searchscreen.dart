@@ -2,10 +2,11 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:in_driver_app/Models/addressModel.dart';
 import 'package:in_driver_app/Models/placeprediction.dart';
 import 'package:in_driver_app/assistants/requestassistant.dart';
 import 'package:in_driver_app/constants.dart';
-import 'package:in_driver_app/controllers/appDataprovider.dart';
+import 'package:in_driver_app/providers/appDataprovider.dart';
 import 'package:in_driver_app/widgets/divider_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -210,48 +211,92 @@ class PredicitionTile extends StatelessWidget {
   const PredicitionTile({super.key, required this.placepredictions});
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.add_location),
-              SizedBox(
-                width: 14,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      placepredictions.main_text.toString(),
-                      style: TextStyle(
-                          fontSize: 16, overflow: TextOverflow.ellipsis),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      placepredictions.main_text.toString(),
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                          overflow: TextOverflow.ellipsis),
-                    )
-                  ],
+    return InkWell(
+      onTap: () {
+        getPlacesDetails(placepredictions.place_id.toString(), context);
+      },
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.add_location),
+                SizedBox(
+                  width: 14,
                 ),
-              )
-            ],
-          ),
-        ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        placepredictions.main_text.toString(),
+                        style: TextStyle(
+                            fontSize: 16, overflow: TextOverflow.ellipsis),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        placepredictions.main_text.toString(),
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                            overflow: TextOverflow.ellipsis),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void getPlacesDetails(String placeId, context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          //title: Text('Dialog Title'),
+          content: Container(
+            height: 50,
+            child: Column(
+              children: [Text('loading....'), LinearProgressIndicator()],
+            ),
+          ),
+        );
+      },
+    );
+
+    String placeDetailsurl =
+        "https://maps.googleapis.com/maps/api/place/details/json?&place_id=$placeId&key=$map";
+    var res = await RequestAssistant.getRequest(placeDetailsurl);
+    Navigator.pop(context);
+    if (res == "failed") {
+      return;
+    }
+    if (res["status"] == "OK") {
+      Address address = Address();
+      address.placeName = res["result"]["name"];
+      address.placeId = placeId;
+      address.lattitude = res["result"]["geometry"]["location"]["lat"];
+
+      address.longitude = res["result"]["geometry"]["location"]["lng"];
+      Provider.of<AppData>(
+        context,
+      ).updatedropofflocation(address);
+      print("This is a dropofflocation::");
+      print(address.placeName);
+      Navigator.pop(context, "obtain Directions");
+    }
   }
 }
