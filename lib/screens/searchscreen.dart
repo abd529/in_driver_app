@@ -10,6 +10,8 @@ import 'package:in_driver_app/providers/appDataprovider.dart';
 import 'package:in_driver_app/widgets/divider_widget.dart';
 import 'package:provider/provider.dart';
 
+import 'home.dart';
+
 class SearchScreen extends StatefulWidget {
   static const String idScreen = 'searchscreen ';
 
@@ -161,18 +163,19 @@ class _SearchScreenState extends State<SearchScreen> {
           (placespredictionlist.isNotEmpty)
               ? Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListView.separated(
-                    itemBuilder: (context, index) {
-                      return PredicitionTile(
-                        placepredictions: placespredictionlist[index],
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return DividerWidget();
-                    },
-                    itemCount: placespredictionlist.length,
-                    shrinkWrap: true,
-                    physics: ClampingScrollPhysics(),
+                  child: SizedBox(
+                    height: 200,
+                    child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        return PredicitionTile(
+                          placepredictions: placespredictionlist[index],
+                        );
+                      },
+                      itemCount: placespredictionlist.length,
+                      shrinkWrap: true,
+                      // physics: ClampingScrollPhysics(),
+                    ),
                   ),
                 )
               : Container()
@@ -223,37 +226,42 @@ class PredicitionTile extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.add_location),
-                SizedBox(
-                  width: 14,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        placepredictions.main_text.toString(),
-                        style: TextStyle(
-                            fontSize: 16, overflow: TextOverflow.ellipsis),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        placepredictions.main_text.toString(),
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                            overflow: TextOverflow.ellipsis),
-                      )
-                    ],
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.add_location),
+                  SizedBox(
+                    width: 14,
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          placepredictions.main_text.toString(),
+                          style: TextStyle(
+                              fontSize: 16, overflow: TextOverflow.ellipsis),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          placepredictions.main_text.toString(),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                              overflow: TextOverflow.ellipsis),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ],
         ),
@@ -296,7 +304,7 @@ class PredicitionTile extends StatelessWidget {
       ).updatedropofflocation(address);
       print("This is a dropofflocation::");
       print(address.placeName);
-      Navigator.pop(context, "obtain Directions");
+      Navigator.pop(context);
     }
   }
 }

@@ -41,6 +41,7 @@ dependencies:
   cloud_firestore: ^4.6.0
   image_picker: ^0.8.7+4
   geolocator: ^9.0.2
+  flutter_polyline_points: ^1.0.0
 
 dev_dependencies:
   flutter_test:

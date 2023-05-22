@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:in_driver_app/assistants/assistantmethods.dart';
 import 'package:in_driver_app/providers/appDataprovider.dart';
@@ -27,6 +28,8 @@ class _HomePageState extends State<HomePage> {
   final Completer<GoogleMapController> _controllerGoogleMap =
       Completer<GoogleMapController>();
   GoogleMapController? _secondGoogleMap;
+  List<LatLng> pLineCordinates = [];
+  Set<Polyline> polylineset = {};
   //use to get current position on map
   Position? currentPosition;
   //instance of geo locator
@@ -198,8 +201,12 @@ class _HomePageState extends State<HomePage> {
                         height: 20.0,
                       ),
                       InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(context, SearchScreen.idScreen);
+                        onTap: () async {
+                          var res = await Navigator.pushNamed(
+                              context, SearchScreen.idScreen);
+                          if (res == "obtainDirection") {
+                            await getPlaceDirectins();
+                          }
                         },
                         child: Container(
                           height: 40,
@@ -340,5 +347,28 @@ class _HomePageState extends State<HomePage> {
 
     print("This is encoded points");
     print(details.endcodedpoints);
+    PolylinePoints polylinePoints = PolylinePoints();
+    List<PointLatLng> decodedpolylinepointsResult =
+        polylinePoints.decodePolyline(details.endcodedpoints.toString());
+    pLineCordinates.clear();
+    if (decodedpolylinepointsResult.isEmpty) {
+      decodedpolylinepointsResult.forEach((PointLatLng pointLatLng) {
+        pLineCordinates
+            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+      });
+    }
+    polylineset.clear();
+    setState(() {
+      Polyline polyline = Polyline(
+          polylineId: PolylineId("PolylineId"),
+          color: Colors.pink,
+          jointType: JointType.round,
+          points: pLineCordinates,
+          width: 5,
+          startCap: Cap.roundCap,
+          endCap: Cap.roundCap,
+          geodesic: true);
+      polylineset.add(polyline);
+    });
   }
 }
