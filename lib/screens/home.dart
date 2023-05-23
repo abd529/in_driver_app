@@ -65,7 +65,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    polylinePoints = PolylinePoints();
   }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -168,7 +167,6 @@ class _HomePageState extends State<HomePage> {
                 locatePosition();
                 setState(() {
                   bottomPadding = 300;
-                  setPolylines();
                 });
               },
             ),
