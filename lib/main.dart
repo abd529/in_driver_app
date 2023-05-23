@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:in_driver_app/admin%20panel/add_user.dart';
 import 'package:in_driver_app/auth/auth_home.dart';
 import 'package:in_driver_app/auth/auth_verifiy.dart';
 import 'package:in_driver_app/auth/forgot.dart';
 import 'package:in_driver_app/auth/login.dart';
 import 'package:in_driver_app/auth/signup.dart';
+import 'package:in_driver_app/screens/admin_panel_screen.dart';
 import 'package:in_driver_app/screens/bottom_menu_bar.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/profileview.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
+import 'admin panel/admin_login.dart';
 import 'providers/appDataprovider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,9 +39,9 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: FirebaseAuth.instance.currentUser != null
-            ? const BottomMenu()
-            : HomePage(),
-        initialRoute: HomePage.idScreen,
+            ? AdminPanelScreen()
+            : AuthHome(),
+        //initialRoute: HomePage.idScreen,
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           SignupPage.idScreen: (context) => const SignupPage(),
@@ -46,7 +49,10 @@ class MyApp extends StatelessWidget {
           HomePage.idScreen: (context) => HomePage(),
           ForgitPassword.idScreen: (context) => const ForgitPassword(),
           EmailVerification.idScreen: (context) => const EmailVerification(),
-          SearchScreen.idScreen: (context) => const SearchScreen()
+          SearchScreen.idScreen: (context) => const SearchScreen(),
+          AdminPanelScreen.routName : (ctx) => const AdminPanelScreen(),
+          AdminLogin.routeName : (ctx) => AdminLogin(),
+          AddUser.routeName : (ctx) => AddUser(),
         },
       ),
     );

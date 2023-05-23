@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_literals_to_create_immutables, unrelated_type_equality_checks
 
 import 'dart:async';
 
@@ -25,9 +25,9 @@ class _HomePageState extends State<HomePage> {
   Address fetchaddress = Address();
 
   final Completer<GoogleMapController> _controllerGoogleMap =
-      Completer<GoogleMapController>();
+  Completer<GoogleMapController>();
   GoogleMapController? _secondGoogleMap;
-  List<LatLng> pLineCordinates = [];
+  List<LatLng> polyLineCordinates = [];
   Set<Polyline> polylineset = {};
   late GoogleMapController _newgoogleMapController;
   //use to get current position on map
@@ -62,6 +62,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+    polylinePoints = PolylinePoints();
+  }
+
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
@@ -71,8 +77,8 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         appBar: AppBar(
           actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Icon(Icons.settings),
             )
           ],
@@ -82,26 +88,26 @@ class _HomePageState extends State<HomePage> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              DrawerHeader(
-                decoration: const BoxDecoration(
+              const DrawerHeader(
+                decoration: BoxDecoration(
                   color: Colors.blue,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 30,
                       child: Icon(CupertinoIcons.person_alt_circle),
                     ),
-                    const SizedBox(height: 10),
-                    const Text(
+                    SizedBox(height: 10),
+                    Text(
                       'John Doe',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                       ),
                     ),
-                    const Text(
+                    Text(
                       'john.doe@example.com',
                       style: TextStyle(
                         color: Colors.white,
@@ -152,6 +158,7 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.only(bottom: bottomPadding),
               //  minMaxZoomPreference: MinMaxZoomPreference(14, 2),
               mapType: MapType.normal,
+              polylines: polylineset,
               myLocationButtonEnabled: true,
               initialCameraPosition: _kGooglePlex,
               onMapCreated: (GoogleMapController controller) {
@@ -161,6 +168,7 @@ class _HomePageState extends State<HomePage> {
                 locatePosition();
                 setState(() {
                   bottomPadding = 300;
+                  setPolylines();
                 });
               },
             ),
@@ -224,18 +232,18 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(12.0),
                             child: Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.search,
                                   color: Colors.red,
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   width: 10,
                                 ),
-                                const Text(
+                                Text(
                                   "Search Drop off",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 )
@@ -272,7 +280,7 @@ class _HomePageState extends State<HomePage> {
                                         .pickuplocation
                                         .placeName
                                     : "Add Home Address",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 13,
                                     color: Colors.grey,
                                     overflow: TextOverflow.visible),
@@ -289,23 +297,23 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(
                         height: 16,
                       ),
-                      Row(
+                      const Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.work,
                             color: Colors.grey,
                           ),
-                          const SizedBox(
+                          SizedBox(
                             width: 12,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text("Work"),
-                              const SizedBox(
+                              Text("Work"),
+                              SizedBox(
                                 height: 4,
                               ),
-                              const Text(
+                              Text(
                                 "Your office addres",
                                 style:
                                     TextStyle(fontSize: 13, color: Colors.grey),
@@ -336,7 +344,7 @@ class _HomePageState extends State<HomePage> {
           //title: Text('Dialog Title'),
           content: Container(
             height: 50,
-            child: Column(
+            child: const Column(
               children: [Text('loading....'), LinearProgressIndicator()],
             ),
           ),
@@ -353,20 +361,20 @@ class _HomePageState extends State<HomePage> {
     PolylinePoints polylinePoints = PolylinePoints();
     List<PointLatLng> decodedpolylinepointsResult =
         polylinePoints.decodePolyline(details.endcodedpoints.toString());
-    pLineCordinates.clear();
+    polyLineCordinates.clear();
     if (decodedpolylinepointsResult.isEmpty) {
       decodedpolylinepointsResult.forEach((PointLatLng pointLatLng) {
-        pLineCordinates
+        polyLineCordinates
             .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
       });
     }
     polylineset.clear();
     setState(() {
       Polyline polyline = Polyline(
-          polylineId: PolylineId("PolylineId"),
+          polylineId: const PolylineId("PolylineId"),
           color: Colors.pink,
           jointType: JointType.round,
-          points: pLineCordinates,
+          points: polyLineCordinates,
           width: 5,
           startCap: Cap.roundCap,
           endCap: Cap.roundCap,

@@ -27,14 +27,14 @@ class UserModel {
 
   //map for fecthing users from firestore
   factory UserModel.fromSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> document) {
-    final data = document.data()!;
+      DocumentSnapshot document) {
+    final data = document.data() as Map<String, dynamic>;
     return UserModel(
         id: document.id,
-        email: data['Email'],
+        email: data['email'],
         fname: data['First Name'],
-        lname: data['last name'],
-        pass: data['pass'],
-        phone: data['Phone']);
+        lname: data['Last Name'],
+        pass: "******",
+        phone: data['phone']);
   }
 }
