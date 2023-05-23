@@ -189,7 +189,7 @@ class _SearchScreenState extends State<SearchScreen> {
       String autoComplete =
           "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&location=37.76999%2C-122.44696&radius=500&types=establishment&key=$map&components=country:pk";
       var res = await RequestAssistant.getRequest(autoComplete);
-      if (res == 'failed') {
+      if (res == "failed") {
         return;
       }
       if (res["status"] == "OK") {
@@ -200,7 +200,7 @@ class _SearchScreenState extends State<SearchScreen> {
         setState(() {
           placespredictionlist = placeslist;
         });
-        print(predictions);
+        print("Place Predictions are::");
         print(res);
       }
     }
@@ -228,7 +228,7 @@ class PredicitionTile extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pop(context);
+                // Navigator.pop(context);
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -299,12 +299,13 @@ class PredicitionTile extends StatelessWidget {
       address.lattitude = res["result"]["geometry"]["location"]["lat"];
 
       address.longitude = res["result"]["geometry"]["location"]["lng"];
-      Provider.of<AppData>(
-        context,
-      ).updatedropofflocation(address);
+      Provider.of<AppData>(context, listen: false)
+          .updatedropofflocation(address);
       print("This is a dropofflocation::");
       print(address.placeName);
-      Navigator.pop(context);
+      // Navigator.push(
+      //     context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.pop(context, "obtainDirection");
     }
   }
 }

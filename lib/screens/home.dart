@@ -16,8 +16,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  static const String idScreen = 'home';
-
+  static String idScreen = 'home';
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -30,17 +29,19 @@ class _HomePageState extends State<HomePage> {
   GoogleMapController? _secondGoogleMap;
   List<LatLng> pLineCordinates = [];
   Set<Polyline> polylineset = {};
+  late GoogleMapController _newgoogleMapController;
   //use to get current position on map
   Position? currentPosition;
   //instance of geo locator
   var geoLocator = Geolocator();
   double bottomPadding = 0;
+
   //function for getting user current location
   final geolocator =
       Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
   void locatePosition() async {
     LocationPermission permission = await Geolocator.checkPermission();
-
+//use to get user current location
     Position positon = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     currentPosition = positon;
@@ -51,8 +52,8 @@ class _HomePageState extends State<HomePage> {
     CameraPosition cameraPosition =
         CameraPosition(target: latitudePosition, zoom: 14);
 
-    CameraUpdate.newCameraPosition(cameraPosition);
-
+    _newgoogleMapController
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     String address =
         await AssitantMethods.searchCordinatesAddress(positon, context);
     print("This is your address ::" + address);
@@ -155,6 +156,7 @@ class _HomePageState extends State<HomePage> {
               initialCameraPosition: _kGooglePlex,
               onMapCreated: (GoogleMapController controller) {
                 _controllerGoogleMap.complete(controller);
+                _newgoogleMapController = controller;
                 _secondGoogleMap = controller;
                 locatePosition();
                 setState(() {
@@ -322,11 +324,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> getPlaceDirectins() async {
-    var init_pos = Provider.of<AppData>(context).pickuplocation;
-    var fin_pos = Provider.of<AppData>(context).dropofflocation;
-    var pickupLatLang = LatLng(init_pos.lattitude, init_pos.longitude);
+    var initalpos = Provider.of<AppData>(context).pickuplocation;
+    var finalpos = Provider.of<AppData>(context).dropofflocation;
+    var pickupLatLang = LatLng(initalpos.lattitude, initalpos.longitude);
 
-    var dropoffLatLang = LatLng(fin_pos.lattitude, fin_pos.longitude);
+    var dropoffLatLang = LatLng(finalpos.lattitude, finalpos.longitude);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -343,7 +345,8 @@ class _HomePageState extends State<HomePage> {
     );
     var details = await AssitantMethods.obtainDirectionDetails(
         pickupLatLang, dropoffLatLang);
-    Navigator.pop(context);
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => HomePage()));
 
     print("This is encoded points");
     print(details.endcodedpoints);
@@ -370,5 +373,24 @@ class _HomePageState extends State<HomePage> {
           geodesic: true);
       polylineset.add(polyline);
     });
+    LatLngBounds latLngBounds;
+    if (pickupLatLang.latitude > dropoffLatLang.latitude &&
+        pickupLatLang.longitude > dropoffLatLang.longitude) {
+      latLngBounds =
+          LatLngBounds(southwest: dropoffLatLang, northeast: pickupLatLang);
+    } else if (pickupLatLang.longitude > dropoffLatLang.longitude) {
+      latLngBounds = LatLngBounds(
+          southwest: LatLng(pickupLatLang.latitude, dropoffLatLang.latitude),
+          northeast: LatLng(dropoffLatLang.longitude, pickupLatLang.longitude));
+    } else if (pickupLatLang.latitude > dropoffLatLang.latitude) {
+      latLngBounds = LatLngBounds(
+          southwest: LatLng(dropoffLatLang.latitude, pickupLatLang.latitude),
+          northeast: LatLng(pickupLatLang.longitude, dropoffLatLang.longitude));
+    } else {
+      latLngBounds =
+          LatLngBounds(southwest: pickupLatLang, northeast: dropoffLatLang);
+    }
+    _newgoogleMapController
+        .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
   }
 }

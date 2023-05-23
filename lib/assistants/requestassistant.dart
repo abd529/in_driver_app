@@ -12,11 +12,7 @@ class RequestAssistant {
         var decodeData = jsonDecode(jsonData);
         return decodeData;
       } else {
-        Column(
-          children: const [
-            Text("Failed"),
-          ],
-        );
+        "Failed, No Response";
       }
     } catch (e) {
       print("Failed");
