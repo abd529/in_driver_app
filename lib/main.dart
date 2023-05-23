@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: FirebaseAuth.instance.currentUser != null
-            ? AdminPanelScreen()
-            : AuthHome(),
+            ? HomePage()
+            : const AuthHome(),
         //initialRoute: HomePage.idScreen,
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
@@ -51,8 +51,8 @@ class MyApp extends StatelessWidget {
           EmailVerification.idScreen: (context) => const EmailVerification(),
           SearchScreen.idScreen: (context) => const SearchScreen(),
           AdminPanelScreen.routName : (ctx) => const AdminPanelScreen(),
-          AdminLogin.routeName : (ctx) => AdminLogin(),
-          AddUser.routeName : (ctx) => AddUser(),
+          AdminLogin.routeName : (ctx) => const AdminLogin(),
+          AddUser.routeName : (ctx) => const AddUser(),
         },
       ),
     );

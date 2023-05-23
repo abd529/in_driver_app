@@ -23,11 +23,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Address fetchaddress = Address();
-
+  Set<Polyline> _polylines = Set<Polyline>();
+    List<LatLng> polyLineCordinates = [];
+    late PolylinePoints polylinePoints ;
   final Completer<GoogleMapController> _controllerGoogleMap =
   Completer<GoogleMapController>();
   GoogleMapController? _secondGoogleMap;
-  List<LatLng> polyLineCordinates = [];
   Set<Polyline> polylineset = {};
   late GoogleMapController _newgoogleMapController;
   //use to get current position on map
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
     currentPosition = positon;
 //use to get current latitude of user location
     LatLng latitudePosition = LatLng(positon.latitude, positon.longitude);
-
+    
     //camera movement
     CameraPosition cameraPosition =
         CameraPosition(target: latitudePosition, zoom: 14);
@@ -65,6 +66,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    polylinePoints = PolylinePoints(); 
   }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -157,12 +159,13 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.only(bottom: bottomPadding),
               //  minMaxZoomPreference: MinMaxZoomPreference(14, 2),
               mapType: MapType.normal,
-              polylines: polylineset,
+              polylines: _polylines,
               myLocationButtonEnabled: true,
               initialCameraPosition: _kGooglePlex,
               onMapCreated: (GoogleMapController controller) {
                 _controllerGoogleMap.complete(controller);
                 _newgoogleMapController = controller;
+                setPolylines();
                 _secondGoogleMap = controller;
                 locatePosition();
                 setState(() {
@@ -399,4 +402,25 @@ class _HomePageState extends State<HomePage> {
     _newgoogleMapController
         .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
   }
+
+ void setPolylines() async{
+  PolylineResult result = await polylinePoints.getRouteBetweenCoordinates("AIzaSyATM0ok3Nn_739JDsbyMO8KFTdD4jgU85Q",const PointLatLng(31.4697, 74.2728) ,const PointLatLng(31.5124, 74.2845)); 
+ if(result.status =="OK"){
+  print(result.points);
+  result.points.forEach((PointLatLng point) {
+    polyLineCordinates.add(LatLng(point.latitude, point.longitude));
+    setState(() {
+      _polylines.add(
+        Polyline(
+          polylineId: PolylineId("polyline"),
+          width: 10,
+          color: Colors.purple,
+          points: polyLineCordinates
+          )
+        );
+    });
+   });
+ }
+ }
+
 }
