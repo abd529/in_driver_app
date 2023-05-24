@@ -13,7 +13,7 @@ class PlacesPredictions {
     this.main_text = "",
   });
   PlacesPredictions.fromJson(Map<String, dynamic> json) {
-    place_id = json['structured_formatting']["place_id"];
+    place_id = json["place_id"];
     main_text = json['structured_formatting']["main_text"];
     secondary_Text = json['structured_formatting']["secondary_text"];
   }

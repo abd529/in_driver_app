@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, unrelated_type_equality_checks
+// ignore_for_file: prefer_const_literals_to_create_immutables, unrelated_type_equality_checks, unnecessary_null_comparison, use_build_context_synchronously, avoid_print, cast_from_null_always_fails
 
 import 'dart:async';
 
@@ -6,11 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:in_driver_app/Models/addressModel.dart';
 import 'package:in_driver_app/assistants/assistantmethods.dart';
 import 'package:in_driver_app/providers/appDataprovider.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
-
-import '../Models/addressModel.dart';
+import 'package:in_driver_app/constants.dart';
+import '../assistants/requestassistant.dart';
+import '../models/addressModel.dart' as Adress;
+import '../models/placeprediction.dart';
 import '../widgets/divider_widget.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
@@ -22,8 +25,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  LatLng current = const LatLng(0,0);
   Address fetchaddress = Address();
-  Set<Polyline> _polylines = Set<Polyline>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  TextEditingController pickUpController = TextEditingController();
+  TextEditingController dropOffController = TextEditingController();
+  final Set<Polyline> _polylines = Set<Polyline>();
+  int check = 0;
+  List<PlacesPredictions> placespredictionlist = [];
     List<LatLng> polyLineCordinates = [];
     late PolylinePoints polylinePoints ;
   final Completer<GoogleMapController> _controllerGoogleMap =
@@ -31,42 +40,86 @@ class _HomePageState extends State<HomePage> {
   GoogleMapController? _secondGoogleMap;
   Set<Polyline> polylineset = {};
   late GoogleMapController _newgoogleMapController;
-  //use to get current position on map
   Position? currentPosition;
-  //instance of geo locator
   var geoLocator = Geolocator();
   double bottomPadding = 0;
-
-  //function for getting user current location
   final geolocator =
       Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
+  
+  Future<Address?> getPlacesDetails(String placeId, context) async {
+    print("function test 1 ok");
+    String placeDetailsurl =
+        "https://maps.googleapis.com/maps/api/place/details/json?&place_id=$placeId&key=$map";
+    var res = await RequestAssistant.getRequest(placeDetailsurl);
+    print("function test 2 ok");
+    print(res);
+    if (res == "failed") {
+      print("function failed test 3 ok");
+      return null;
+    }
+    if (res["status"] == "OK") {
+      print("function OK test 4 ok");
+      print("detail result=======$res");
+      Address address = Address();
+      address.placeName = res["result"]["name"];
+      address.placeId = placeId;
+      address.lattitude = res["result"]["geometry"]["location"]["lat"];
+
+      address.longitude = res["result"]["geometry"]["location"]["lng"];
+      Provider.of<AppData>(context, listen: false)
+          .updatedropofflocation(address as Address);
+      print("This is a dropofflocation::");
+    return address;
+    }
+    print("function test 5 ok");
+    return null;
+  }
+
   void locatePosition() async {
     LocationPermission permission = await Geolocator.checkPermission();
-//use to get user current location
     Position positon = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    currentPosition = positon;
-//use to get current latitude of user location
     LatLng latitudePosition = LatLng(positon.latitude, positon.longitude);
-    
-    //camera movement
     CameraPosition cameraPosition =
         CameraPosition(target: latitudePosition, zoom: 14);
-
     _newgoogleMapController
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     String address =
         await AssitantMethods.searchCordinatesAddress(positon, context);
-    print("This is your address ::" + address);
+    print("This is your address ::$address");
     setState(() {
       fetchaddress = Address(placeName: address);
     });
+  }
+  
+  void findplaceName(String placeName) async {
+    if (placeName.length > 1) {
+      String autoComplete =
+          "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&location=37.76999%2C-122.44696&radius=500&types=establishment&key=$map&components=country:pk";
+      var res = await RequestAssistant.getRequest(autoComplete);
+      if (res == "failed") {
+        return;
+      }
+      if (res["status"] == "OK") {
+        var predictions = res["predictions"];
+        print(predictions);
+        var placeslist = (predictions as List)
+            .map((e) => PlacesPredictions.fromJson(e))
+            .toList();
+            print(placeslist[0].place_id);
+        setState(() {
+          placespredictionlist = placeslist;
+        });
+        print("Place Predictions are::");
+        print(res);
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    polylinePoints = PolylinePoints(); 
+    polylinePoints = PolylinePoints();
   }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -162,10 +215,12 @@ class _HomePageState extends State<HomePage> {
               polylines: _polylines,
               myLocationButtonEnabled: true,
               initialCameraPosition: _kGooglePlex,
-              onMapCreated: (GoogleMapController controller) {
+              onMapCreated: (GoogleMapController controller) async{
+                Position p = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
                 _controllerGoogleMap.complete(controller);
                 _newgoogleMapController = controller;
-                setPolylines();
+                setPolylines(p);
                 _secondGoogleMap = controller;
                 locatePosition();
                 setState(() {
@@ -178,7 +233,7 @@ class _HomePageState extends State<HomePage> {
               right: 0,
               bottom: 0,
               child: Container(
-                height: 300,
+                height: 400,
                 decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -193,143 +248,248 @@ class _HomePageState extends State<HomePage> {
                     ]),
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        height: 6.0,
-                      ),
-                      const Text(
-                        "Hi,there",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      const Text(
-                        "Where to?",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          var res = await Navigator.pushNamed(
-                              context, SearchScreen.idScreen);
-                          if (res == "obtainDirection") {
-                            await getPlaceDirectins();
-                          }
-                        },
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                            boxShadow: [
-                              const BoxShadow(
-                                blurRadius: 6.0,
-                                spreadRadius: 0.3,
-                                color: Colors.black54,
-                                offset: Offset(0.7, 0.7),
-                              ),
-                            ],
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.search,
-                                  color: Colors.red,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  "Search Drop off",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )
-                              ],
-                            ),
-                          ),
+                       const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                  child: Form(
+                    key: _formKey,
+                    child:  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                         const SizedBox(
+                          height: 6.0,
                         ),
-                      ),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      //home row
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.home,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text("Home"),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                              Text(
-                                //fetchaddress.placeName,
-                                Provider.of<AppData>(context).pickuplocation !=
-                                        null
-                                    ? Provider.of<AppData>(context)
-                                        .pickuplocation
-                                        .placeName
-                                    : "Add Home Address",
-                                style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey,
-                                    overflow: TextOverflow.visible),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const DividerWidget(),
-                      //work row
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      const Row(
-                        children: [
-                          Icon(
-                            Icons.work,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Work"),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              Text(
-                                "Your office addres",
-                                style:
-                                    TextStyle(fontSize: 13, color: Colors.grey),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ],
+                         const Text(
+                          "Hi,there",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                         const Text(
+                          "Where to?",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                         const SizedBox(
+                          height: 20.0,
+                        ),
+                        TextFormField(
+                          controller: pickUpController,
+                          validator: (value) {
+                            if(value!.isEmpty){
+                              return "pickup location is required";
+                            }
+                          },
+                          onChanged: (val) {
+                                    findplaceName(val);
+                                    check = 0;
+                                  },
+                          decoration: textFeildDecore("Enter Pickup Location"),
+                        ),
+                        const SizedBox(height: 5,),
+                        TextFormField(
+                          controller: dropOffController,
+                          validator: (value) {
+                            if(value!.isEmpty){
+                              return "drop off location is required";
+                            }
+                          },
+                          onChanged: (val) {
+                                    findplaceName(val);
+                                    check = 1;
+                                  },
+                          decoration: textFeildDecore("Enter Drop off Location"),
+                        ),
+                        (placespredictionlist.isNotEmpty)
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: SizedBox(
+                    height: 160,
+                    child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        PlacesPredictions place = placespredictionlist[index];
+                       
+                        return ListTile(
+                          leading: const Icon(Icons.location_on_outlined),
+                          title: Text(place.main_text.toString()),
+                          onTap: () async{
+                           Address? add = await getPlacesDetails(place.place_id.toString(), context);
+                            if(check == 0){
+                              pickUpController.text = add!.placeName.toString();
+                            }
+                            else if(check == 1){
+                               dropOffController.text = add!.placeName.toString();
+                            }
+                            setState(() {
+                            placespredictionlist = [];  
+                            });
+                            
+                          },
+                        ); 
+                        // PredicitionTile(
+                        //   placepredictions: placespredictionlist[index],
+                        // );
+                      },
+                      itemCount: placespredictionlist.length,
+                      shrinkWrap: true,
+                      // physics: ClampingScrollPhysics(),
+                    ),
+                  ),
+                )
+              : SizedBox(
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20,),
+                    ElevatedButton(onPressed: (){print("hehe");}, child: const Text("find a rider")),
+                  ],
+                ),
+              )
+                        // InkWell(
+                        //   onTap: () async {
+                        //     var res = await Navigator.pushNamed(
+                        //         context, SearchScreen.idScreen);
+                        //     if (res == "obtainDirection") {
+                        //       await getPlaceDirectins();
+                        //     }
+                        //   },
+                        //   child: Container(
+                        //     height: 40,
+                        //     decoration: BoxDecoration(
+                        //       borderRadius: BorderRadius.circular(10),
+                        //       color: Colors.white,
+                        //       boxShadow: [
+                        //         const BoxShadow(
+                        //           blurRadius: 6.0,
+                        //           spreadRadius: 0.3,
+                        //           color: Colors.black54,
+                        //           offset: Offset(0.7, 0.7),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //     child: const Padding(
+                        //       padding: EdgeInsets.all(12.0),
+                        //       child: Row(
+                        //         children: [
+                        //           Icon(
+                        //             Icons.search,
+                        //             color: Colors.red,
+                        //           ),
+                        //           SizedBox(
+                        //             width: 10,
+                        //           ),
+                        //           Text(
+                        //             "Search Drop off",
+                        //             style: TextStyle(fontWeight: FontWeight.bold),
+                        //           )
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // const SizedBox(
+                        //   height: 24,
+                        // ),
+                        // //home row
+                        // Row(
+                        //   children: [
+                        //     const Icon(
+                        //       Icons.home,
+                        //       color: Colors.grey,
+                        //     ),
+                        //     const SizedBox(
+                        //       width: 12,
+                        //     ),
+                        //     Column(
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        //         const Text("Home"),
+                        //         const SizedBox(
+                        //           height: 4,
+                        //         ),
+                        //         Text(
+                        //           //fetchaddress.placeName,
+                        //           Provider.of<AppData>(context).pickuplocation !=
+                        //                   null
+                        //               ? Provider.of<AppData>(context)
+                        //                   .pickuplocation
+                        //                   .placeName
+                        //               : "Add Home Address",
+                        //           style: const TextStyle(
+                        //               fontSize: 13,
+                        //               color: Colors.grey,
+                        //               overflow: TextOverflow.visible),
+                        //         ),
+                        //       ],
+                        //     )
+                        //   ],
+                        // ),
+                        // const SizedBox(
+                        //   height: 10,
+                        // ),
+                        // const DividerWidget(),
+                        // //work row
+                        // const SizedBox(
+                        //   height: 16,
+                        // ),
+                        // const Row(
+                        //   children: [
+                        //     Icon(
+                        //       Icons.work,
+                        //       color: Colors.grey,
+                        //     ),
+                        //     SizedBox(
+                        //       width: 12,
+                        //     ),
+                        //     Column(
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        //         Text("Work"),
+                        //         SizedBox(
+                        //           height: 4,
+                        //         ),
+                        //         Text(
+                        //           "Your office addres",
+                        //           style:
+                        //               TextStyle(fontSize: 13, color: Colors.grey),
+                        //         ),
+                        //       ],
+                        //     )
+                        //   ],
+                        // ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             )
           ],
         ));
+  }
+
+  InputDecoration textFeildDecore(String hint) {
+    return InputDecoration(
+  contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(8.0),
+    borderSide: const BorderSide(
+      color: Colors.grey,
+      width: 1.0,
+    ),
+  ),
+  enabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(8.0),
+    borderSide: const BorderSide(
+      color: Colors.grey,
+      width: 1.0,
+    ),
+  ),
+  focusedBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(8.0),
+    borderSide: const BorderSide(
+      color: Colors.blue,
+      width: 1.5,
+    ),
+  ),
+  hintText: hint,
+);
   }
 
   Future<void> getPlaceDirectins() async {
@@ -403,8 +563,8 @@ class _HomePageState extends State<HomePage> {
         .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
   }
 
- void setPolylines() async{
-  PolylineResult result = await polylinePoints.getRouteBetweenCoordinates("AIzaSyATM0ok3Nn_739JDsbyMO8KFTdD4jgU85Q",const PointLatLng(31.4697, 74.2728) ,const PointLatLng(31.5124, 74.2845)); 
+ void setPolylines(Position current) async{
+  PolylineResult result = await polylinePoints.getRouteBetweenCoordinates("AIzaSyATM0ok3Nn_739JDsbyMO8KFTdD4jgU85Q",PointLatLng(current.latitude,current.longitude) ,const PointLatLng(31.5124, 74.2845)); 
  if(result.status =="OK"){
   print(result.points);
   result.points.forEach((PointLatLng point) {
@@ -412,7 +572,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _polylines.add(
         Polyline(
-          polylineId: PolylineId("polyline"),
+          polylineId: const PolylineId("polyline"),
           width: 10,
           color: Colors.purple,
           points: polyLineCordinates
@@ -423,4 +583,109 @@ class _HomePageState extends State<HomePage> {
  }
  }
 
+ 
+
 }
+
+class PredicitionTile extends StatelessWidget {
+  final PlacesPredictions placepredictions;
+ // final TextEditingController controller;
+
+  //final StructuredFormatting structure;
+  const PredicitionTile({super.key, required this.placepredictions});
+
+  void getPlacesDetails(String placeId, context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          //title: Text('Dialog Title'),
+          content: Container(
+            height: 50,
+            child: Column(
+              children: [Text('loading....'), LinearProgressIndicator()],
+            ),
+          ),
+        );
+      },
+    );
+
+    String placeDetailsurl =
+        "https://maps.googleapis.com/maps/api/place/details/json?&place_id=$placeId&key=$map";
+    var res = await RequestAssistant.getRequest(placeDetailsurl);
+    Navigator.pop(context);
+    if (res == "failed") {
+      return;
+    }
+    if (res["status"] == "OK") {
+      Address address = Address();
+      address.placeName = res["result"]["name"];
+      address.placeId = placeId;
+      address.lattitude = res["result"]["geometry"]["location"]["lat"];
+
+      address.longitude = res["result"]["geometry"]["location"]["lng"];
+      Provider.of<AppData>(context, listen: false)
+          .updatedropofflocation(address as Address);
+      print("This is a dropofflocation::");
+      print(address.placeName);
+      // Navigator.push(
+      //     context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.pop(context, "obtainDirection");
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        getPlacesDetails(placepredictions.place_id.toString(), context);
+      },
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            InkWell(
+              onTap: () {
+                // Navigator.pop(context);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.add_location),
+                  SizedBox(
+                    width: 14,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          placepredictions.main_text.toString(),
+                          style: TextStyle(
+                              fontSize: 16, overflow: TextOverflow.ellipsis),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          placepredictions.main_text.toString(),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                              overflow: TextOverflow.ellipsis),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }}
