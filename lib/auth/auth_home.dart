@@ -26,42 +26,41 @@ class _AuthHomeState extends State<AuthHome> {
           children: [
             Image(
               fit: BoxFit.cover,
-              height: 60,
-              width: 60,
+              height: 160,
+              width: 160,
               image: AssetImage('assets/images/logo.png'),
             ),
             SizedBox(height: 50,),
-            MyCustomButton(
-                width: MediaQuery.of(context).size.width - 70,
-                title: "Sign Up",
-                borderrad: 25,
-                onaction: () {
-                  Navigator.pushNamed(context, SignupPage.idScreen);
-                },
-                color1: gd2,
-                color2: gd1),
-            const SizedBox(
-              height: 20,
-            ),
-            MyCustomButton(
-                width: MediaQuery.of(context).size.width - 70,
-                title: "Sign In",
-                borderrad: 25,
-                onaction: () {
-                  Navigator.pushNamed(context, LoginPage.idScreen);
-                },
-                color1: green,
-                color2: green),
-                SizedBox(height: 50,),
-            MyCustomButton(
-                width: MediaQuery.of(context).size.width - 70,
-                title: "Log in as Admin",
-                borderrad: 25,
-                onaction: () {
-                  Navigator.pushNamed(context, AdminLogin.routeName);
-                },
-                color1: green,
-                color2: green),    
+            ElevatedButton(onPressed: (){
+              Navigator.of(context).pushNamed(SignupPage.idScreen);
+            },
+            style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
+                          shape: RoundedRectangleBorder( //to set border radius to button
+                    borderRadius: BorderRadius.circular(50)
+                              ),), 
+             child: const Text("Sign Up")),
+             const SizedBox(height: 20,),
+            ElevatedButton(onPressed: (){
+              Navigator.of(context).pushNamed(LoginPage.idScreen);
+            },
+            style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
+                          shape: RoundedRectangleBorder( //to set border radius to button
+                    borderRadius: BorderRadius.circular(50)
+                              ),), 
+             child: const Text("Sign In")),
+             const SizedBox(height: 70,),
+             ElevatedButton(onPressed: (){
+              Navigator.of(context).pushNamed(AdminLogin.routeName);
+             },
+            style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
+                          shape: RoundedRectangleBorder( //to set border radius to button
+                    borderRadius: BorderRadius.circular(50)
+                              ),), 
+             child: const Text("Log In As Admin")), 
+                
           ],
         ),
       ),

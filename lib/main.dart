@@ -6,10 +6,9 @@ import 'package:in_driver_app/auth/forgot.dart';
 import 'package:in_driver_app/auth/login.dart';
 import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/screens/admin_panel_screen.dart';
-import 'package:in_driver_app/screens/bottom_menu_bar.dart';
 import 'package:in_driver_app/screens/home.dart';
-import 'package:in_driver_app/screens/profileview.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
+import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
 import 'providers/appDataprovider.dart';
 import 'firebase_options.dart';
@@ -36,12 +35,16 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+          primaryColor: const Color.fromRGBO(64, 190, 148, 1),
+          primarySwatch: generateMaterialColor(const Color.fromRGBO(64, 190, 148, 1)),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+           style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromRGBO(64, 190, 148, 1),
+          )
+        ),),
         home: FirebaseAuth.instance.currentUser != null
             ? HomePage()
             : const AuthHome(),
-        //initialRoute: HomePage.idScreen,
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           SignupPage.idScreen: (context) => const SignupPage(),

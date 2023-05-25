@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, unrelated_type_equality_checks, unnecessary_null_comparison, use_build_context_synchronously, avoid_print, cast_from_null_always_fails
+// ignore_for_file: prefer_const_literals_to_create_immutables, unrelated_type_equality_checks, unnecessary_null_comparison, use_build_context_synchronously, avoid_print, cast_from_null_always_fails, unused_field
 
 import 'dart:async';
 
@@ -11,6 +11,7 @@ import 'package:in_driver_app/assistants/assistantmethods.dart';
 import 'package:in_driver_app/providers/appDataprovider.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
 import 'package:in_driver_app/constants.dart';
+import 'package:location/location.dart' hide LocationAccuracy;
 import '../assistants/requestassistant.dart';
 import '../models/addressModel.dart' as Adress;
 import '../models/placeprediction.dart';
@@ -30,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController pickUpController = TextEditingController();
   TextEditingController dropOffController = TextEditingController();
-  final Set<Polyline> _polylines = Set<Polyline>();
+  final Set<Polyline> _polylines = <Polyline>{};
   int check = 0;
   List<PlacesPredictions> placespredictionlist = [];
     List<LatLng> polyLineCordinates = [];
@@ -41,12 +42,17 @@ class _HomePageState extends State<HomePage> {
   Set<Polyline> polylineset = {};
   late GoogleMapController _newgoogleMapController;
   Position? currentPosition;
+  late Position pickUp ;
+  late Position dropOff;
   var geoLocator = Geolocator();
   double bottomPadding = 0;
-  final geolocator =
+  final geolocator = 
       Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
+  LocationData? currentLocation;
+  BitmapDescriptor currentIcon = BitmapDescriptor.defaultMarker;
+
   
-  Future<Address?> getPlacesDetails(String placeId, context) async {
+  Future<Address?> getPlacesDetails(String placeId, int check ,context) async {
     print("function test 1 ok");
     String placeDetailsurl =
         "https://maps.googleapis.com/maps/api/place/details/json?&place_id=$placeId&key=$map";
@@ -61,6 +67,35 @@ class _HomePageState extends State<HomePage> {
       print("function OK test 4 ok");
       print("detail result=======$res");
       Address address = Address();
+      if(check == 0){
+        setState(() {
+        pickUp = Position(
+        latitude: res["result"]["geometry"]["location"]["lat"],
+        longitude: res["result"]["geometry"]["location"]["lng"],
+        accuracy: 1.0,
+        altitude: 1.0,
+        heading: 1.0,
+        speed: 50,
+        speedAccuracy: 1.0,
+        timestamp: DateTime.now(),
+      );    
+        });
+      }
+      if(check == 1){
+        setState(() {
+        dropOff = Position(
+        latitude: res["result"]["geometry"]["location"]["lat"],
+        longitude: res["result"]["geometry"]["location"]["lng"],
+        accuracy: 1.0,
+        altitude: 1.0,
+        heading: 1.0,
+        speed: 50,
+        speedAccuracy: 1.0,
+        timestamp: DateTime.now(),
+      );    
+        });
+      }
+      
       address.placeName = res["result"]["name"];
       address.placeId = placeId;
       address.lattitude = res["result"]["geometry"]["location"]["lat"];
@@ -71,8 +106,35 @@ class _HomePageState extends State<HomePage> {
       print("This is a dropofflocation::");
     return address;
     }
-    print("function test 5 ok");
     return null;
+  }
+
+  void setCustomMarkerId(){
+    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/current_marker.png").then((icon){
+      currentIcon = icon;
+    } ) ;
+  }
+  
+  void getCurrentPosition()async{
+    Location location = Location();
+    location.getLocation().then((location){
+      currentLocation = location;
+    });
+    // GoogleMapController mapController = await _controllerGoogleMap.future;
+    // location.onLocationChanged.listen((newLoc) {
+    //   currentLocation = newLoc;
+    //   mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(newLoc.latitude as double, newLoc.longitude as double))));
+    // });
+  }
+
+  LatLng currentLatLng = LatLng(0, 0);
+  void getCurrentLatLng()async{
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+        setState(() {
+        currentLatLng = LatLng(position.latitude, position.longitude);  
+        });
+        
   }
 
   void locatePosition() async {
@@ -120,6 +182,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     polylinePoints = PolylinePoints();
+    getCurrentLatLng();
+    setCustomMarkerId();
   }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -130,13 +194,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          title: const Text("inDriver", style: TextStyle(color: Colors.white),),
           actions: [
             const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Icon(Icons.settings),
+              child: Icon(Icons.settings, color: Colors.white,),
             )
           ],
-          backgroundColor: Colors.blueGrey,
         ),
         drawer: Drawer(
           child: ListView(
@@ -216,16 +280,21 @@ class _HomePageState extends State<HomePage> {
               myLocationButtonEnabled: true,
               initialCameraPosition: _kGooglePlex,
               onMapCreated: (GoogleMapController controller) async{
-                Position p = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
                 _controllerGoogleMap.complete(controller);
                 _newgoogleMapController = controller;
-                setPolylines(p);
+                
                 _secondGoogleMap = controller;
                 locatePosition();
                 setState(() {
-                  bottomPadding = 300;
+                  bottomPadding = 330;
                 });
+              },
+              markers: {
+                 Marker(
+                  markerId: const MarkerId("current_position"),
+                  position: currentLatLng,
+                  icon: currentIcon
+                  )
               },
             ),
             Positioned(
@@ -298,38 +367,49 @@ class _HomePageState extends State<HomePage> {
                         (placespredictionlist.isNotEmpty)
               ? Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: SizedBox(
-                    height: 160,
-                    child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (context, index) {
-                        PlacesPredictions place = placespredictionlist[index];
-                       
-                        return ListTile(
-                          leading: const Icon(Icons.location_on_outlined),
-                          title: Text(place.main_text.toString()),
-                          onTap: () async{
-                           Address? add = await getPlacesDetails(place.place_id.toString(), context);
-                            if(check == 0){
-                              pickUpController.text = add!.placeName.toString();
-                            }
-                            else if(check == 1){
-                               dropOffController.text = add!.placeName.toString();
-                            }
-                            setState(() {
-                            placespredictionlist = [];  
-                            });
-                            
+                  child: Column(
+                    children: [
+                     check == 0? ListTile(
+                              leading: const Icon(Icons.location_searching_rounded, color: Colors.green,),
+                              title: const Text("Get your current location"),
+                              onTap: ()async{
+                                pickUpController.text = fetchaddress.placeName.toString();
+                                 pickUp = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+                                setState(() {
+                                  placespredictionlist = [];
+                                 
+                                });
+                              },
+                              ):const SizedBox(),
+                      SizedBox(
+                        height: 110,
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) {
+                            PlacesPredictions place = placespredictionlist[index];
+                            return ListTile(
+                              leading: const Icon(Icons.location_on_outlined),
+                              title: Text(place.main_text.toString()),
+                              onTap: () async{
+                               Address? add = await getPlacesDetails(place.place_id.toString(),check ,context);
+                                if(check == 0){
+                                  pickUpController.text = add!.placeName.toString();
+                                }
+                                else if(check == 1){
+                                   dropOffController.text = add!.placeName.toString();
+                                }
+                                setState(() {
+                                placespredictionlist = [];  
+                                });
+                              },
+                            ); 
                           },
-                        ); 
-                        // PredicitionTile(
-                        //   placepredictions: placespredictionlist[index],
-                        // );
-                      },
-                      itemCount: placespredictionlist.length,
-                      shrinkWrap: true,
-                      // physics: ClampingScrollPhysics(),
-                    ),
+                          itemCount: placespredictionlist.length,
+                          shrinkWrap: true,
+                        ),
+                      ),
+                    ],
                   ),
                 )
               : SizedBox(
@@ -338,7 +418,13 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 20,),
-                    ElevatedButton(onPressed: (){print("hehe");}, child: const Text("find a rider")),
+                    ElevatedButton(onPressed: (){
+                      if(_formKey.currentState!.validate()){
+                      setPolylines(
+                        pickUp,
+                        dropOff);
+                      }
+                      }, child: const Text("Find Route")),
                   ],
                 ),
               )
@@ -563,8 +649,8 @@ class _HomePageState extends State<HomePage> {
         .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
   }
 
- void setPolylines(Position current) async{
-  PolylineResult result = await polylinePoints.getRouteBetweenCoordinates("AIzaSyATM0ok3Nn_739JDsbyMO8KFTdD4jgU85Q",PointLatLng(current.latitude,current.longitude) ,const PointLatLng(31.5124, 74.2845)); 
+ void setPolylines(Position current, Position dropOff) async{
+  PolylineResult result = await polylinePoints.getRouteBetweenCoordinates("AIzaSyATM0ok3Nn_739JDsbyMO8KFTdD4jgU85Q",PointLatLng(current.latitude,current.longitude) ,PointLatLng(dropOff.latitude, dropOff.longitude)); 
  if(result.status =="OK"){
   print(result.points);
   result.points.forEach((PointLatLng point) {
@@ -602,7 +688,7 @@ class PredicitionTile extends StatelessWidget {
           //title: Text('Dialog Title'),
           content: Container(
             height: 50,
-            child: Column(
+            child: const Column(
               children: [Text('loading....'), LinearProgressIndicator()],
             ),
           ),
@@ -644,7 +730,7 @@ class PredicitionTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             InkWell(
@@ -655,8 +741,8 @@ class PredicitionTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.add_location),
-                  SizedBox(
+                  const Icon(Icons.add_location),
+                  const SizedBox(
                     width: 14,
                   ),
                   Expanded(
@@ -665,15 +751,15 @@ class PredicitionTile extends StatelessWidget {
                       children: [
                         Text(
                           placepredictions.main_text.toString(),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 16, overflow: TextOverflow.ellipsis),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
                           placepredictions.main_text.toString(),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
                               overflow: TextOverflow.ellipsis),
