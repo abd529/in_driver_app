@@ -54,7 +54,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: SingleChildScrollView(
           child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start, children: [
             SizedBox(
               height: 20,
             ),
@@ -72,7 +73,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
               elevation: 10,
               child: Container(
                 height: 100,
-                width: 300,
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -124,7 +125,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
               color: IconColor,
               child: Container(
                 height: 250,
-                width: 300,
+                width: double.infinity,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(

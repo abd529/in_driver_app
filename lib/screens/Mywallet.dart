@@ -176,12 +176,12 @@ class _MyWalletState extends State<MyWallet> {
                 ),
                 SelectTile(
                   title: "Payment Methods",
-                  action: () {
+                  action:  ()=>
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => PaymentMethod()));
-                  },
+                            builder: (context) => PaymentMethod()))
+                  
                 ),
                 SizedBox(
                   height: 10,
@@ -247,9 +247,9 @@ class SelectTile extends StatelessWidget {
               style: TextStyle(fontSize: 18, color: Colors.black),
             ),
             IconButton(
-              onPressed: () {
-                action;
-              },
+              onPressed:
+                action,
+              
               icon: Icon(
                 CupertinoIcons.right_chevron,
               ),
