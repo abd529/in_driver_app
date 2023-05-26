@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController pickUpController = TextEditingController();
   TextEditingController dropOffController = TextEditingController();
+  TextEditingController fareController = TextEditingController();
   final Set<Polyline> _polylines = <Polyline>{};
   int check = 0;
   List<PlacesPredictions> placespredictionlist = [];
@@ -50,7 +51,9 @@ class _HomePageState extends State<HomePage> {
       Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
   LocationData? currentLocation;
   BitmapDescriptor currentIcon = BitmapDescriptor.defaultMarker;
-
+  BitmapDescriptor startIcon = BitmapDescriptor.defaultMarker; 
+  BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;  
+  int sizeCheck =0;
   
   Future<Address?> getPlacesDetails(String placeId, int check ,context) async {
     print("function test 1 ok");
@@ -112,7 +115,14 @@ class _HomePageState extends State<HomePage> {
   void setCustomMarkerId(){
     BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/current_marker.png").then((icon){
       currentIcon = icon;
-    } ) ;
+    });
+    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/start-icon.png").then((icon){
+      startIcon = icon;
+    });
+    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/destination-icon.png").then((icon){
+      destinationIcon = icon;
+    });
+    
   }
   
   void getCurrentPosition()async{
@@ -134,7 +144,6 @@ class _HomePageState extends State<HomePage> {
         setState(() {
         currentLatLng = LatLng(position.latitude, position.longitude);  
         });
-        
   }
 
   void locatePosition() async {
@@ -177,6 +186,7 @@ class _HomePageState extends State<HomePage> {
       }
     }
   }
+  Set<Marker> mapMarkers = {};
 
   @override
   void initState() {
@@ -192,8 +202,27 @@ class _HomePageState extends State<HomePage> {
   );
   @override
   Widget build(BuildContext context) {
+    Set<Marker> mapMarkers={
+                 Marker(
+                  markerId: const MarkerId("current_position"),
+                  position: currentLatLng,
+                  icon: currentIcon
+                  )
+              };
     return Scaffold(
         appBar: AppBar(
+           leading: Builder(
+      builder: (BuildContext context) {
+        return IconButton(
+          icon: const Icon(
+            Icons.menu_rounded,color: Colors.white,
+          ),
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+        );
+      },),
           title: const Text("inDriver", style: TextStyle(color: Colors.white),),
           actions: [
             const Padding(
@@ -270,11 +299,10 @@ class _HomePageState extends State<HomePage> {
         body: Stack(
           children: [
             GoogleMap(
-              myLocationEnabled: true,
+              myLocationEnabled: false,
               zoomControlsEnabled: true,
               zoomGesturesEnabled: true,
               padding: EdgeInsets.only(bottom: bottomPadding),
-              //  minMaxZoomPreference: MinMaxZoomPreference(14, 2),
               mapType: MapType.normal,
               polylines: _polylines,
               myLocationButtonEnabled: true,
@@ -286,23 +314,18 @@ class _HomePageState extends State<HomePage> {
                 _secondGoogleMap = controller;
                 locatePosition();
                 setState(() {
-                  bottomPadding = 330;
+                  bottomPadding = 300;
                 });
               },
-              markers: {
-                 Marker(
-                  markerId: const MarkerId("current_position"),
-                  position: currentLatLng,
-                  icon: currentIcon
-                  )
-              },
+              markers: mapMarkers,
             ),
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: Container(
-                height: 400,
+                height: 
+                sizeCheck == 1? 550: sizeCheck == 2? 500:sizeCheck == 0?380:380,
                 decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -347,6 +370,7 @@ class _HomePageState extends State<HomePage> {
                           onChanged: (val) {
                                     findplaceName(val);
                                     check = 0;
+                                    sizeCheck = 1;
                                   },
                           decoration: textFeildDecore("Enter Pickup Location"),
                         ),
@@ -361,8 +385,24 @@ class _HomePageState extends State<HomePage> {
                           onChanged: (val) {
                                     findplaceName(val);
                                     check = 1;
+                                    sizeCheck = 2;
                                   },
                           decoration: textFeildDecore("Enter Drop off Location"),
+                        ),
+                        const SizedBox(height: 5,),
+                        TextFormField(
+                          controller: fareController,
+                          onChanged: (val){
+                            sizeCheck = 0;
+                          },
+                          validator: (value) {
+                            if(value!.isEmpty){
+                              return "fare is required";
+                            }
+                          },
+                          keyboardType: TextInputType.number,
+                         
+                          decoration: textFeildDecore("Enter Fare in PKR"),
                         ),
                         (placespredictionlist.isNotEmpty)
               ? Padding(
@@ -383,7 +423,7 @@ class _HomePageState extends State<HomePage> {
                               },
                               ):const SizedBox(),
                       SizedBox(
-                        height: 110,
+                        height: 180,
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           itemBuilder: (context, index) {
@@ -424,7 +464,13 @@ class _HomePageState extends State<HomePage> {
                         pickUp,
                         dropOff);
                       }
-                      }, child: const Text("Find Route")),
+                      }, 
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.fromLTRB(100, 20, 100, 20),
+                          shape: RoundedRectangleBorder( //to set border radius to button
+                    borderRadius: BorderRadius.circular(50)
+                              )),
+                      child: const Text("Find Route", style: TextStyle(color: Colors.white),)),
                   ],
                 ),
               )
@@ -650,12 +696,17 @@ class _HomePageState extends State<HomePage> {
   }
 
  void setPolylines(Position current, Position dropOff) async{
+  setState(() {
+    polyLineCordinates = [];
+  });
   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates("AIzaSyATM0ok3Nn_739JDsbyMO8KFTdD4jgU85Q",PointLatLng(current.latitude,current.longitude) ,PointLatLng(dropOff.latitude, dropOff.longitude)); 
  if(result.status =="OK"){
   print(result.points);
   result.points.forEach((PointLatLng point) {
     polyLineCordinates.add(LatLng(point.latitude, point.longitude));
     setState(() {
+      mapMarkers.add(Marker(markerId: const MarkerId("start marker id"),position: LatLng(current.latitude, current.longitude),icon:startIcon));
+      mapMarkers.add(Marker(markerId: const MarkerId("destination marker id"),position: LatLng(dropOff.latitude, dropOff.longitude),icon:startIcon));
       _polylines.add(
         Polyline(
           polylineId: const PolylineId("polyline"),
@@ -665,6 +716,9 @@ class _HomePageState extends State<HomePage> {
           )
         );
     });
+   });
+   setState(() {
+     
    });
  }
  }

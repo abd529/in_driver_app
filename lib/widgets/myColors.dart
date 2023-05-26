@@ -9,5 +9,4 @@ const Color appbartitle = Colors.black;
 const Color red = Color(0xffdb0b0b);
 const Color appbg = Color(0xfff8f5fe);
 const Color kCanvasColor = Color(0xfff2f3f7);
-
 const Color button = Color(0xFF071137);

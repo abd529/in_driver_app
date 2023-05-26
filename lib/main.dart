@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:in_driver_app/admin%20panel/add_user.dart';
 import 'package:in_driver_app/auth/auth_home.dart';
 import 'package:in_driver_app/auth/auth_verifiy.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
+          fontFamily: GoogleFonts.poppins().fontFamily,
           primaryColor: const Color.fromRGBO(64, 190, 148, 1),
           primarySwatch: generateMaterialColor(const Color.fromRGBO(64, 190, 148, 1)),
           elevatedButtonTheme: ElevatedButtonThemeData(
