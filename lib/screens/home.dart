@@ -12,6 +12,7 @@ import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/models/ride.dart';
 import 'package:in_driver_app/providers/appDataprovider.dart';
 import 'package:in_driver_app/constants.dart';
+import 'package:in_driver_app/screens/paymentmethod.dart';
 import 'package:location/location.dart' hide LocationAccuracy;
 import '../assistants/requestassistant.dart';
 import '../auth/login.dart';
@@ -21,6 +22,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../widgets/myColors.dart';
+import 'Mywallet.dart';
 import 'language_select.dart';
 
 class HomePage extends StatefulWidget {
@@ -55,9 +57,9 @@ class _HomePageState extends State<HomePage> {
       Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
   LocationData? currentLocation;
   BitmapDescriptor currentIcon = BitmapDescriptor.defaultMarker;
-  BitmapDescriptor startIcon = BitmapDescriptor.defaultMarker; 
-  BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;  
-  int sizeCheck =0;
+  BitmapDescriptor startIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;
+  int sizeCheck = 0;
   int nextCheck = 0;
   final List<String> vehicals = [
     "Luxury Vehical",
@@ -67,13 +69,29 @@ class _HomePageState extends State<HomePage> {
   ];
   int index = 0;
   final List<Ride> rides = [
-    Ride(type: "Luxury", distance: "0.5 KM", imgUrl: "assets/images/luxury.png", money: "200"),
-    Ride(type: "Car", distance: "0.5 KM", imgUrl: "assets/images/car-icon.png", money: "250"),
-    Ride(type: "Bike", distance: "0.5 KM", imgUrl: "assets/images/bike.png", money: "220"),
-    Ride(type: "Taxi", distance: "0.5 KM", imgUrl: "assets/images/taxi.png", money: "180"),
+    Ride(
+        type: "Luxury",
+        distance: "0.5 KM",
+        imgUrl: "assets/images/luxury.png",
+        money: "200"),
+    Ride(
+        type: "Car",
+        distance: "0.5 KM",
+        imgUrl: "assets/images/car-icon.png",
+        money: "250"),
+    Ride(
+        type: "Bike",
+        distance: "0.5 KM",
+        imgUrl: "assets/images/bike.png",
+        money: "220"),
+    Ride(
+        type: "Taxi",
+        distance: "0.5 KM",
+        imgUrl: "assets/images/taxi.png",
+        money: "180"),
   ];
-  
-  Future<Address?> getPlacesDetails(String placeId, int check ,context) async {
+
+  Future<Address?> getPlacesDetails(String placeId, int check, context) async {
     print("function test 1 ok");
     String placeDetailsurl =
         "https://maps.googleapis.com/maps/api/place/details/json?&place_id=$placeId&key=$map";
@@ -161,7 +179,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   LatLng currentLatLng = const LatLng(0, 0);
-  void getCurrentLatLng()async{
+  void getCurrentLatLng() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
@@ -234,20 +252,24 @@ class _HomePageState extends State<HomePage> {
     };
     return Scaffold(
         appBar: AppBar(
-           leading: Builder(
-      builder: (BuildContext context) {
-        return IconButton(
-          icon: const Icon(
-            Icons.menu_rounded,color: Colors.white,
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(
+                  Icons.menu_rounded,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              );
+            },
           ),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-            
-          },
-          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-        );
-      },),
-          title: const Text("inDriver", style: TextStyle(color: Colors.white),),
+          title: const Text(
+            "inDriver",
+            style: TextStyle(color: Colors.white),
+          ),
           actions: [
             const Padding(
               padding: EdgeInsets.all(8.0),
@@ -258,9 +280,9 @@ class _HomePageState extends State<HomePage> {
             )
           ],
         ),
-        
-       // bottomSheet: Container(height: 500,),
-        
+
+        // bottomSheet: Container(height: 500,),
+
         drawer: Drawer(
           width: 240,
           child: ListView(
@@ -333,7 +355,8 @@ class _HomePageState extends State<HomePage> {
                 leading: const Icon(Icons.wallet),
                 title: const Text('Wallet'),
                 onTap: () {
-                  // Handle Profile button tap
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => MyWallet()));
                 },
               ),
               ListTile(
@@ -361,8 +384,10 @@ class _HomePageState extends State<HomePage> {
                 leading: const Icon(Icons.g_translate),
                 title: const Text('Language'),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const LanguageSel()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LanguageSel()));
                 },
               ),
               ListTile(
@@ -425,390 +450,484 @@ class _HomePageState extends State<HomePage> {
                     ]),
                 child: Padding(
                   padding:
-                       const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                  child: 
-                  nextCheck == 0? Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          height: 6.0,
-                        ),
-                        const Text(
-                          "Hi,there",
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        const Text(
-                          "Where to?",
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        const SizedBox(
-                          height: 20.0,
-                        ),
-                        TextFormField(
-                          controller: pickUpController,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "pickup location is required";
-                            }
-                          },
-                          onChanged: (val) {
-                            findplaceName(val);
-                            check = 0;
-                            sizeCheck = 1;
-                          },
-                          decoration: textFeildDecore("Enter Pickup Location"),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        TextFormField(
-                          controller: dropOffController,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "drop off location is required";
-                            }
-                          },
-                          onChanged: (val) {
-                            findplaceName(val);
-                            check = 1;
-                            sizeCheck = 2;
-                          },
-                          decoration:
-                              textFeildDecore("Enter Drop off Location"),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        TextFormField(
-                          controller: fareController,
-                          onChanged: (val){
-                            setState(() {
-                            sizeCheck = 0;
-                            });
-                          },
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "fare is required";
-                            }
-                          },
-                          keyboardType: TextInputType.number,
-                          decoration: textFeildDecore("Enter Fare in PKR"),
-                        ),
-                        (placespredictionlist.isNotEmpty)
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Column(
-                    children: [
-                     check == 0? ListTile(
-                              leading: const Icon(Icons.location_searching_rounded, color: Colors.green,),
-                              title: const Text("Get your current location"),
-                              onTap: ()async{
-                                pickUpController.text = fetchaddress.placeName.toString();
-                                 pickUp = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-                                setState(() {
-                                  placespredictionlist = [];
-                                 
-                                });
-                              },
-                              ):const SizedBox(),
-                      SizedBox(
-                        height: 180,
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) {
-                            PlacesPredictions place = placespredictionlist[index];
-                            return ListTile(
-                              leading: const Icon(Icons.location_on_outlined),
-                              title: Text(place.main_text.toString()),
-                              onTap: () async{
-                               Address? add = await getPlacesDetails(place.place_id.toString(),check ,context);
-                                if(check == 0){
-                                  pickUpController.text = add!.placeName.toString();
-                                }
-                                else if(check == 1){
-                                   dropOffController.text = add!.placeName.toString();
-                                }
-                                setState(() {
-                                placespredictionlist = [];  
-                                });
-                              },
-                            ); 
-                          },
-                          itemCount: placespredictionlist.length,
-                          shrinkWrap: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : SizedBox(
-                width: double.infinity,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 20,),
-                    ElevatedButton(onPressed: (){
-                      if(_formKey.currentState!.validate()){
-                        setPolylines(
-                          pickUp,
-                          dropOff);  
-                        setState(() {
-                          nextCheck = 1;
-                        });
-                      }
-                    }, 
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
-                          shape: RoundedRectangleBorder( //to set border radius to button
-                    borderRadius: BorderRadius.circular(50)
-                              )),
-                      child: const Text("Find Route", style: TextStyle(color: Colors.white),)),
-                  ],
-                ),
-              )
-                        // InkWell(
-                        //   onTap: () async {
-                        //     var res = await Navigator.pushNamed(
-                        //         context, SearchScreen.idScreen);
-                        //     if (res == "obtainDirection") {
-                        //       await getPlaceDirectins();
-                        //     }
-                        //   },
-                        //   child: Container(
-                        //     height: 40,
-                        //     decoration: BoxDecoration(
-                        //       borderRadius: BorderRadius.circular(10),
-                        //       color: Colors.white,
-                        //       boxShadow: [
-                        //         const BoxShadow(
-                        //           blurRadius: 6.0,
-                        //           spreadRadius: 0.3,
-                        //           color: Colors.black54,
-                        //           offset: Offset(0.7, 0.7),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //     child: const Padding(
-                        //       padding: EdgeInsets.all(12.0),
-                        //       child: Row(
-                        //         children: [
-                        //           Icon(
-                        //             Icons.search,
-                        //             color: Colors.red,
-                        //           ),
-                        //           SizedBox(
-                        //             width: 10,
-                        //           ),
-                        //           Text(
-                        //             "Search Drop off",
-                        //             style: TextStyle(fontWeight: FontWeight.bold),
-                        //           )
-                        //         ],
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                        // const SizedBox(
-                        //   height: 24,
-                        // ),
-                        // //home row
-                        // Row(
-                        //   children: [
-                        //     const Icon(
-                        //       Icons.home,
-                        //       color: Colors.grey,
-                        //     ),
-                        //     const SizedBox(
-                        //       width: 12,
-                        //     ),
-                        //     Column(
-                        //       crossAxisAlignment: CrossAxisAlignment.start,
-                        //       children: [
-                        //         const Text("Home"),
-                        //         const SizedBox(
-                        //           height: 4,
-                        //         ),
-                        //         Text(
-                        //           //fetchaddress.placeName,
-                        //           Provider.of<AppData>(context).pickuplocation !=
-                        //                   null
-                        //               ? Provider.of<AppData>(context)
-                        //                   .pickuplocation
-                        //                   .placeName
-                        //               : "Add Home Address",
-                        //           style: const TextStyle(
-                        //               fontSize: 13,
-                        //               color: Colors.grey,
-                        //               overflow: TextOverflow.visible),
-                        //         ),
-                        //       ],
-                        //     )
-                        //   ],
-                        // ),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
-                        // const DividerWidget(),
-                        // //work row
-                        // const SizedBox(
-                        //   height: 16,
-                        // ),
-                        // const Row(
-                        //   children: [
-                        //     Icon(
-                        //       Icons.work,
-                        //       color: Colors.grey,
-                        //     ),
-                        //     SizedBox(
-                        //       width: 12,
-                        //     ),
-                        //     Column(
-                        //       crossAxisAlignment: CrossAxisAlignment.start,
-                        //       children: [
-                        //         Text("Work"),
-                        //         SizedBox(
-                        //           height: 4,
-                        //         ),
-                        //         Text(
-                        //           "Your office addres",
-                        //           style:
-                        //               TextStyle(fontSize: 13, color: Colors.grey),
-                        //         ),
-                        //       ],
-                        //     )
-                        //   ],
-                        // ),
-                      ],
-                    ),
-                  ) : nextCheck == 1? Column(children: [
-                     SizedBox(
-                      height: 50,
-                      child: Card(
-                        elevation: 2,
-                        color: Colors.grey[100],
-                        child: Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                  child: nextCheck == 0
+                      ? Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              InkWell(
-                                onTap: (){
+                              const SizedBox(
+                                height: 6.0,
+                              ),
+                              const Text(
+                                "Hi,there",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              const Text(
+                                "Where to?",
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              const SizedBox(
+                                height: 20.0,
+                              ),
+                              TextFormField(
+                                controller: pickUpController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return "pickup location is required";
+                                  }
+                                },
+                                onChanged: (val) {
+                                  findplaceName(val);
+                                  check = 0;
+                                  sizeCheck = 1;
+                                },
+                                decoration:
+                                    textFeildDecore("Enter Pickup Location"),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              TextFormField(
+                                controller: dropOffController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return "drop off location is required";
+                                  }
+                                },
+                                onChanged: (val) {
+                                  findplaceName(val);
+                                  check = 1;
+                                  sizeCheck = 2;
+                                },
+                                decoration:
+                                    textFeildDecore("Enter Drop off Location"),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              TextFormField(
+                                controller: fareController,
+                                onChanged: (val) {
                                   setState(() {
-                                    index = 0;
+                                    sizeCheck = 0;
                                   });
                                 },
-                                child: const ImageIcon(AssetImage("assets/images/luxury.png"),size: 40,)),
-                              InkWell(
-                                onTap: (){
-                                  setState(() {
-                                    index=1;
-                                  });
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return "fare is required";
+                                  }
                                 },
-                                child:const  ImageIcon(AssetImage("assets/images/car-icon.png"),size: 40,)),
-                              InkWell(
-                                onTap: (){
-                                  setState(() {
-                                    index=2;
-                                  });
-                                },
-                                child:const ImageIcon(AssetImage("assets/images/bike.png"),size: 40,)),
-                              InkWell(
-                                onTap: (){
-                                  setState(() {
-                                    index=3;
-                                  });
-                                },
-                                child: const ImageIcon(AssetImage("assets/images/taxi.png"),size: 40,)),
+                                keyboardType: TextInputType.number,
+                                decoration:
+                                    textFeildDecore("Enter Fare in PKR"),
+                              ),
+                              (placespredictionlist.isNotEmpty)
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                      child: Column(
+                                        children: [
+                                          check == 0
+                                              ? ListTile(
+                                                  leading: const Icon(
+                                                    Icons
+                                                        .location_searching_rounded,
+                                                    color: Colors.green,
+                                                  ),
+                                                  title: const Text(
+                                                      "Get your current location"),
+                                                  onTap: () async {
+                                                    pickUpController.text =
+                                                        fetchaddress.placeName
+                                                            .toString();
+                                                    pickUp = await Geolocator
+                                                        .getCurrentPosition(
+                                                            desiredAccuracy:
+                                                                LocationAccuracy
+                                                                    .high);
+                                                    setState(() {
+                                                      placespredictionlist = [];
+                                                    });
+                                                  },
+                                                )
+                                              : const SizedBox(),
+                                          SizedBox(
+                                            height: 180,
+                                            child: ListView.builder(
+                                              scrollDirection: Axis.vertical,
+                                              itemBuilder: (context, index) {
+                                                PlacesPredictions place =
+                                                    placespredictionlist[index];
+                                                return ListTile(
+                                                  leading: const Icon(Icons
+                                                      .location_on_outlined),
+                                                  title: Text(place.main_text
+                                                      .toString()),
+                                                  onTap: () async {
+                                                    Address? add =
+                                                        await getPlacesDetails(
+                                                            place.place_id
+                                                                .toString(),
+                                                            check,
+                                                            context);
+                                                    if (check == 0) {
+                                                      pickUpController.text =
+                                                          add!.placeName
+                                                              .toString();
+                                                    } else if (check == 1) {
+                                                      dropOffController.text =
+                                                          add!.placeName
+                                                              .toString();
+                                                    }
+                                                    setState(() {
+                                                      placespredictionlist = [];
+                                                    });
+                                                  },
+                                                );
+                                              },
+                                              itemCount:
+                                                  placespredictionlist.length,
+                                              shrinkWrap: true,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      width: double.infinity,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                if (_formKey.currentState!
+                                                    .validate()) {
+                                                  setPolylines(pickUp, dropOff);
+                                                  setState(() {
+                                                    nextCheck = 1;
+                                                  });
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          100, 20, 100, 20),
+                                                  shape: RoundedRectangleBorder(
+                                                      //to set border radius to button
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              50))),
+                                              child: const Text(
+                                                "Find Route",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              )),
+                                        ],
+                                      ),
+                                    )
+                              // InkWell(
+                              //   onTap: () async {
+                              //     var res = await Navigator.pushNamed(
+                              //         context, SearchScreen.idScreen);
+                              //     if (res == "obtainDirection") {
+                              //       await getPlaceDirectins();
+                              //     }
+                              //   },
+                              //   child: Container(
+                              //     height: 40,
+                              //     decoration: BoxDecoration(
+                              //       borderRadius: BorderRadius.circular(10),
+                              //       color: Colors.white,
+                              //       boxShadow: [
+                              //         const BoxShadow(
+                              //           blurRadius: 6.0,
+                              //           spreadRadius: 0.3,
+                              //           color: Colors.black54,
+                              //           offset: Offset(0.7, 0.7),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //     child: const Padding(
+                              //       padding: EdgeInsets.all(12.0),
+                              //       child: Row(
+                              //         children: [
+                              //           Icon(
+                              //             Icons.search,
+                              //             color: Colors.red,
+                              //           ),
+                              //           SizedBox(
+                              //             width: 10,
+                              //           ),
+                              //           Text(
+                              //             "Search Drop off",
+                              //             style: TextStyle(fontWeight: FontWeight.bold),
+                              //           )
+                              //         ],
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
+                              // const SizedBox(
+                              //   height: 24,
+                              // ),
+                              // //home row
+                              // Row(
+                              //   children: [
+                              //     const Icon(
+                              //       Icons.home,
+                              //       color: Colors.grey,
+                              //     ),
+                              //     const SizedBox(
+                              //       width: 12,
+                              //     ),
+                              //     Column(
+                              //       crossAxisAlignment: CrossAxisAlignment.start,
+                              //       children: [
+                              //         const Text("Home"),
+                              //         const SizedBox(
+                              //           height: 4,
+                              //         ),
+                              //         Text(
+                              //           //fetchaddress.placeName,
+                              //           Provider.of<AppData>(context).pickuplocation !=
+                              //                   null
+                              //               ? Provider.of<AppData>(context)
+                              //                   .pickuplocation
+                              //                   .placeName
+                              //               : "Add Home Address",
+                              //           style: const TextStyle(
+                              //               fontSize: 13,
+                              //               color: Colors.grey,
+                              //               overflow: TextOverflow.visible),
+                              //         ),
+                              //       ],
+                              //     )
+                              //   ],
+                              // ),
+                              // const SizedBox(
+                              //   height: 10,
+                              // ),
+                              // const DividerWidget(),
+                              // //work row
+                              // const SizedBox(
+                              //   height: 16,
+                              // ),
+                              // const Row(
+                              //   children: [
+                              //     Icon(
+                              //       Icons.work,
+                              //       color: Colors.grey,
+                              //     ),
+                              //     SizedBox(
+                              //       width: 12,
+                              //     ),
+                              //     Column(
+                              //       crossAxisAlignment: CrossAxisAlignment.start,
+                              //       children: [
+                              //         Text("Work"),
+                              //         SizedBox(
+                              //           height: 4,
+                              //         ),
+                              //         Text(
+                              //           "Your office addres",
+                              //           style:
+                              //               TextStyle(fontSize: 13, color: Colors.grey),
+                              //         ),
+                              //       ],
+                              //     )
+                              //   ],
+                              // ),
                             ],
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10,),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(5)
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Radio(value: true,activeColor: Colors.grey[800] ,groupValue: true, onChanged: (boolean){}),
-                          Container(
-                          height: 50,  
-                            child: Text("Pickup Location:\n${pickUpController.text}", style: const TextStyle(color: Colors.white),softWrap: true,)),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 5,),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(5)
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Radio(value: true,activeColor: Colors.grey[800] ,groupValue: true, onChanged: (boolean){}),
-                          Container(
-                            height: 50,
-                            child: Text("Destination Location: \n${dropOffController.text}", style:const TextStyle(color: Colors.white),)),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 5,),
-                    Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(5)
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(width: 5,),
-                          Text("Your proposed budget: PKR ${fareController.text}", style: const TextStyle(color: Colors.white,),),
-                        ],
-                      ),
-                    ),
-                    Text("Selected Vehical: ${vehicals[index]}"),
-                    const SizedBox(height: 20,),
-                    ElevatedButton(
-                      onPressed: (){
-                        setState(() {
-                          nextCheck = 2;
-                        });
-                      }, 
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
-                          shape: RoundedRectangleBorder( //to set border radius to button
-                    borderRadius: BorderRadius.circular(50)
-                              )),
-                      child: const Text("Find Riders", style: TextStyle(color: Colors.white),))
-                  ],)
-                  :Column(children: [
-                   const Text("All Rides near you"),
-                    Container(
-                      height: 300,
-                      child: ListView.builder(
-                        itemCount: rides.length,
-                        itemBuilder: (context, index) {
-                        Ride ride =  rides[index];
-                        return Card(
-                          elevation: 3,
-                          child: ListTile(
-                            leading: ImageIcon(AssetImage(ride.imgUrl)),
-                            title: Text(ride.type),
-                            subtitle: Text(ride.distance),
-                            trailing: Text("PKR ${ride.money}"),
-                          ),
-                        );
-                      },),
-                    ),
-                  ]),  
+                        )
+                      : nextCheck == 1
+                          ? Column(
+                              children: [
+                                SizedBox(
+                                  height: 50,
+                                  child: Card(
+                                    elevation: 2,
+                                    color: Colors.grey[100],
+                                    child: Padding(
+                                      padding: EdgeInsets.all(5.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  index = 0;
+                                                });
+                                              },
+                                              child: const ImageIcon(
+                                                AssetImage(
+                                                    "assets/images/luxury.png"),
+                                                size: 40,
+                                              )),
+                                          InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  index = 1;
+                                                });
+                                              },
+                                              child: const ImageIcon(
+                                                AssetImage(
+                                                    "assets/images/car-icon.png"),
+                                                size: 40,
+                                              )),
+                                          InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  index = 2;
+                                                });
+                                              },
+                                              child: const ImageIcon(
+                                                AssetImage(
+                                                    "assets/images/bike.png"),
+                                                size: 40,
+                                              )),
+                                          InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  index = 3;
+                                                });
+                                              },
+                                              child: const ImageIcon(
+                                                AssetImage(
+                                                    "assets/images/taxi.png"),
+                                                size: 40,
+                                              )),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor,
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Radio(
+                                          value: true,
+                                          activeColor: Colors.grey[800],
+                                          groupValue: true,
+                                          onChanged: (boolean) {}),
+                                      Container(
+                                          height: 50,
+                                          child: Text(
+                                            "Pickup Location:\n${pickUpController.text}",
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                            softWrap: true,
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor,
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Radio(
+                                          value: true,
+                                          activeColor: Colors.grey[800],
+                                          groupValue: true,
+                                          onChanged: (boolean) {}),
+                                      Container(
+                                          height: 50,
+                                          child: Text(
+                                            "Destination Location: \n${dropOffController.text}",
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor,
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "Your proposed budget: PKR ${fareController.text}",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text("Selected Vehical: ${vehicals[index]}"),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        nextCheck = 2;
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            100, 20, 100, 20),
+                                        shape: RoundedRectangleBorder(
+                                            //to set border radius to button
+                                            borderRadius:
+                                                BorderRadius.circular(50))),
+                                    child: const Text(
+                                      "Find Riders",
+                                      style: TextStyle(color: Colors.white),
+                                    ))
+                              ],
+                            )
+                          : Column(children: [
+                              const Text("All Rides near you"),
+                              Container(
+                                height: 300,
+                                child: ListView.builder(
+                                  itemCount: rides.length,
+                                  itemBuilder: (context, index) {
+                                    Ride ride = rides[index];
+                                    return Card(
+                                      elevation: 3,
+                                      child: ListTile(
+                                        leading:
+                                            ImageIcon(AssetImage(ride.imgUrl)),
+                                        title: Text(ride.type),
+                                        subtitle: Text(ride.distance),
+                                        trailing: Text("PKR ${ride.money}"),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ]),
                 ),
               ),
             )
@@ -1051,4 +1170,5 @@ class PredicitionTile extends StatelessWidget {
         ),
       ),
     );
-  }}
+  }
+}

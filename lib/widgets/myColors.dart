@@ -11,3 +11,4 @@ const Color appbg = Color(0xfff8f5fe);
 const Color kCanvasColor = Color(0xfff2f3f7);
 const Color button = Color(0xFF071137);
 const Color IconColor = Color(0xff40BE94);
+const Color backgroundColor = Color(0xffecf0f3);

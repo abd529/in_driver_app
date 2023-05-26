@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:in_driver_app/screens/paymentmethod.dart';
 
 import '../widgets/myColors.dart';
 import 'language_select.dart';
@@ -175,7 +176,12 @@ class _MyWalletState extends State<MyWallet> {
                 ),
                 SelectTile(
                   title: "Payment Methods",
-                  action: () {},
+                  action: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PaymentMethod()));
+                  },
                 ),
                 SizedBox(
                   height: 10,

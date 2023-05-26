@@ -9,6 +9,7 @@ import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/screens/Mywallet.dart';
 import 'package:in_driver_app/screens/admin_panel_screen.dart';
 import 'package:in_driver_app/screens/home.dart';
+import 'package:in_driver_app/screens/paymentmethod.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
 import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
