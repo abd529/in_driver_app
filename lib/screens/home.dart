@@ -8,14 +8,17 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:in_driver_app/Models/addressModel.dart';
 import 'package:in_driver_app/assistants/assistantmethods.dart';
+import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/models/ride.dart';
 import 'package:in_driver_app/providers/appDataprovider.dart';
 import 'package:in_driver_app/constants.dart';
 import 'package:location/location.dart' hide LocationAccuracy;
 import '../assistants/requestassistant.dart';
+import '../auth/login.dart';
 import '../models/placeprediction.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../widgets/myColors.dart';
 import 'language_select.dart';
@@ -366,7 +369,8 @@ class _HomePageState extends State<HomePage> {
                 leading: const Icon(Icons.logout),
                 title: const Text('Logout'),
                 onTap: () {
-                  // Handle Logout button tap
+                  FirebaseAuth.instance.signOut();
+                  Navigator.of(context).pushNamed(LoginPage.idScreen);
                 },
               ),
             ],

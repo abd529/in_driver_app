@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
         ),
         home: FirebaseAuth.instance.currentUser != null
             ? HomePage()
-            : const MyWallet(),
+            : LoginPage(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           SignupPage.idScreen: (context) => const SignupPage(),
