@@ -33,7 +33,7 @@ class _ProfileViewState extends State<ProfileView> {
   int check = 0;
   String name = "name";
   String email = "example@gmail.com";
-  String phone = 'null';
+  String phone = 'loading...';
 
   void getInfo() async {
     var collection = FirebaseFirestore.instance.collection('users');
