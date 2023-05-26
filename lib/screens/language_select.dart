@@ -3,7 +3,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 class LanguageSel extends StatefulWidget {
   const LanguageSel({super.key});
 
@@ -21,15 +20,20 @@ class _LanguageSelState extends State<LanguageSel> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        leading: Icon(
-          CupertinoIcons.left_chevron,
-          color: Theme.of(context).primaryColor,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            CupertinoIcons.left_chevron,
+            color: Theme.of(context).primaryColor,
+          ),
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: ImageIcon(
-              AssetImage("assets/images/menuicon.png"),
+              AssetImage("assets/images/menu.png"),
               color: Theme.of(context).primaryColor,
             ),
           ),

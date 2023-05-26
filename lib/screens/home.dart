@@ -19,6 +19,9 @@ import '../widgets/divider_widget.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/myColors.dart';
+import 'language_select.dart';
+
 class HomePage extends StatefulWidget {
   static String idScreen = 'home';
   @override
@@ -26,7 +29,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  LatLng current = const LatLng(0,0);
+  LatLng current = const LatLng(0, 0);
   Address fetchaddress = Address();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController pickUpController = TextEditingController();
@@ -35,27 +38,27 @@ class _HomePageState extends State<HomePage> {
   final Set<Polyline> _polylines = <Polyline>{};
   int check = 0;
   List<PlacesPredictions> placespredictionlist = [];
-    List<LatLng> polyLineCordinates = [];
-    late PolylinePoints polylinePoints ;
+  List<LatLng> polyLineCordinates = [];
+  late PolylinePoints polylinePoints;
   final Completer<GoogleMapController> _controllerGoogleMap =
-  Completer<GoogleMapController>();
+      Completer<GoogleMapController>();
   GoogleMapController? _secondGoogleMap;
   Set<Polyline> polylineset = {};
   late GoogleMapController _newgoogleMapController;
   Position? currentPosition;
-  late Position pickUp ;
+  late Position pickUp;
   late Position dropOff;
   var geoLocator = Geolocator();
   double bottomPadding = 0;
-  final geolocator = 
+  final geolocator =
       Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
   LocationData? currentLocation;
   BitmapDescriptor currentIcon = BitmapDescriptor.defaultMarker;
-  BitmapDescriptor startIcon = BitmapDescriptor.defaultMarker; 
-  BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;  
-  int sizeCheck =0;
-  
-  Future<Address?> getPlacesDetails(String placeId, int check ,context) async {
+  BitmapDescriptor startIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;
+  int sizeCheck = 0;
+
+  Future<Address?> getPlacesDetails(String placeId, int check, context) async {
     print("function test 1 ok");
     String placeDetailsurl =
         "https://maps.googleapis.com/maps/api/place/details/json?&place_id=$placeId&key=$map";
@@ -70,35 +73,35 @@ class _HomePageState extends State<HomePage> {
       print("function OK test 4 ok");
       print("detail result=======$res");
       Address address = Address();
-      if(check == 0){
+      if (check == 0) {
         setState(() {
-        pickUp = Position(
-        latitude: res["result"]["geometry"]["location"]["lat"],
-        longitude: res["result"]["geometry"]["location"]["lng"],
-        accuracy: 1.0,
-        altitude: 1.0,
-        heading: 1.0,
-        speed: 50,
-        speedAccuracy: 1.0,
-        timestamp: DateTime.now(),
-      );    
+          pickUp = Position(
+            latitude: res["result"]["geometry"]["location"]["lat"],
+            longitude: res["result"]["geometry"]["location"]["lng"],
+            accuracy: 1.0,
+            altitude: 1.0,
+            heading: 1.0,
+            speed: 50,
+            speedAccuracy: 1.0,
+            timestamp: DateTime.now(),
+          );
         });
       }
-      if(check == 1){
+      if (check == 1) {
         setState(() {
-        dropOff = Position(
-        latitude: res["result"]["geometry"]["location"]["lat"],
-        longitude: res["result"]["geometry"]["location"]["lng"],
-        accuracy: 1.0,
-        altitude: 1.0,
-        heading: 1.0,
-        speed: 50,
-        speedAccuracy: 1.0,
-        timestamp: DateTime.now(),
-      );    
+          dropOff = Position(
+            latitude: res["result"]["geometry"]["location"]["lat"],
+            longitude: res["result"]["geometry"]["location"]["lng"],
+            accuracy: 1.0,
+            altitude: 1.0,
+            heading: 1.0,
+            speed: 50,
+            speedAccuracy: 1.0,
+            timestamp: DateTime.now(),
+          );
         });
       }
-      
+
       address.placeName = res["result"]["name"];
       address.placeId = placeId;
       address.lattitude = res["result"]["geometry"]["location"]["lat"];
@@ -107,27 +110,32 @@ class _HomePageState extends State<HomePage> {
       Provider.of<AppData>(context, listen: false)
           .updatedropofflocation(address as Address);
       print("This is a dropofflocation::");
-    return address;
+      return address;
     }
     return null;
   }
 
-  void setCustomMarkerId(){
-    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/current_marker.png").then((icon){
+  void setCustomMarkerId() {
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration.empty, "assets/images/current_marker.png")
+        .then((icon) {
       currentIcon = icon;
     });
-    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/start-icon.png").then((icon){
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration.empty, "assets/images/start-icon.png")
+        .then((icon) {
       startIcon = icon;
     });
-    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/destination-icon.png").then((icon){
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration.empty, "assets/images/destination-icon.png")
+        .then((icon) {
       destinationIcon = icon;
     });
-    
   }
-  
-  void getCurrentPosition()async{
+
+  void getCurrentPosition() async {
     Location location = Location();
-    location.getLocation().then((location){
+    location.getLocation().then((location) {
       currentLocation = location;
     });
     // GoogleMapController mapController = await _controllerGoogleMap.future;
@@ -138,12 +146,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   LatLng currentLatLng = LatLng(0, 0);
-  void getCurrentLatLng()async{
+  void getCurrentLatLng() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-        setState(() {
-        currentLatLng = LatLng(position.latitude, position.longitude);  
-        });
+    setState(() {
+      currentLatLng = LatLng(position.latitude, position.longitude);
+    });
   }
 
   void locatePosition() async {
@@ -162,7 +170,7 @@ class _HomePageState extends State<HomePage> {
       fetchaddress = Address(placeName: address);
     });
   }
-  
+
   void findplaceName(String placeName) async {
     if (placeName.length > 1) {
       String autoComplete =
@@ -177,7 +185,7 @@ class _HomePageState extends State<HomePage> {
         var placeslist = (predictions as List)
             .map((e) => PlacesPredictions.fromJson(e))
             .toList();
-            print(placeslist[0].place_id);
+        print(placeslist[0].place_id);
         setState(() {
           placespredictionlist = placeslist;
         });
@@ -186,6 +194,7 @@ class _HomePageState extends State<HomePage> {
       }
     }
   }
+
   Set<Marker> mapMarkers = {};
 
   @override
@@ -202,66 +211,101 @@ class _HomePageState extends State<HomePage> {
   );
   @override
   Widget build(BuildContext context) {
-    Set<Marker> mapMarkers={
-                 Marker(
-                  markerId: const MarkerId("current_position"),
-                  position: currentLatLng,
-                  icon: currentIcon
-                  )
-              };
+    Set<Marker> mapMarkers = {
+      Marker(
+          markerId: const MarkerId("current_position"),
+          position: currentLatLng,
+          icon: currentIcon)
+    };
     return Scaffold(
         appBar: AppBar(
-           leading: Builder(
-      builder: (BuildContext context) {
-        return IconButton(
-          icon: const Icon(
-            Icons.menu_rounded,color: Colors.white,
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(
+                  Icons.menu_rounded,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              );
+            },
           ),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-        );
-      },),
-          title: const Text("inDriver", style: TextStyle(color: Colors.white),),
+          title: const Text(
+            "inDriver",
+            style: TextStyle(color: Colors.white),
+          ),
           actions: [
             const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Icon(Icons.settings, color: Colors.white,),
+              child: Icon(
+                Icons.settings,
+                color: Colors.white,
+              ),
             )
           ],
         ),
         drawer: Drawer(
+          width: 240,
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      child: Icon(CupertinoIcons.person_alt_circle),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'John Doe',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
+              Container(
+                color: IconColor,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 100,
                       ),
-                    ),
-                    Text(
-                      'john.doe@example.com',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
+                      CircleAvatar(
+                        radius: 30,
+                        child: Icon(CupertinoIcons.person_alt_circle),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 10),
+                      Text(
+                        'John Doe',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Container(
+                        height: 30,
+                        width: 120,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("Cash:"),
+                              Text(
+                                "2500:",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Icon(
+                                CupertinoIcons.right_chevron,
+                                color: IconColor,
+                                size: 20,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 40,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               ListTile(
@@ -272,20 +316,41 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('Profile'),
+                leading: const Icon(Icons.wallet),
+                title: const Text('Wallet'),
                 onTap: () {
                   // Handle Profile button tap
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
+                leading: const Icon(Icons.history),
+                title: const Text('History'),
                 onTap: () {
                   // Handle Settings button tap
                 },
               ),
-              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.notification_add_sharp),
+                title: const Text('Notifications'),
+                onTap: () {
+                  // Handle Logout button tap
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.wallet_giftcard),
+                title: const Text('Invite Friends'),
+                onTap: () {
+                  // Handle Logout button tap
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.g_translate),
+                title: const Text('Language'),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LanguageSel()));
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Logout'),
@@ -307,10 +372,10 @@ class _HomePageState extends State<HomePage> {
               polylines: _polylines,
               myLocationButtonEnabled: true,
               initialCameraPosition: _kGooglePlex,
-              onMapCreated: (GoogleMapController controller) async{
+              onMapCreated: (GoogleMapController controller) async {
                 _controllerGoogleMap.complete(controller);
                 _newgoogleMapController = controller;
-                
+
                 _secondGoogleMap = controller;
                 locatePosition();
                 setState(() {
@@ -324,8 +389,13 @@ class _HomePageState extends State<HomePage> {
               right: 0,
               bottom: 0,
               child: Container(
-                height: 
-                sizeCheck == 1? 550: sizeCheck == 2? 500:sizeCheck == 0?380:380,
+                height: sizeCheck == 1
+                    ? 550
+                    : sizeCheck == 2
+                        ? 500
+                        : sizeCheck == 0
+                            ? 380
+                            : 380,
                 decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -340,140 +410,170 @@ class _HomePageState extends State<HomePage> {
                     ]),
                 child: Padding(
                   padding:
-                       const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                   child: Form(
                     key: _formKey,
-                    child:  Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         const SizedBox(
+                        const SizedBox(
                           height: 6.0,
                         ),
-                         const Text(
+                        const Text(
                           "Hi,there",
                           style: TextStyle(fontSize: 12),
                         ),
-                         const Text(
+                        const Text(
                           "Where to?",
                           style: TextStyle(fontSize: 18),
                         ),
-                         const SizedBox(
+                        const SizedBox(
                           height: 20.0,
                         ),
                         TextFormField(
                           controller: pickUpController,
                           validator: (value) {
-                            if(value!.isEmpty){
+                            if (value!.isEmpty) {
                               return "pickup location is required";
                             }
                           },
                           onChanged: (val) {
-                                    findplaceName(val);
-                                    check = 0;
-                                    sizeCheck = 1;
-                                  },
+                            findplaceName(val);
+                            check = 0;
+                            sizeCheck = 1;
+                          },
                           decoration: textFeildDecore("Enter Pickup Location"),
                         ),
-                        const SizedBox(height: 5,),
+                        const SizedBox(
+                          height: 5,
+                        ),
                         TextFormField(
                           controller: dropOffController,
                           validator: (value) {
-                            if(value!.isEmpty){
+                            if (value!.isEmpty) {
                               return "drop off location is required";
                             }
                           },
                           onChanged: (val) {
-                                    findplaceName(val);
-                                    check = 1;
-                                    sizeCheck = 2;
-                                  },
-                          decoration: textFeildDecore("Enter Drop off Location"),
+                            findplaceName(val);
+                            check = 1;
+                            sizeCheck = 2;
+                          },
+                          decoration:
+                              textFeildDecore("Enter Drop off Location"),
                         ),
-                        const SizedBox(height: 5,),
+                        const SizedBox(
+                          height: 5,
+                        ),
                         TextFormField(
                           controller: fareController,
-                          onChanged: (val){
+                          onChanged: (val) {
                             sizeCheck = 0;
                           },
                           validator: (value) {
-                            if(value!.isEmpty){
+                            if (value!.isEmpty) {
                               return "fare is required";
                             }
                           },
                           keyboardType: TextInputType.number,
-                         
                           decoration: textFeildDecore("Enter Fare in PKR"),
                         ),
                         (placespredictionlist.isNotEmpty)
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Column(
-                    children: [
-                     check == 0? ListTile(
-                              leading: const Icon(Icons.location_searching_rounded, color: Colors.green,),
-                              title: const Text("Get your current location"),
-                              onTap: ()async{
-                                pickUpController.text = fetchaddress.placeName.toString();
-                                 pickUp = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-                                setState(() {
-                                  placespredictionlist = [];
-                                 
-                                });
-                              },
-                              ):const SizedBox(),
-                      SizedBox(
-                        height: 180,
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) {
-                            PlacesPredictions place = placespredictionlist[index];
-                            return ListTile(
-                              leading: const Icon(Icons.location_on_outlined),
-                              title: Text(place.main_text.toString()),
-                              onTap: () async{
-                               Address? add = await getPlacesDetails(place.place_id.toString(),check ,context);
-                                if(check == 0){
-                                  pickUpController.text = add!.placeName.toString();
-                                }
-                                else if(check == 1){
-                                   dropOffController.text = add!.placeName.toString();
-                                }
-                                setState(() {
-                                placespredictionlist = [];  
-                                });
-                              },
-                            ); 
-                          },
-                          itemCount: placespredictionlist.length,
-                          shrinkWrap: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : SizedBox(
-                width: double.infinity,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 20,),
-                    ElevatedButton(onPressed: (){
-                      if(_formKey.currentState!.validate()){
-                      setPolylines(
-                        pickUp,
-                        dropOff);
-                      }
-                      }, 
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.fromLTRB(100, 20, 100, 20),
-                          shape: RoundedRectangleBorder( //to set border radius to button
-                    borderRadius: BorderRadius.circular(50)
-                              )),
-                      child: const Text("Find Route", style: TextStyle(color: Colors.white),)),
-                  ],
-                ),
-              )
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                child: Column(
+                                  children: [
+                                    check == 0
+                                        ? ListTile(
+                                            leading: const Icon(
+                                              Icons.location_searching_rounded,
+                                              color: Colors.green,
+                                            ),
+                                            title: const Text(
+                                                "Get your current location"),
+                                            onTap: () async {
+                                              pickUpController.text =
+                                                  fetchaddress.placeName
+                                                      .toString();
+                                              pickUp = await Geolocator
+                                                  .getCurrentPosition(
+                                                      desiredAccuracy:
+                                                          LocationAccuracy
+                                                              .high);
+                                              setState(() {
+                                                placespredictionlist = [];
+                                              });
+                                            },
+                                          )
+                                        : const SizedBox(),
+                                    SizedBox(
+                                      height: 180,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.vertical,
+                                        itemBuilder: (context, index) {
+                                          PlacesPredictions place =
+                                              placespredictionlist[index];
+                                          return ListTile(
+                                            leading: const Icon(
+                                                Icons.location_on_outlined),
+                                            title: Text(
+                                                place.main_text.toString()),
+                                            onTap: () async {
+                                              Address? add =
+                                                  await getPlacesDetails(
+                                                      place.place_id.toString(),
+                                                      check,
+                                                      context);
+                                              if (check == 0) {
+                                                pickUpController.text =
+                                                    add!.placeName.toString();
+                                              } else if (check == 1) {
+                                                dropOffController.text =
+                                                    add!.placeName.toString();
+                                              }
+                                              setState(() {
+                                                placespredictionlist = [];
+                                              });
+                                            },
+                                          );
+                                        },
+                                        itemCount: placespredictionlist.length,
+                                        shrinkWrap: true,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : SizedBox(
+                                width: double.infinity,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            setPolylines(pickUp, dropOff);
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            padding: EdgeInsets.fromLTRB(
+                                                100, 20, 100, 20),
+                                            shape: RoundedRectangleBorder(
+                                                //to set border radius to button
+                                                borderRadius:
+                                                    BorderRadius.circular(50))),
+                                        child: const Text(
+                                          "Find Route",
+                                          style: TextStyle(color: Colors.white),
+                                        )),
+                                  ],
+                                ),
+                              )
                         // InkWell(
                         //   onTap: () async {
                         //     var res = await Navigator.pushNamed(
@@ -598,30 +698,31 @@ class _HomePageState extends State<HomePage> {
 
   InputDecoration textFeildDecore(String hint) {
     return InputDecoration(
-  contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8.0),
-    borderSide: const BorderSide(
-      color: Colors.grey,
-      width: 1.0,
-    ),
-  ),
-  enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8.0),
-    borderSide: const BorderSide(
-      color: Colors.grey,
-      width: 1.0,
-    ),
-  ),
-  focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8.0),
-    borderSide: const BorderSide(
-      color: Colors.blue,
-      width: 1.5,
-    ),
-  ),
-  hintText: hint,
-);
+      contentPadding:
+          const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: const BorderSide(
+          color: Colors.grey,
+          width: 1.0,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: const BorderSide(
+          color: Colors.grey,
+          width: 1.0,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: const BorderSide(
+          color: Colors.blue,
+          width: 1.5,
+        ),
+      ),
+      hintText: hint,
+    );
   }
 
   Future<void> getPlaceDirectins() async {
@@ -695,41 +796,42 @@ class _HomePageState extends State<HomePage> {
         .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
   }
 
- void setPolylines(Position current, Position dropOff) async{
-  setState(() {
-    polyLineCordinates = [];
-  });
-  PolylineResult result = await polylinePoints.getRouteBetweenCoordinates("AIzaSyATM0ok3Nn_739JDsbyMO8KFTdD4jgU85Q",PointLatLng(current.latitude,current.longitude) ,PointLatLng(dropOff.latitude, dropOff.longitude)); 
- if(result.status =="OK"){
-  print(result.points);
-  result.points.forEach((PointLatLng point) {
-    polyLineCordinates.add(LatLng(point.latitude, point.longitude));
+  void setPolylines(Position current, Position dropOff) async {
     setState(() {
-      mapMarkers.add(Marker(markerId: const MarkerId("start marker id"),position: LatLng(current.latitude, current.longitude),icon:startIcon));
-      mapMarkers.add(Marker(markerId: const MarkerId("destination marker id"),position: LatLng(dropOff.latitude, dropOff.longitude),icon:startIcon));
-      _polylines.add(
-        Polyline(
-          polylineId: const PolylineId("polyline"),
-          width: 10,
-          color: Colors.purple,
-          points: polyLineCordinates
-          )
-        );
+      polyLineCordinates = [];
     });
-   });
-   setState(() {
-     
-   });
- }
- }
-
- 
-
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        "AIzaSyATM0ok3Nn_739JDsbyMO8KFTdD4jgU85Q",
+        PointLatLng(current.latitude, current.longitude),
+        PointLatLng(dropOff.latitude, dropOff.longitude));
+    if (result.status == "OK") {
+      print(result.points);
+      result.points.forEach((PointLatLng point) {
+        polyLineCordinates.add(LatLng(point.latitude, point.longitude));
+        setState(() {
+          mapMarkers.add(Marker(
+              markerId: const MarkerId("start marker id"),
+              position: LatLng(current.latitude, current.longitude),
+              icon: startIcon));
+          mapMarkers.add(Marker(
+              markerId: const MarkerId("destination marker id"),
+              position: LatLng(dropOff.latitude, dropOff.longitude),
+              icon: startIcon));
+          _polylines.add(Polyline(
+              polylineId: const PolylineId("polyline"),
+              width: 10,
+              color: Colors.purple,
+              points: polyLineCordinates));
+        });
+      });
+      setState(() {});
+    }
+  }
 }
 
 class PredicitionTile extends StatelessWidget {
   final PlacesPredictions placepredictions;
- // final TextEditingController controller;
+  // final TextEditingController controller;
 
   //final StructuredFormatting structure;
   const PredicitionTile({super.key, required this.placepredictions});
@@ -773,6 +875,7 @@ class PredicitionTile extends StatelessWidget {
       Navigator.pop(context, "obtainDirection");
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -828,4 +931,5 @@ class PredicitionTile extends StatelessWidget {
         ),
       ),
     );
-  }}
+  }
+}

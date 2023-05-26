@@ -6,6 +6,7 @@ import 'package:in_driver_app/auth/auth_verifiy.dart';
 import 'package:in_driver_app/auth/forgot.dart';
 import 'package:in_driver_app/auth/login.dart';
 import 'package:in_driver_app/auth/signup.dart';
+import 'package:in_driver_app/screens/Mywallet.dart';
 import 'package:in_driver_app/screens/admin_panel_screen.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
@@ -38,15 +39,16 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           fontFamily: GoogleFonts.poppins().fontFamily,
           primaryColor: const Color.fromRGBO(64, 190, 148, 1),
-          primarySwatch: generateMaterialColor(const Color.fromRGBO(64, 190, 148, 1)),
+          primarySwatch:
+              generateMaterialColor(const Color.fromRGBO(64, 190, 148, 1)),
           elevatedButtonTheme: ElevatedButtonThemeData(
-           style: ElevatedButton.styleFrom(
+              style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromRGBO(64, 190, 148, 1),
-          )
-        ),),
+          )),
+        ),
         home: FirebaseAuth.instance.currentUser != null
-            ? HomePage()
-            : const AuthHome(),
+            ? MyWallet()
+            : const MyWallet(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           SignupPage.idScreen: (context) => const SignupPage(),
@@ -55,9 +57,9 @@ class MyApp extends StatelessWidget {
           ForgitPassword.idScreen: (context) => const ForgitPassword(),
           EmailVerification.idScreen: (context) => const EmailVerification(),
           SearchScreen.idScreen: (context) => const SearchScreen(),
-          AdminPanelScreen.routName : (ctx) => const AdminPanelScreen(),
-          AdminLogin.routeName : (ctx) => const AdminLogin(),
-          AddUser.routeName : (ctx) => const AddUser(),
+          AdminPanelScreen.routName: (ctx) => const AdminPanelScreen(),
+          AdminLogin.routeName: (ctx) => const AdminLogin(),
+          AddUser.routeName: (ctx) => const AddUser(),
         },
       ),
     );
