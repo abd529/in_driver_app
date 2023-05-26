@@ -46,9 +46,8 @@ class MyApp extends StatelessWidget {
             backgroundColor: const Color.fromRGBO(64, 190, 148, 1),
           )),
         ),
-        home: FirebaseAuth.instance.currentUser != null
-            ? MyWallet()
-            : const MyWallet(),
+        home:
+            FirebaseAuth.instance.currentUser != null ? MyWallet() : MyWallet(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           SignupPage.idScreen: (context) => const SignupPage(),
