@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_driver_app/auth/signup.dart';
 import 'package:get/get.dart';
+import 'package:in_driver_app/screens/home.dart';
 
 import '../Models/loginviewmodel.dart';
 import '../widgets/myColors.dart';
@@ -185,8 +186,8 @@ class _LoginPageState extends State<LoginPage> {
                             email: _emailController.text.trim(),
                             password: _passController.text.trim(),
                           );
-
-                          Get.snackbar("Message", "You have been logged in");
+                          Navigator.of(context).pushNamed(HomePage.idScreen);
+                         // Get.snackbar("Message", "You have been logged in");
                           // User is signed in
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'user-not-found') {

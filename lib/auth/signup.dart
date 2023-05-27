@@ -98,20 +98,20 @@ class _SignupPageState extends State<SignupPage> {
         'phone': Phone
       });
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => EmailVerification()));
-      Get.snackbar("Message", "You have been SIgnup");
+          MaterialPageRoute(builder: (context) => HomePage()));
+    //  Get.snackbar("Message", "You have been SIgnup");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         Get.snackbar("Message", e.code);
 
         print('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        Get.snackbar("Message", e.code);
+       // Get.snackbar("Message", e.code);
 
         print('The account already exists for that email.');
       }
     } catch (e) {
-      Get.snackbar("Message", e.toString());
+      //Get.snackbar("Message", e.toString());
 
       print(e);
     }

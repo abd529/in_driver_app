@@ -6,10 +6,8 @@ import 'package:in_driver_app/auth/auth_verifiy.dart';
 import 'package:in_driver_app/auth/forgot.dart';
 import 'package:in_driver_app/auth/login.dart';
 import 'package:in_driver_app/auth/signup.dart';
-import 'package:in_driver_app/screens/Mywallet.dart';
 import 'package:in_driver_app/screens/admin_panel_screen.dart';
 import 'package:in_driver_app/screens/home.dart';
-import 'package:in_driver_app/screens/paymentmethod.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
 import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
@@ -18,6 +16,8 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,8 +48,8 @@ class MyApp extends StatelessWidget {
           )),
         ),
         home: FirebaseAuth.instance.currentUser != null
-            ? HomePage()
-            : LoginPage(),
+            ? SplashScreen()
+            : SplashScreen(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           SignupPage.idScreen: (context) => const SignupPage(),
