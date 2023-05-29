@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:in_driver_app/auth/auth_home.dart';
 import '../models/content_model.dart';
-import 'home.dart';
 
 class OnboardScreen extends StatefulWidget {
   const OnboardScreen({super.key});
@@ -103,7 +102,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
                           shape: RoundedRectangleBorder( //to set border radius to button
                     borderRadius: BorderRadius.circular(50)
                               ),), 
-              child: const Text("Skip"))
+              child: const Text("Skip",style: TextStyle(color: Colors.white),))
           ],
         ),
       ),

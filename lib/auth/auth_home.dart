@@ -39,17 +39,17 @@ class _AuthHomeState extends State<AuthHome> {
                           shape: RoundedRectangleBorder( //to set border radius to button
                     borderRadius: BorderRadius.circular(50)
                               ),), 
-             child: const Text("Sign Up")),
+             child: const Text("Sign Up",style: TextStyle(color: Colors.white),)),
              const SizedBox(height: 20,),
             ElevatedButton(onPressed: (){
-              Navigator.of(context).pushNamed(LoginPage.idScreen);
+              Navigator.of(context).pushNamed(LoginPage.routeName);
             },
             style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
                           shape: RoundedRectangleBorder( //to set border radius to button
                     borderRadius: BorderRadius.circular(50)
                               ),), 
-             child: const Text("Sign In")),
+             child: const Text("Sign In",style: TextStyle(color: Colors.white),)),
              const SizedBox(height: 70,),
              ElevatedButton(onPressed: (){
               Navigator.of(context).pushNamed(AdminLogin.routeName);
@@ -59,7 +59,7 @@ class _AuthHomeState extends State<AuthHome> {
                           shape: RoundedRectangleBorder( //to set border radius to button
                     borderRadius: BorderRadius.circular(50)
                               ),), 
-             child: const Text("Log In As Admin")), 
+             child: const Text("Log In As Admin",style: TextStyle(color: Colors.white),)), 
                 
           ],
         ),

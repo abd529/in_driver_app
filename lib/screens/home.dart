@@ -395,7 +395,7 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Logout'),
                 onTap: () {
                   FirebaseAuth.instance.signOut();
-                  Navigator.of(context).pushNamed(LoginPage.idScreen);
+                  Navigator.of(context).pushNamed(LoginPage.routeName);
                 },
               ),
             ],

@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
-          //fontFamily: GoogleFonts.poppins().fontFamily,
+          fontFamily: GoogleFonts.poppins().fontFamily,
           primaryColor: const Color.fromRGBO(64, 190, 148, 1),
           primarySwatch:
               generateMaterialColor(const Color.fromRGBO(64, 190, 148, 1)),
@@ -53,12 +53,12 @@ class MyApp extends StatelessWidget {
           )),
         ),
         home: FirebaseAuth.instance.currentUser != null
-            ? InviteFriends()
-            : InviteFriends(),
+            ? HomePage()
+            : SplashScreen(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
-          SignupPage.idScreen: (context) => const SignupPage(),
-          LoginPage.idScreen: (context) => const LoginPage(),
+          SignupPage.idScreen: (context) => SignupPage(),
+          LoginPage.routeName: (context) =>LoginPage(),
           HomePage.idScreen: (context) => HomePage(),
           ForgitPassword.idScreen: (context) => const ForgitPassword(),
           EmailVerification.idScreen: (context) => const EmailVerification(),
