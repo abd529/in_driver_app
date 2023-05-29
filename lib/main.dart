@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           SignupPage.idScreen: (context) => SignupPage(),
-          LoginPage.routeName: (context) =>LoginPage(),
+          LoginPage.routeName: (context) => LoginPage(),
           HomePage.idScreen: (context) => HomePage(),
           ForgitPassword.idScreen: (context) => const ForgitPassword(),
           EmailVerification.idScreen: (context) => const EmailVerification(),
