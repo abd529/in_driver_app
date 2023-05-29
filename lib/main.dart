@@ -8,7 +8,9 @@ import 'package:in_driver_app/auth/login.dart';
 import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/screens/admin_panel_screen.dart';
 import 'package:in_driver_app/screens/home.dart';
+import 'package:in_driver_app/screens/paymentmethod.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
+import 'package:in_driver_app/screens/transactionshistory.dart';
 import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
 import 'providers/appDataprovider.dart';
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
-          fontFamily: GoogleFonts.poppins().fontFamily,
+          //fontFamily: GoogleFonts.poppins().fontFamily,
           primaryColor: const Color.fromRGBO(64, 190, 148, 1),
           primarySwatch:
               generateMaterialColor(const Color.fromRGBO(64, 190, 148, 1)),
@@ -48,8 +50,8 @@ class MyApp extends StatelessWidget {
           )),
         ),
         home: FirebaseAuth.instance.currentUser != null
-            ? SplashScreen()
-            : SplashScreen(),
+            ? TransactionHistory()
+            : TransactionHistory(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           SignupPage.idScreen: (context) => const SignupPage(),
