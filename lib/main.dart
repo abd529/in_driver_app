@@ -8,6 +8,7 @@ import 'package:in_driver_app/auth/login.dart';
 import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/screens/admin_panel_screen.dart';
 import 'package:in_driver_app/screens/home.dart';
+import 'package:in_driver_app/screens/invitefriends.dart';
 import 'package:in_driver_app/screens/paymentmethod.dart';
 import 'package:in_driver_app/screens/ratingscreen.dart';
 import 'package:in_driver_app/screens/ridehistory.dart';
@@ -52,8 +53,8 @@ class MyApp extends StatelessWidget {
           )),
         ),
         home: FirebaseAuth.instance.currentUser != null
-            ? RatingScreen()
-            : RatingScreen(),
+            ? InviteFriends()
+            : InviteFriends(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           SignupPage.idScreen: (context) => const SignupPage(),

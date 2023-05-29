@@ -47,6 +47,9 @@ dependencies:
   google_fonts: ^4.0.4
   location: ^4.4.0
   carousel_slider: ^4.2.1
+  fast_contacts: ^3.0.3
+  flutter_sms: ^2.3.3
+  share: ^2.0.4
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +67,7 @@ dev_dependencies:
   provider: ^6.0.5
   http: ^0.13.6
   flutter_rating_bar: ^4.0.1
+  contacts_service: ^0.6.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
