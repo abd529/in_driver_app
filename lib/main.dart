@@ -9,6 +9,8 @@ import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/screens/admin_panel_screen.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/paymentmethod.dart';
+import 'package:in_driver_app/screens/ratingscreen.dart';
+import 'package:in_driver_app/screens/ridehistory.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
 import 'package:in_driver_app/screens/transactionshistory.dart';
 import 'package:in_driver_app/widgets/materialColor.dart';
@@ -50,8 +52,8 @@ class MyApp extends StatelessWidget {
           )),
         ),
         home: FirebaseAuth.instance.currentUser != null
-            ? TransactionHistory()
-            : TransactionHistory(),
+            ? RatingScreen()
+            : RatingScreen(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           SignupPage.idScreen: (context) => const SignupPage(),
