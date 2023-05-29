@@ -20,7 +20,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
   @override
   void initState() {
     super.initState();
-    _checkLocationPermission();
+    //_checkLocationPermission();
     _controller = PageController(initialPage: 0);
   }
 
@@ -147,12 +147,12 @@ class _OnboardScreenState extends State<OnboardScreen> {
                 },
               ),
             ),
-            Center(
-              child: ElevatedButton(
-                onPressed: _checkLocationPermission,
-                child: Text('Enable Location'),
-              ),
-            ),
+            // Center(
+            //   child: ElevatedButton(
+            //     onPressed: _checkLocationPermission,
+            //     child: Text('Enable Location'),
+            //   ),
+            // ),
             const SizedBox(
               height: 20,
             ),

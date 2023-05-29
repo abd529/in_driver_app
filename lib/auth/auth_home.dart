@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:in_driver_app/admin%20panel/admin_login.dart';
-import '../widgets/myColors.dart';
-import '../widgets/mybutton.dart';
 import 'login.dart';
 import 'signup.dart';
 
@@ -15,6 +13,8 @@ class AuthHome extends StatefulWidget {
 }
 
 class _AuthHomeState extends State<AuthHome> {
+  bool roleValue = true;
+  String role = "Customer";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,32 +24,50 @@ class _AuthHomeState extends State<AuthHome> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image(
+            const Image(
               fit: BoxFit.cover,
               height: 160,
               width: 160,
               image: AssetImage('assets/images/logo.png'),
             ),
-            SizedBox(height: 50,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Rider"),
+                Switch(value: roleValue, onChanged: (value){
+                  setState(() {
+                    roleValue = !roleValue;
+                    if(roleValue == true){
+                      role = "Customer";
+                    }
+                    else{
+                      role = "Rider";
+                    }
+                  });
+                }),
+                const Text("Customer"),
+              ],
+            ),
+            const SizedBox(height: 50,),
             ElevatedButton(onPressed: (){
-              Navigator.of(context).pushNamed(SignupPage.idScreen);
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => SignupPage(role),)) ;
             },
             style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
                           shape: RoundedRectangleBorder( //to set border radius to button
                     borderRadius: BorderRadius.circular(50)
                               ),), 
-             child: const Text("Sign Up",style: TextStyle(color: Colors.white),)),
+             child: Text("Sign Up as $role",style: TextStyle(color: Colors.white),)),
              const SizedBox(height: 20,),
             ElevatedButton(onPressed: (){
-              Navigator.of(context).pushNamed(LoginPage.routeName);
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage(role),)) ;
             },
             style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
                           shape: RoundedRectangleBorder( //to set border radius to button
                     borderRadius: BorderRadius.circular(50)
                               ),), 
-             child: const Text("Sign In",style: TextStyle(color: Colors.white),)),
+             child: Text("Sign In as $role",style: TextStyle(color: Colors.white),)),
              const SizedBox(height: 70,),
              ElevatedButton(onPressed: (){
               Navigator.of(context).pushNamed(AdminLogin.routeName);

@@ -4,23 +4,23 @@ class UserModel {
   final String? id;
   final String fname;
   final String lname;
-  final String pass;
   final String phone;
   final String email;
+  final String role;
   const UserModel(
       {this.id,
       required this.email,
       required this.fname,
       required this.lname,
-      required this.pass,
-      required this.phone});
+      required this.phone,
+      required this.role
+      });
 
   toJson() {
     return {
       'First Name': fname,
       'last name': lname,
       'Email': email,
-      'Password': pass,
       'Phone': phone,
     };
   }
@@ -31,10 +31,11 @@ class UserModel {
     final data = document.data() as Map<String, dynamic>;
     return UserModel(
         id: document.id,
-        email: data['email'],
+        email: data['Email'],
         fname: data['First Name'],
         lname: data['Last Name'],
-        pass: "******",
-        phone: data['phone']);
+        phone: data['Phone'],
+        role: data['Role']
+        );
   }
 }

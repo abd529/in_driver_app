@@ -285,6 +285,8 @@ import 'forgot.dart';
 
 class LoginPage extends StatefulWidget {
   static const routeName = "login";
+  final String role;
+  const LoginPage(this.role, {super.key});
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -416,7 +418,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignupPage()),
+                        MaterialPageRoute(builder: (context) => SignupPage(widget.role)),
                       );
                     },
                     child: const Text('Don\'t have an account? Sign up here'),

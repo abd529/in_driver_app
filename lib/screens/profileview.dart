@@ -10,6 +10,7 @@ import 'package:get/get_core/src/get_main.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:in_driver_app/auth/auth_home.dart';
 
 import '../auth/login.dart';
 import '../widgets/myColors.dart';
@@ -26,7 +27,7 @@ class _ProfileViewState extends State<ProfileView> {
     print('object');
     await auth.signOut();
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginPage()));
+        context, MaterialPageRoute(builder: (context) => AuthHome()));
   }
 
   final userId = FirebaseAuth.instance.currentUser!.uid;

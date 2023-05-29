@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../models/loginviewmodel.dart';
-import '../screens/admin_panel_screen.dart';
+import 'admin_panel_screen.dart';
 
 class AdminLogin extends StatefulWidget {
   static const routeName = "admin-login";
@@ -41,8 +41,8 @@ class _AdminLoginState extends State<AdminLogin> {
                 children: <Widget>[
                     Column(
                       children: [
-                        SvgPicture.asset(
-                         "assets/images/logo.svg",
+                        Image.asset(
+                         "assets/images/logo.png",
                          width: 85,
                          height: 85,
                         ),
@@ -86,7 +86,7 @@ class _AdminLoginState extends State<AdminLogin> {
                                   right:   BorderSide(width: 1.0, color: Colors.black),
                                 ),
                             ),
-                          child: Icon(Icons.lock_open_rounded)),
+                          child: const Icon(Icons.lock_open_rounded)),
                       ),
                       labelText: 'Password',
                       suffixIcon: IconButton(onPressed: (){
@@ -119,14 +119,14 @@ class _AdminLoginState extends State<AdminLogin> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.fromLTRB(100, 20, 100, 20),
+                        padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
                           shape: RoundedRectangleBorder( //to set border radius to button
                     borderRadius: BorderRadius.circular(50)
                               ),
                       ),
                       child: _isLoggingIn
                         ? const CircularProgressIndicator()
-                        : const Text('Sign In'),  
+                        : const Text('Sign In', style: TextStyle(color: Colors.white),),  
                     ),
                   ),
                   const SizedBox(height: 16.0),

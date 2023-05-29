@@ -302,6 +302,8 @@ import 'login.dart';
 
 class SignupPage extends StatefulWidget {
   static const idScreen = "signup-up";
+  final String role;
+  const SignupPage(this.role, {super.key});
   @override
   _SignupPageState createState() => _SignupPageState();
 }
@@ -319,6 +321,7 @@ class _SignupPageState extends State<SignupPage> {
   bool obsCheck2 = false;
   PhoneNumber number = PhoneNumber(isoCode: 'PK');
   final RegisterViewModel _registerVM = RegisterViewModel();
+  String errMsg = "";
 
   @override
   void dispose() {
@@ -438,7 +441,6 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     inputBorder: OutlineInputBorder(
                       borderSide: const BorderSide(color: Colors.transparent),
-
                       borderRadius:
                           BorderRadius.circular(50), // Set border radius here
                     ),
@@ -476,9 +478,9 @@ class _SignupPageState extends State<SignupPage> {
                       setState(() {
                         obsCheck1 =!obsCheck1;
                       });
-                    }, icon: Icon( obsCheck1? Icons.visibility_off : Icons.visibility))
+                    }, icon: Icon( obsCheck1? Icons.visibility : Icons.visibility_off))
                     ),
-                    obscureText: obsCheck1,
+                    obscureText: !obsCheck1,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Please enter a password';
@@ -505,9 +507,9 @@ class _SignupPageState extends State<SignupPage> {
                       setState(() {
                         obsCheck2 =!obsCheck2;
                       });
-                    }, icon: Icon( obsCheck2? Icons.visibility_off : Icons.visibility))
+                    }, icon: Icon( obsCheck2? Icons.visibility : Icons.visibility_off))
                     ),
-                    obscureText: obsCheck2,
+                    obscureText: !obsCheck2,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Please confirm your password';
@@ -533,9 +535,23 @@ class _SignupPageState extends State<SignupPage> {
                                 _passwordController.text.trim(), _fNameController.text.trim(), _lNameController.text.trim());
                           if (isRegistered) {
                             var userId = FirebaseAuth.instance.currentUser!.uid;
-                            await FirebaseFirestore.instance.collection("UsersData").doc(userId).set({"First Name":_fNameController.text.trim(), "Last Name":_lNameController.text.trim(),"Email":_emailController.text.trim()});
+                            await FirebaseFirestore.instance.collection("UsersData").doc(userId).set(
+                              {
+                                "First Name":_fNameController.text.trim(), 
+                                "Last Name":_lNameController.text.trim(),
+                                "Email":_emailController.text.trim(),
+                                "Phone" :_phoneController.text.trim(),
+                                "Role":widget.role,
+                              }
+                              
+                            );
                             Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (ctx) => HomePage()),
                                 (Route<dynamic> route) => false);
+                         }else{
+                          setState(() {
+                          _isSigningUp = false;  
+                          errMsg = _registerVM.message;
+                          });
                          }
                         }
                       },
@@ -550,11 +566,12 @@ class _SignupPageState extends State<SignupPage> {
                         : const Text('Sign Up',style: TextStyle(color: Colors.white),),
                     ),
                   ),
+                  Text(errMsg,style: TextStyle(color: Colors.red),),
                    TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
+                      MaterialPageRoute(builder: (context) => LoginPage(widget.role)),
                     );
                   },
                   child: const Text('Already have an account? Login up here'),

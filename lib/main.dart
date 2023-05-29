@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:in_driver_app/admin%20panel/add_user.dart';
@@ -6,23 +8,18 @@ import 'package:in_driver_app/auth/auth_verifiy.dart';
 import 'package:in_driver_app/auth/forgot.dart';
 import 'package:in_driver_app/auth/login.dart';
 import 'package:in_driver_app/auth/signup.dart';
-import 'package:in_driver_app/screens/admin_panel_screen.dart';
 import 'package:in_driver_app/screens/home.dart';
-import 'package:in_driver_app/screens/invitefriends.dart';
-import 'package:in_driver_app/screens/paymentmethod.dart';
-import 'package:in_driver_app/screens/ratingscreen.dart';
-import 'package:in_driver_app/screens/ridehistory.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
-import 'package:in_driver_app/screens/transactionshistory.dart';
+import 'package:in_driver_app/screens/splash_screen.dart';
 import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
+import 'admin panel/admin_panel_screen.dart';
+import 'admin panel/tabs_screen.dart';
 import 'providers/appDataprovider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-
-import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,12 +50,12 @@ class MyApp extends StatelessWidget {
           )),
         ),
         home: FirebaseAuth.instance.currentUser != null
-            ? HomePage()
+            ? FirebaseAuth.instance.currentUser!.uid == "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"? MyHomePage() :HomePage()
             : SplashScreen(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
-          SignupPage.idScreen: (context) => SignupPage(),
-          LoginPage.routeName: (context) => LoginPage(),
+          // SignupPage.idScreen: (context) => SignupPage(),
+          // LoginPage.routeName: (context) => LoginPage(),
           HomePage.idScreen: (context) => HomePage(),
           ForgitPassword.idScreen: (context) => const ForgitPassword(),
           EmailVerification.idScreen: (context) => const EmailVerification(),

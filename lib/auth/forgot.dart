@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:in_driver_app/auth/auth_home.dart';
 import 'package:in_driver_app/auth/login.dart';
 
 import '../widgets/myColors.dart';
@@ -89,7 +90,7 @@ class _ForgitPasswordState extends State<ForgitPassword> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginPage()));
+                                builder: (context) => AuthHome()));
                         _showetoast("Details Send to your email");
                       } else
                         _showetoast("Please a valid email address");

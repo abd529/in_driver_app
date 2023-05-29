@@ -8,6 +8,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:in_driver_app/Models/addressModel.dart';
 import 'package:in_driver_app/assistants/assistantmethods.dart';
+import 'package:in_driver_app/auth/auth_home.dart';
 import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/models/ride.dart';
 import 'package:in_driver_app/providers/appDataprovider.dart';
@@ -395,7 +396,7 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Logout'),
                 onTap: () {
                   FirebaseAuth.instance.signOut();
-                  Navigator.of(context).pushNamed(LoginPage.routeName);
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => AuthHome(),)) ;
                 },
               ),
             ],
