@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, unrelated_type_equality_checks, unnecessary_null_comparison, use_build_context_synchronously, avoid_print, cast_from_null_always_fails, unused_field
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +69,42 @@ class _HomePageState extends State<HomePage> {
     "Bike",
     "Taxi"
   ];
+  double calculateDistance(double startLatitude, double startLongitude,
+      double endLatitude, double endLongitude) {
+    const int earthRadius = 6371; // Earth's radius in kilometers
+
+    // Convert degrees to radians
+    double startLatRadians = degreesToRadians(startLatitude);
+    double startLonRadians = degreesToRadians(startLongitude);
+    double endLatRadians = degreesToRadians(endLatitude);
+    double endLonRadians = degreesToRadians(endLongitude);
+
+    // Calculate the differences between the coordinates
+    double latDiff = endLatRadians - startLatRadians;
+    double lonDiff = endLonRadians - startLonRadians;
+
+    // Apply the Haversine formula
+    double a = pow(sin(latDiff / 2), 2) +
+        cos(startLatRadians) * cos(endLatRadians) * pow(sin(lonDiff / 2), 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double distance = earthRadius * c;
+
+    return distance;
+  }
+
+  double degreesToRadians(double degrees) {
+    return degrees * pi / 180;
+  }
+
+  double calculateFare(double distance) {
+    const double ratePerKilometer = 120; // Fare rate per kilometer
+
+    // Calculate the fare based on the distance
+    double fare = distance * ratePerKilometer;
+
+    return fare;
+  }
+
   int index = 0;
   final List<Ride> rides = [
     Ride(
@@ -396,7 +433,9 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Logout'),
                 onTap: () {
                   FirebaseAuth.instance.signOut();
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => AuthHome(),)) ;
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => AuthHome(),
+                  ));
                 },
               ),
             ],
@@ -605,30 +644,63 @@ class _HomePageState extends State<HomePage> {
                                           const SizedBox(
                                             height: 20,
                                           ),
-                                          ElevatedButton(
-                                              onPressed: () {
-                                                if (_formKey.currentState!
-                                                    .validate()) {
-                                                  setPolylines(pickUp, dropOff);
-                                                  setState(() {
-                                                    nextCheck = 1;
-                                                  });
-                                                }
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          100, 20, 100, 20),
-                                                  shape: RoundedRectangleBorder(
-                                                      //to set border radius to button
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              50))),
-                                              child: const Text(
-                                                "Find Route",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              )),
+                                          Row(
+                                            children: [
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    double distance =
+                                                        calculateDistance(
+                                                            pickUp.latitude,
+                                                            pickUp.longitude,
+                                                            dropOff.latitude,
+                                                            dropOff.longitude);
+
+                                                    double fare =
+                                                        calculateFare(distance);
+
+                                                    print("fare ${fare}");
+                                                  },
+                                                  child: Text("fare")),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    print(
+                                                        "dissssssssssstanceeeeeeeeee ${calculateDistance(pickUp.latitude, pickUp.longitude, dropOff.latitude, dropOff.longitude)}");
+                                                  },
+                                                  child: Text("dis")),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    if (_formKey.currentState!
+                                                        .validate()) {
+                                                      setPolylines(
+                                                          pickUp, dropOff);
+                                                      setState(() {
+                                                        //  nextCheck = 1;
+                                                      });
+                                                    }
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  100,
+                                                                  20,
+                                                                  100,
+                                                                  20),
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                                  //to set border radius to button
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              50))),
+                                                  child: const Text(
+                                                    "Find Route",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  )),
+                                            ],
+                                          ),
                                         ],
                                       ),
                                     )
