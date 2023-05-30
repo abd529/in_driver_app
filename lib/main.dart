@@ -2,19 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:in_driver_app/admin%20panel/add_user.dart';
 import 'package:in_driver_app/auth/auth_home.dart';
 import 'package:in_driver_app/auth/auth_verifiy.dart';
 import 'package:in_driver_app/auth/forgot.dart';
-import 'package:in_driver_app/auth/login.dart';
-import 'package:in_driver_app/auth/signup.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
 import 'package:in_driver_app/screens/splash_screen.dart';
 import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
 import 'admin panel/admin_panel_screen.dart';
-import 'admin panel/tabs_screen.dart';
+import 'admin panel/admin_panel.dart';
 import 'providers/appDataprovider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -51,7 +48,7 @@ class MyApp extends StatelessWidget {
         ),
         home: FirebaseAuth.instance.currentUser != null
             ? FirebaseAuth.instance.currentUser!.uid == "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"? AdminPanel() :HomePage()
-            : SplashScreen(),
+            : const SplashScreen(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           // SignupPage.idScreen: (context) => SignupPage(),
@@ -62,7 +59,6 @@ class MyApp extends StatelessWidget {
           SearchScreen.idScreen: (context) => const SearchScreen(),
           AdminPanelScreen.routName: (ctx) => const AdminPanelScreen(),
           AdminLogin.routeName: (ctx) => const AdminLogin(),
-          AddUser.routeName: (ctx) => const AddUser(),
         },
       ),
     );

@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:in_driver_app/admin%20panel/tabs_screen.dart';
+import 'package:in_driver_app/admin%20panel/admin_panel.dart';
 
 import '../models/loginviewmodel.dart';
 
