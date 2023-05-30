@@ -1,8 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:in_driver_app/admin%20panel/tabs_screen.dart';
 
 import '../models/loginviewmodel.dart';
-import 'admin_panel_screen.dart';
 
 class AdminLogin extends StatefulWidget {
   static const routeName = "admin-login";
@@ -19,6 +20,7 @@ class _AdminLoginState extends State<AdminLogin> {
   final _passwordController = TextEditingController();
   bool _isLoggingIn = false;
   final LoginViewModel _loginVM = LoginViewModel();
+  String errMsg = '';
 
   @override
   void dispose() {
@@ -113,8 +115,14 @@ class _AdminLoginState extends State<AdminLogin> {
                             _isLoggingIn = true;
                           });
                            bool isLoggedIn = await _loginVM.login(_emailController.text, _passwordController.text);
-                           if(isLoggedIn){
-                             Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (ctx) => const AdminPanelScreen()),(Route<dynamic> route) => false);
+                           if(isLoggedIn && _emailController.text == "admin@gmail.com" && _passwordController.text == "admin123"){
+                             Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (ctx) => AdminPanel()),(Route<dynamic> route) => false);
+                           }else{
+                            setState(() {
+                            errMsg = "Invalid Credienticals";
+                            _isLoggingIn = false;  
+                            });
+                            
                            }
                         }
                       },
@@ -129,6 +137,7 @@ class _AdminLoginState extends State<AdminLogin> {
                         : const Text('Sign In', style: TextStyle(color: Colors.white),),  
                     ),
                   ),
+                  Text(errMsg,style: const TextStyle(color: Colors.red),),
                   const SizedBox(height: 16.0),
                 ],
               ),

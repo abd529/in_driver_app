@@ -1,11 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class MyHomePage extends StatefulWidget {
+import '../auth/auth_home.dart';
+import '../models/usermodel.dart';
+
+class AdminPanel extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _AdminPanelState createState() => _AdminPanelState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -20,11 +25,35 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  logOut(){
+  showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Do you want to log out?'),
+                  actions: [
+                    TextButton(
+                      child: const Text('Log Out'),
+                      onPressed: () {
+                        FirebaseAuth.instance.signOut();
+                        Navigator.of(context).pushNamedAndRemoveUntil(AuthHome.idScreen,(boolo){return false;});
+                      },
+                    ),
+                    TextButton(onPressed: (){
+                      Navigator.of(context).pop();
+                    }, child: const Text("Cancel", style: TextStyle(color: Colors.red),))
+                  ],
+                );
+              },
+            );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(onPressed: (){logOut();}, child: const Icon(Icons.logout, color: Colors.white,)),
       appBar: AppBar(
-        title: Text('Tab Example'),
+        title: const Text('Admin Panel', style: TextStyle(color: Colors.white)),
       ),
       body: TabBarView(
         controller: _tabController,
@@ -36,10 +65,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ),
       bottomNavigationBar: TabBar(
         controller: _tabController,
-        tabs: [
-          Tab(icon: Icon(Icons.home)),
-          Tab(icon: Icon(Icons.search)),
-          Tab(icon: Icon(Icons.settings)),
+        tabs: const [
+          Tab(icon: Icon(Icons.people),text: "Customers",),
+          Tab(icon: Icon(Icons.person_4_sharp), text: "Drivers",),
+          Tab(icon: Icon(Icons.car_repair), text: "Rides"),
         ],
       ),
     );
@@ -49,19 +78,52 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 class Tab1Widget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Tab 1',
-        style: TextStyle(fontSize: 24),
-      ),
+
+    Widget _buildListItem(UserModel user) {
+    return ListTile(
+      title: Text(user.fname),
+      
     );
+  }
+
+    Widget _buildList(QuerySnapshot<Object?>? snapshot) {
+    if (snapshot!.docs.isEmpty) {
+      return const Center(child: Text("No Users !"));
+    } else {
+      return ListView.builder(
+        itemCount: snapshot.docs.length,
+        itemBuilder: (context, index) {
+          final doc = snapshot.docs[index];
+          final user = UserModel.fromSnapshot(doc);
+          return _buildListItem(user);
+        },
+      );
+    }
+  }
+  
+    return SafeArea(child:
+      SizedBox(
+        width: double.infinity,
+        child:  Column(
+         children: [ 
+          const Text("Customers", style: TextStyle(fontSize: 18),),
+           StreamBuilder<QuerySnapshot>(
+            stream:
+                FirebaseFirestore.instance.collection("UsersData").snapshots(),
+            builder: ((context, snapshot) {
+              if (!snapshot.hasData) return const LinearProgressIndicator();
+              return Expanded(child: _buildList(snapshot.data));
+            })),
+          ]
+        ),
+      ));
   }
 }
 
 class Tab2Widget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text(
         'Tab 2',
         style: TextStyle(fontSize: 24),
@@ -73,7 +135,7 @@ class Tab2Widget extends StatelessWidget {
 class Tab3Widget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text(
         'Tab 3',
         style: TextStyle(fontSize: 24),

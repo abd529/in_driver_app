@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
           )),
         ),
         home: FirebaseAuth.instance.currentUser != null
-            ? FirebaseAuth.instance.currentUser!.uid == "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"? MyHomePage() :HomePage()
+            ? FirebaseAuth.instance.currentUser!.uid == "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"? AdminPanel() :HomePage()
             : SplashScreen(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
