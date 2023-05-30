@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:in_driver_app/Models/addressModel.dart';
 import 'package:in_driver_app/Models/direction_details_model.dart';
@@ -50,5 +51,9 @@ class AssitantMethods {
     directionDetails.durationText = res["routes"][0]["duration"]["text"];
     directionDetails.durationValue = res["routes"][0]["duration"]["value"];
     return directionDetails;
+  }
+
+  static void getCurrentUserinfo() async {
+    firebaseUser = await FirebaseAuth.instance.currentUser;
   }
 }

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, unrelated_type_equality_checks, unnecessary_null_comparison, use_build_context_synchronously, avoid_print, cast_from_null_always_fails, unused_field
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   GoogleMapController? _secondGoogleMap;
   Set<Polyline> polylineset = {};
   late GoogleMapController _newgoogleMapController;
-  Position? currentPosition;
+  //Position? currentPosition;
   late Position pickUp;
   late Position dropOff;
   var geoLocator = Geolocator();
@@ -68,11 +69,47 @@ class _HomePageState extends State<HomePage> {
     "Bike",
     "Taxi"
   ];
+  double calculateDistance(double startLatitude, double startLongitude,
+      double endLatitude, double endLongitude) {
+    const int earthRadius = 6371; // Earth's radius in kilometers
+
+    // Convert degrees to radians
+    double startLatRadians = degreesToRadians(startLatitude);
+    double startLonRadians = degreesToRadians(startLongitude);
+    double endLatRadians = degreesToRadians(endLatitude);
+    double endLonRadians = degreesToRadians(endLongitude);
+
+    // Calculate the differences between the coordinates
+    double latDiff = endLatRadians - startLatRadians;
+    double lonDiff = endLonRadians - startLonRadians;
+
+    // Apply the Haversine formula
+    double a = pow(sin(latDiff / 2), 2) +
+        cos(startLatRadians) * cos(endLatRadians) * pow(sin(lonDiff / 2), 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double distance = earthRadius * c;
+
+    return distance;
+  }
+
+  double degreesToRadians(double degrees) {
+    return degrees * pi / 180;
+  }
+
+  double calculateFare(double distance) {
+    const double ratePerKilometer = 120; // Fare rate per kilometer
+
+    // Calculate the fare based on the distance
+    double fare = distance * ratePerKilometer;
+
+    return fare;
+  }
+
   int index = 0;
   final List<Ride> rides = [
     Ride(
         type: "Luxury",
-        distance: "0.5 KM",
+        distance: 0.5.toString(),
         imgUrl: "assets/images/luxury.png",
         money: "200"),
     Ride(
@@ -251,6 +288,7 @@ class _HomePageState extends State<HomePage> {
           position: currentLatLng,
           icon: currentIcon)
     };
+
     return Scaffold(
         appBar: AppBar(
           leading: Builder(
@@ -396,7 +434,9 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Logout'),
                 onTap: () {
                   FirebaseAuth.instance.signOut();
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => AuthHome(),)) ;
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => AuthHome(),
+                  ));
                 },
               ),
             ],
@@ -605,145 +645,66 @@ class _HomePageState extends State<HomePage> {
                                           const SizedBox(
                                             height: 20,
                                           ),
-                                          ElevatedButton(
-                                              onPressed: () {
-                                                if (_formKey.currentState!
-                                                    .validate()) {
-                                                  setPolylines(pickUp, dropOff);
-                                                  setState(() {
-                                                    nextCheck = 1;
-                                                  });
-                                                }
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          100, 20, 100, 20),
-                                                  shape: RoundedRectangleBorder(
-                                                      //to set border radius to button
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              50))),
-                                              child: const Text(
-                                                "Find Route",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              )),
+                                          Row(
+                                            children: [
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    double distance =
+                                                        calculateDistance(
+                                                            pickUp.latitude,
+                                                            pickUp.longitude,
+                                                            dropOff.latitude,
+                                                            dropOff.longitude);
+
+                                                    double fare =
+                                                        calculateFare(distance);
+
+                                                    print("fare ${fare}");
+                                                  },
+                                                  child: Text("fare")),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    print(
+                                                        "dissssssssssstanceeeeeeeeee ${calculateDistance(pickUp.latitude, pickUp.longitude, dropOff.latitude, dropOff.longitude)}");
+                                                  },
+                                                  child: Text("dis")),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    if (_formKey.currentState!
+                                                        .validate()) {
+                                                      setPolylines(
+                                                          pickUp, dropOff);
+                                                      setState(() {
+                                                        // nextCheck = 1;
+                                                      });
+                                                    }
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  10,
+                                                                  20,
+                                                                  10,
+                                                                  20),
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                                  //to set border radius to button
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              50))),
+                                                  child: const Text(
+                                                    "Find Route",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  )),
+                                            ],
+                                          ),
                                         ],
                                       ),
                                     )
-                              // InkWell(
-                              //   onTap: () async {
-                              //     var res = await Navigator.pushNamed(
-                              //         context, SearchScreen.idScreen);
-                              //     if (res == "obtainDirection") {
-                              //       await getPlaceDirectins();
-                              //     }
-                              //   },
-                              //   child: Container(
-                              //     height: 40,
-                              //     decoration: BoxDecoration(
-                              //       borderRadius: BorderRadius.circular(10),
-                              //       color: Colors.white,
-                              //       boxShadow: [
-                              //         const BoxShadow(
-                              //           blurRadius: 6.0,
-                              //           spreadRadius: 0.3,
-                              //           color: Colors.black54,
-                              //           offset: Offset(0.7, 0.7),
-                              //         ),
-                              //       ],
-                              //     ),
-                              //     child: const Padding(
-                              //       padding: EdgeInsets.all(12.0),
-                              //       child: Row(
-                              //         children: [
-                              //           Icon(
-                              //             Icons.search,
-                              //             color: Colors.red,
-                              //           ),
-                              //           SizedBox(
-                              //             width: 10,
-                              //           ),
-                              //           Text(
-                              //             "Search Drop off",
-                              //             style: TextStyle(fontWeight: FontWeight.bold),
-                              //           )
-                              //         ],
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
-                              // const SizedBox(
-                              //   height: 24,
-                              // ),
-                              // //home row
-                              // Row(
-                              //   children: [
-                              //     const Icon(
-                              //       Icons.home,
-                              //       color: Colors.grey,
-                              //     ),
-                              //     const SizedBox(
-                              //       width: 12,
-                              //     ),
-                              //     Column(
-                              //       crossAxisAlignment: CrossAxisAlignment.start,
-                              //       children: [
-                              //         const Text("Home"),
-                              //         const SizedBox(
-                              //           height: 4,
-                              //         ),
-                              //         Text(
-                              //           //fetchaddress.placeName,
-                              //           Provider.of<AppData>(context).pickuplocation !=
-                              //                   null
-                              //               ? Provider.of<AppData>(context)
-                              //                   .pickuplocation
-                              //                   .placeName
-                              //               : "Add Home Address",
-                              //           style: const TextStyle(
-                              //               fontSize: 13,
-                              //               color: Colors.grey,
-                              //               overflow: TextOverflow.visible),
-                              //         ),
-                              //       ],
-                              //     )
-                              //   ],
-                              // ),
-                              // const SizedBox(
-                              //   height: 10,
-                              // ),
-                              // const DividerWidget(),
-                              // //work row
-                              // const SizedBox(
-                              //   height: 16,
-                              // ),
-                              // const Row(
-                              //   children: [
-                              //     Icon(
-                              //       Icons.work,
-                              //       color: Colors.grey,
-                              //     ),
-                              //     SizedBox(
-                              //       width: 12,
-                              //     ),
-                              //     Column(
-                              //       crossAxisAlignment: CrossAxisAlignment.start,
-                              //       children: [
-                              //         Text("Work"),
-                              //         SizedBox(
-                              //           height: 4,
-                              //         ),
-                              //         Text(
-                              //           "Your office addres",
-                              //           style:
-                              //               TextStyle(fontSize: 13, color: Colors.grey),
-                              //         ),
-                              //       ],
-                              //     )
-                              //   ],
-                              // ),
                             ],
                           ),
                         )
@@ -888,23 +849,27 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(
                                   height: 20,
                                 ),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        nextCheck = 2;
-                                      });
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            100, 20, 100, 20),
-                                        shape: RoundedRectangleBorder(
-                                            //to set border radius to button
-                                            borderRadius:
-                                                BorderRadius.circular(50))),
-                                    child: const Text(
-                                      "Find Riders",
-                                      style: TextStyle(color: Colors.white),
-                                    ))
+                                Row(
+                                  children: [
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            nextCheck = 2;
+                                          });
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                100, 20, 100, 20),
+                                            shape: RoundedRectangleBorder(
+                                                //to set border radius to button
+                                                borderRadius:
+                                                    BorderRadius.circular(50))),
+                                        child: const Text(
+                                          "Find Riders",
+                                          style: TextStyle(color: Colors.white),
+                                        )),
+                                  ],
+                                )
                               ],
                             )
                           : Column(children: [
@@ -965,76 +930,76 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> getPlaceDirectins() async {
-    var initalpos = Provider.of<AppData>(context).pickuplocation;
-    var finalpos = Provider.of<AppData>(context).dropofflocation;
-    var pickupLatLang = LatLng(initalpos.lattitude, initalpos.longitude);
+  // Future<void> getPlaceDirectins() async {
+  //   var initalpos = Provider.of<AppData>(context).pickuplocation;
+  //   var finalpos = Provider.of<AppData>(context).dropofflocation;
+  //   var pickupLatLang = LatLng(initalpos.lattitude, initalpos.longitude);
 
-    var dropoffLatLang = LatLng(finalpos.lattitude, finalpos.longitude);
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          //title: Text('Dialog Title'),
-          content: Container(
-            height: 50,
-            child: const Column(
-              children: [Text('loading....'), LinearProgressIndicator()],
-            ),
-          ),
-        );
-      },
-    );
-    var details = await AssitantMethods.obtainDirectionDetails(
-        pickupLatLang, dropoffLatLang);
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HomePage()));
+  //   var dropoffLatLang = LatLng(finalpos.lattitude, finalpos.longitude);
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         //title: Text('Dialog Title'),
+  //         content: Container(
+  //           height: 50,
+  //           child: const Column(
+  //             children: [Text('loading....'), LinearProgressIndicator()],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  //   var details = await AssitantMethods.obtainDirectionDetails(
+  //       pickupLatLang, dropoffLatLang);
+  //   Navigator.push(
+  //       context, MaterialPageRoute(builder: (context) => HomePage()));
 
-    print("This is encoded points");
-    print(details.endcodedpoints);
-    PolylinePoints polylinePoints = PolylinePoints();
-    List<PointLatLng> decodedpolylinepointsResult =
-        polylinePoints.decodePolyline(details.endcodedpoints.toString());
-    polyLineCordinates.clear();
-    if (decodedpolylinepointsResult.isEmpty) {
-      decodedpolylinepointsResult.forEach((PointLatLng pointLatLng) {
-        polyLineCordinates
-            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
-      });
-    }
-    polylineset.clear();
-    setState(() {
-      Polyline polyline = Polyline(
-          polylineId: const PolylineId("PolylineId"),
-          color: Colors.pink,
-          jointType: JointType.round,
-          points: polyLineCordinates,
-          width: 5,
-          startCap: Cap.roundCap,
-          endCap: Cap.roundCap,
-          geodesic: true);
-      polylineset.add(polyline);
-    });
-    LatLngBounds latLngBounds;
-    if (pickupLatLang.latitude > dropoffLatLang.latitude &&
-        pickupLatLang.longitude > dropoffLatLang.longitude) {
-      latLngBounds =
-          LatLngBounds(southwest: dropoffLatLang, northeast: pickupLatLang);
-    } else if (pickupLatLang.longitude > dropoffLatLang.longitude) {
-      latLngBounds = LatLngBounds(
-          southwest: LatLng(pickupLatLang.latitude, dropoffLatLang.latitude),
-          northeast: LatLng(dropoffLatLang.longitude, pickupLatLang.longitude));
-    } else if (pickupLatLang.latitude > dropoffLatLang.latitude) {
-      latLngBounds = LatLngBounds(
-          southwest: LatLng(dropoffLatLang.latitude, pickupLatLang.latitude),
-          northeast: LatLng(pickupLatLang.longitude, dropoffLatLang.longitude));
-    } else {
-      latLngBounds =
-          LatLngBounds(southwest: pickupLatLang, northeast: dropoffLatLang);
-    }
-    _newgoogleMapController
-        .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
-  }
+  //   print("This is encoded points");
+  //   print(details.endcodedpoints);
+  //   PolylinePoints polylinePoints = PolylinePoints();
+  //   List<PointLatLng> decodedpolylinepointsResult =
+  //       polylinePoints.decodePolyline(details.endcodedpoints.toString());
+  //   polyLineCordinates.clear();
+  //   if (decodedpolylinepointsResult.isEmpty) {
+  //     decodedpolylinepointsResult.forEach((PointLatLng pointLatLng) {
+  //       polyLineCordinates
+  //           .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+  //     });
+  //   }
+  //   polylineset.clear();
+  //   setState(() {
+  //     Polyline polyline = Polyline(
+  //         polylineId: const PolylineId("PolylineId"),
+  //         color: Colors.pink,
+  //         jointType: JointType.round,
+  //         points: polyLineCordinates,
+  //         width: 5,
+  //         startCap: Cap.roundCap,
+  //         endCap: Cap.roundCap,
+  //         geodesic: true);
+  //     polylineset.add(polyline);
+  //   });
+  //   LatLngBounds latLngBounds;
+  //   if (pickupLatLang.latitude > dropoffLatLang.latitude &&
+  //       pickupLatLang.longitude > dropoffLatLang.longitude) {
+  //     latLngBounds =
+  //         LatLngBounds(southwest: dropoffLatLang, northeast: pickupLatLang);
+  //   } else if (pickupLatLang.longitude > dropoffLatLang.longitude) {
+  //     latLngBounds = LatLngBounds(
+  //         southwest: LatLng(pickupLatLang.latitude, dropoffLatLang.latitude),
+  //         northeast: LatLng(dropoffLatLang.longitude, pickupLatLang.longitude));
+  //   } else if (pickupLatLang.latitude > dropoffLatLang.latitude) {
+  //     latLngBounds = LatLngBounds(
+  //         southwest: LatLng(dropoffLatLang.latitude, pickupLatLang.latitude),
+  //         northeast: LatLng(pickupLatLang.longitude, dropoffLatLang.longitude));
+  //   } else {
+  //     latLngBounds =
+  //         LatLngBounds(southwest: pickupLatLang, northeast: dropoffLatLang);
+  //   }
+  //   _newgoogleMapController
+  //       .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
+  // }
 
   void setPolylines(Position current, Position dropOff) async {
     setState(() {
