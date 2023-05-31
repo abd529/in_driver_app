@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:in_driver_app/Models/addressModel.dart';
@@ -7,6 +9,7 @@ import 'package:in_driver_app/providers/appDataprovider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../constants.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class AssitantMethods {
   static Future<String> searchCordinatesAddress(
@@ -55,5 +58,13 @@ class AssitantMethods {
 
   static void getCurrentUserinfo() async {
     firebaseUser = await FirebaseAuth.instance.currentUser;
+    String userId = firebaseUser!.uid;
+    DatabaseReference reference =
+        FirebaseDatabase.instance.ref().child("users").child(userId);
+    reference.once().then((DataSnapshot dataSnapshot) {
+          if (dataSnapshot.value != null) {
+            //  usercurrentinfo = User.fromSnapshot(dataSnapshot);
+          }
+        } as FutureOr Function(DatabaseEvent value));
   }
 }
