@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, unused_field, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, unused_field, prefer_const_constructors, use_build_context_synchronously
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:in_driver_app/screens/home.dart';
 
 import '../Models/loginviewmodel.dart';
+import '../driver panel/driver_home.dart';
 import '../widgets/myColors.dart';
 import '../widgets/myTextField.dart';
 import '../widgets/mybutton.dart';
@@ -398,7 +399,8 @@ class _LoginPageState extends State<LoginPage> {
                           });
                            bool isLoggedIn = await _loginVM.login(_emailController.text, _passwordController.text);
                            if(isLoggedIn){
-                             Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (ctx) => HomePage()),(Route<dynamic> route) => false);
+                             Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (ctx) => widget.role == "Rider"? DriverHome():HomePage()),
+                                (Route<dynamic> route) => false);
                            }
                         }
                       },

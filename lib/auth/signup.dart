@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:in_driver_app/auth/auth_verifiy.dart';
 import 'package:get/get.dart';
+import 'package:in_driver_app/driver%20panel/driver_home.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
@@ -545,7 +546,7 @@ class _SignupPageState extends State<SignupPage> {
                               }
                               
                             );
-                            Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (ctx) => HomePage()),
+                            Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (ctx) => widget.role == "Rider"? DriverHome():HomePage()),
                                 (Route<dynamic> route) => false);
                          }else{
                           setState(() {

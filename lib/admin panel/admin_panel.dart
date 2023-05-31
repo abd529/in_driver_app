@@ -84,6 +84,7 @@ class Tab1Widget extends StatefulWidget {
 
 class _Tab1WidgetState extends State<Tab1Widget> {
   List<String> customers =[];
+  List<UserModel> users =[];
   List<String> searchResults = [];
   int heightCheck = 0;
   TextEditingController controller = TextEditingController();

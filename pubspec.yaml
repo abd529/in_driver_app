@@ -51,6 +51,9 @@ dependencies:
   fast_contacts: ^3.0.3
   flutter_sms: ^2.3.3
   share: ^2.0.4
+  firebase_messaging: ^14.6.2
+  flutter_local_notifications: ^14.1.0
+  awesome_notifications: ^0.7.4+1
   
 
 dev_dependencies:
