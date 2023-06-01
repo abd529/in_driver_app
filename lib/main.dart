@@ -27,6 +27,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 Future<void> myBackgroundMessageHandler(RemoteMessage event) async {
+  
+  print("activeeeeeeee");
   Map message = event.toMap();
   print('backgroundMessage: message => ${message.toString()}');
   var notification = message['notification'];
@@ -50,7 +52,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  //FirebaseMessaging.
+  FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
   runApp(const MyApp());
 }
 
