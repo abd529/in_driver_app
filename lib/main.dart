@@ -7,8 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:in_driver_app/auth/auth_home.dart';
 import 'package:in_driver_app/auth/auth_verifiy.dart';
 import 'package:in_driver_app/auth/forgot.dart';
-import 'package:in_driver_app/driver%20panel/dashboard.dart';
-import 'package:in_driver_app/driver%20panel/driver_home.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
 import 'package:in_driver_app/screens/splash_screen.dart';
@@ -16,10 +14,7 @@ import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
 import 'admin panel/admin_panel_screen.dart';
 import 'admin panel/admin_panel.dart';
-import 'driver panel/contactinfo.dart';
-import 'driver panel/ride_status.dart';
-import 'driver panel/riderequest.dart';
-import 'driver panel/riderequest_tranhistory.dart';
+import 'driver panel/driver_home.dart';
 import 'providers/appDataprovider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -31,17 +26,12 @@ Future<void> myBackgroundMessageHandler(RemoteMessage event) async {
   print("activeeeeeeee");
   Map message = event.toMap();
   print('backgroundMessage: message => ${message.toString()}');
-  var notification = message['notification'];
-  var roomId = notification['room_id'] as String;
-  var userName = notification['userName'] as String;
-  var userNumber = notification["userNumber"];
-  var token = notification["token"];
   AwesomeNotifications().createNotification(
     content: NotificationContent(
         id: 10,
         channelKey: 'basic_channel',
-        title: '$userName is calling...',
-        body: userNumber,
+        title: 'notii',
+        body: "userNumber",
         wakeUpScreen: true,
         fullScreenIntent: true),
   );
@@ -49,10 +39,20 @@ Future<void> myBackgroundMessageHandler(RemoteMessage event) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
+  // AwesomeNotifications().initialize(
+  //   null,
+  //   [
+  //     NotificationChannel(
+  //       channelKey: 'basic_channel',
+  //       channelName: 'Basic notifications',
+  //       channelDescription: 'Notification channel for basic notifications',
+  //       defaultColor: Colors.teal,
+  //       ledColor: Colors.teal,
+  //     ),
+  //   ],
+  // );
   runApp(const MyApp());
 }
 
@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
             ? FirebaseAuth.instance.currentUser!.uid ==
                     "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"
                 ? AdminPanel()
-                : RideTransactionHistory()
+                : DriverHome()
             : const SplashScreen(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),

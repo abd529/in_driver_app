@@ -42,7 +42,7 @@ class _DriverHomeState extends State<DriverHome> {
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization':
-              'key=key=AAAANKVW1Kg:APA91bE2tuK90I3kgjHGnx-DWn_IiorJvAww7PwyqdwCg8_WiZWbENI7gqNZDpJCh66HbydWpPWh9OSwhDaH9C4D3iLoWhy3X-QSe-lGsQKVdehI6DDbQp7fY_hmKdwZtK2dzqAkAllj',
+              'key=AAAAQdieV_0:APA91bHZqyu50fe_VqgkFnzr2R0aGtaeckWueKLTtzsCTt5mjXWYRigAhDHpMK2VzvA8jDN_R3EKJ7-jwXAyuZensUGhbDS6mVmcC8ZRM-nfKP5sR29xPBZx4tDoR62F3L_FCMjGr0Vo',
         },
         body: jsonEncode(
           <String, dynamic>{
@@ -69,29 +69,8 @@ class _DriverHomeState extends State<DriverHome> {
 
   @override
   void initState() {
-    super.initState();
     requestPermission();
-
-    _messaging = FirebaseMessaging.instance;
     
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
-    // Configure the notification channels.
-    // const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    //   'news',
-    //   'News notifications',
-    //   description: 'Notifications about new news articles',
-    //   importance: Importance.max,
-    // );
-    
-    // Subscribe to topic notifications.
-    _messaging.subscribeToTopic('news');
-
-    // Configure the message callback functions.
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      // Handle incoming messages.
-      print(message.data);
-    });
     AwesomeNotifications().initialize(
   // set the icon to null if you want to use the default app icon
   null,
@@ -104,6 +83,7 @@ class _DriverHomeState extends State<DriverHome> {
         defaultColor: const Color(0xFF9D50DD),
         ledColor: Colors.white)
   ],
+  // Channel groups are only visual and are not required
   channelGroups: [
     NotificationChannelGroup(
         channelGroupKey: 'basic_channel_group',
@@ -111,33 +91,11 @@ class _DriverHomeState extends State<DriverHome> {
   ],
   debug: true
 );
-  // AwesomeNotifications().setListeners(onActionReceivedMethod:(receivedAction) async{
-  //     //return NotificationController.onActionReceivedMethod(receivedAction, context, userEM);
-  //   print("listened");
+  // AwesomeNotifications().setListeners(onActionReceivedMethod:(receivedAction) {
+  //     return NotificationController.onActionReceivedMethod(receivedAction, context, userEM);
+  //   } );
     
-  //   });
-
-    // FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async{
-    //   // Handle incoming messages in the background.
-    //   print(message.data);
-    // });
-    // flutterLocalNotificationsPlugin
-    //   .initialize(
-    //     InitializationSettings(
-    //       android: AndroidInitializationSettings(channel.id),
-    //     ),
-    //   )
-    //   .then((_) {
-    //     // Configure the notification settings.
-    //     FirebaseMessaging.onMessageOpenedApp.listen((notification) {
-    //         // Handle notification tapped.
-    //         print(notification.messageId);
-    //         print(notification.data);
-    //        // flutterLocalNotificationsPlugin.show(int.parse(notification.messageId as String), notification.category, notification.senderId, NotificationDetails());
-    //       });
-    //   });
-
-      
+    super.initState();
   }
 
   @override
