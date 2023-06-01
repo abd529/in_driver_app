@@ -41,18 +41,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
-  // AwesomeNotifications().initialize(
-  //   null,
-  //   [
-  //     NotificationChannel(
-  //       channelKey: 'basic_channel',
-  //       channelName: 'Basic notifications',
-  //       channelDescription: 'Notification channel for basic notifications',
-  //       defaultColor: Colors.teal,
-  //       ledColor: Colors.teal,
-  //     ),
-  //   ],
-  // );
   runApp(const MyApp());
 }
 
