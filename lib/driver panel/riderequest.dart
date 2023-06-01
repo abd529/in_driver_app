@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:in_driver_app/driver%20panel/ride_status.dart';
 
 import '../widgets/myColors.dart';
 
@@ -84,14 +85,16 @@ class _RidesHistoryState extends State<RidesHistory> {
               height: height / 10,
             ),
             Center(
-              child: Container(
+              child: SizedBox(
                 height: 50,
                 width: 200,
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20))),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => RideStatus(),));
+                    },
                     child: Text(
                       "Continue",
                       style: TextStyle(fontSize: 16, color: Colors.white),
@@ -160,9 +163,9 @@ class _HistoryCardState extends State<HistoryCard> {
                     ),
                     Column(
                       children: [
-                        Container(
+                        SizedBox(
                           height: 40,
-                          width: 80,
+                          width: 90,
                           child: ElevatedButton(
                             onPressed: () {},
                             child: Text(
@@ -175,8 +178,8 @@ class _HistoryCardState extends State<HistoryCard> {
                         SizedBox(
                           height: 10,
                         ),
-                        Container(
-                          width: 80,
+                        SizedBox(
+                          width: 90,
                           height: 40,
                           child: ElevatedButton(
                             onPressed: () {

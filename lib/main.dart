@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:in_driver_app/auth/auth_home.dart';
 import 'package:in_driver_app/auth/auth_verifiy.dart';
 import 'package:in_driver_app/auth/forgot.dart';
+import 'package:in_driver_app/firebase_options.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
 import 'package:in_driver_app/screens/splash_screen.dart';
@@ -14,9 +15,8 @@ import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
 import 'admin panel/admin_panel_screen.dart';
 import 'admin panel/admin_panel.dart';
-import 'driver panel/driver_home.dart';
+import 'driver panel/dashboard.dart';
 import 'providers/appDataprovider.dart';
-import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +39,9 @@ Future<void> myBackgroundMessageHandler(RemoteMessage event) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
   FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
   runApp(const MyApp());
 }
@@ -68,7 +70,7 @@ class MyApp extends StatelessWidget {
             ? FirebaseAuth.instance.currentUser!.uid ==
                     "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"
                 ? AdminPanel()
-                : DriverHome()
+                : Dashboard()
             : const SplashScreen(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
