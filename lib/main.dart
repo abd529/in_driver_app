@@ -16,6 +16,10 @@ import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
 import 'admin panel/admin_panel_screen.dart';
 import 'admin panel/admin_panel.dart';
+import 'driver panel/contactinfo.dart';
+import 'driver panel/ride_status.dart';
+import 'driver panel/riderequest.dart';
+import 'driver panel/riderequest_tranhistory.dart';
 import 'providers/appDataprovider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,7 +78,7 @@ class MyApp extends StatelessWidget {
             ? FirebaseAuth.instance.currentUser!.uid ==
                     "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"
                 ? AdminPanel()
-                : Dashboard()
+                : RideTransactionHistory()
             : const SplashScreen(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
