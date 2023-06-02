@@ -210,7 +210,7 @@ class _RideStatusState extends State<RideStatus> {
               child: Container(
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                height: height ,
+                height: height,
                 width: width,
                 child: Stack(
                   alignment: Alignment.topCenter,
@@ -228,7 +228,7 @@ class _RideStatusState extends State<RideStatus> {
                         onMapCreated: (GoogleMapController controller) async {
                           _controllerGoogleMap.complete(controller);
                           _newgoogleMapController = controller;
-      
+
                           _secondGoogleMap = controller;
                           locatePosition();
                         },
@@ -291,8 +291,8 @@ class _RideStatusState extends State<RideStatus> {
                                 Row(
                                   children: [
                                     Image(
-                                      image:
-                                          AssetImage("assets/images/history.png"),
+                                      image: AssetImage(
+                                          "assets/images/history.png"),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -359,11 +359,13 @@ class _RideStatusState extends State<RideStatus> {
                           children: [
                             Text(
                               "Current Balance",
-                              style: TextStyle(fontSize: 16, color: Colors.black),
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.black),
                             ),
                             Text(
                               "\$${negotiate.toString()}",
-                              style: TextStyle(fontSize: 20, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.grey),
                             ),
                           ],
                         ),
@@ -397,15 +399,18 @@ class _RideStatusState extends State<RideStatus> {
                                 return AlertDialog(
                                   content: Container(
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50)),
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
                                     height: 300,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
                                         Icon(
-                                          CupertinoIcons.check_mark_circled_solid,
+                                          CupertinoIcons
+                                              .check_mark_circled_solid,
                                           color: IconColor,
                                           size: 100,
                                         ),
@@ -445,7 +450,8 @@ class _RideStatusState extends State<RideStatus> {
                                         MaterialButton(
                                           child: Text(
                                             'Done',
-                                            style: TextStyle(color: Colors.green),
+                                            style:
+                                                TextStyle(color: Colors.green),
                                           ),
                                           onPressed: () {},
                                         ),
@@ -478,10 +484,12 @@ class _RideStatusState extends State<RideStatus> {
                                 return AlertDialog(
                                   content: Container(
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50)),
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
                                     height: 300,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
@@ -526,7 +534,8 @@ class _RideStatusState extends State<RideStatus> {
                                         MaterialButton(
                                           child: Text(
                                             'Done',
-                                            style: TextStyle(color: Colors.green),
+                                            style:
+                                                TextStyle(color: Colors.green),
                                           ),
                                           onPressed: () {},
                                         ),

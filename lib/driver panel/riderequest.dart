@@ -93,7 +93,9 @@ class _RidesHistoryState extends State<RidesHistory> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20))),
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => RideStatus(),));
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => RideStatus(),
+                      ));
                     },
                     child: Text(
                       "Continue",
@@ -125,6 +127,10 @@ class _HistoryCardState extends State<HistoryCard> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+
+    final width = MediaQuery.of(context).size.width;
+
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Card(
@@ -145,56 +151,68 @@ class _HistoryCardState extends State<HistoryCard> {
                       image: AssetImage("assets/images/history.png"),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "7958 swift Village",
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: 14),
                           ),
                           SizedBox(
                             height: 20,
                           ),
                           Text("105 Willaim St,Chicago",
-                              style: TextStyle(fontSize: 16))
+                              style: TextStyle(fontSize: 14))
                         ],
                       ),
                     ),
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 40,
-                          width: 90,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: Text(
-                              "Accept",
-                              style:
-                                  TextStyle(fontSize: 13, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          width: 90,
-                          height: 40,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              changecol();
-                            },
-                            child: Text(
-                              "Decline",
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: check ? Colors.white : Colors.grey,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Column(
+                        children: [
+                          InkWell(
+                            child: Container(
+                              width: width / 6,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  color: IconColor,
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Center(
+                                child: Text(
+                                  "Accept",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        )
-                      ],
+                          SizedBox(
+                            height: 10,
+                          ),
+                          InkWell(
+                            onTap: changecol,
+                            child: Container(
+                              width: width / 6,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  color: IconColor,
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Center(
+                                child: Text(
+                                  "Decline",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: check ? Colors.white : Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     )
                   ],
                 ),

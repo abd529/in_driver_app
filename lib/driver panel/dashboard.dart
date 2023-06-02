@@ -23,7 +23,7 @@ class _DashboardState extends State<Dashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   GoogleMapController? _secondGoogleMap;
   BitmapDescriptor currentIcon = BitmapDescriptor.defaultMarker;
-  LatLng currentLatLng = LatLng(0.0,0.0);
+  LatLng currentLatLng = LatLng(0.0, 0.0);
   Address fetchaddress = Address();
   late GoogleMapController _newgoogleMapController;
   final Completer<GoogleMapController> _controllerGoogleMap =
@@ -34,7 +34,6 @@ class _DashboardState extends State<Dashboard> {
   );
   double _rating = 0;
   TextEditingController notes = TextEditingController();
-
   void locatePosition() async {
     //LocationPermission permission = await Geolocator.checkPermission();
     Position positon = await Geolocator.getCurrentPosition(
@@ -67,7 +66,7 @@ class _DashboardState extends State<Dashboard> {
       currentIcon = icon;
     });
   }
-  
+
   @override
   void initState() {
     super.initState();
@@ -75,13 +74,13 @@ class _DashboardState extends State<Dashboard> {
     setCustomMarkerId();
     print("init");
   }
-  
+
   @override
   Widget build(BuildContext context) {
     Set<Marker> mapMarkers = {
       Marker(
           markerId: const MarkerId("current_position"),
-          position: LatLng(currentLatLng.latitude,currentLatLng.longitude),
+          position: LatLng(currentLatLng.latitude, currentLatLng.longitude),
           icon: currentIcon)
     };
     final height = MediaQuery.of(context).size.height;
@@ -98,17 +97,15 @@ class _DashboardState extends State<Dashboard> {
       child: Scaffold(
         key: _scaffoldKey,
         drawer: Drawer(
-          backgroundColor: Theme.of(context).primaryColor ,
+          backgroundColor: Theme.of(context).primaryColor,
           child: Column(
             children: [
               DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.white
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Column(children: [
-                  const SizedBox(
+                  decoration: BoxDecoration(color: Colors.white),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Column(children: [
+                      const SizedBox(
                         height: 0,
                       ),
                       const CircleAvatar(
@@ -116,25 +113,37 @@ class _DashboardState extends State<Dashboard> {
                         child: Icon(CupertinoIcons.person_alt_circle),
                       ),
                       Text(
-                              "George Smith",
-                              style:
-                                  TextStyle(fontSize: 17, letterSpacing: 2),
-                            )
-                      ]),
-                )
-                ),
+                        "George Smith",
+                        style: TextStyle(fontSize: 17, letterSpacing: 2),
+                      )
+                    ]),
+                  )),
               ListTile(
-                leading: Icon(Icons.car_crash_outlined , color: Colors.white,),
-                title: Text("Ride Request", style: TextStyle(color: Colors.white),),
-                onTap: (){
-                //  Navigator.of(context).push(MaterialPageRoute(builder: (context) => RidesHistory(),));
+                leading: Icon(
+                  Icons.car_crash_outlined,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  "Ride Request",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  //  Navigator.of(context).push(MaterialPageRoute(builder: (context) => RidesHistory(),));
                 },
               ),
               ListTile(
-                leading: Icon(Icons.drive_eta, color: Colors.white,),
-                title: Text("Ride History", style: TextStyle(color: Colors.white),),
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => RidesHistory(),));
+                leading: Icon(
+                  Icons.drive_eta,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  "Ride History",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => RidesHistory(),
+                  ));
                 },
               ),
             ],
@@ -156,7 +165,7 @@ class _DashboardState extends State<Dashboard> {
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: InkWell(
-                onTap: (){
+                onTap: () {
                   _scaffoldKey.currentState?.openDrawer();
                 },
                 child: ImageIcon(
@@ -175,7 +184,8 @@ class _DashboardState extends State<Dashboard> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                   child: Stack(
                     alignment: Alignment.topCenter,
                     children: <Widget>[
@@ -183,7 +193,7 @@ class _DashboardState extends State<Dashboard> {
                         padding: EdgeInsets.only(top: circleRadius / 2.0),
                         child: Container(
                           width: width - 20,
-                          height: height-150,
+                          height: height - 150,
                           decoration: BoxDecoration(
                               color: IconColor,
                               borderRadius: BorderRadius.circular(10)),
@@ -214,8 +224,7 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             Text(
                               "George Smith",
-                              style:
-                                  TextStyle(fontSize: 17, letterSpacing: 2),
+                              style: TextStyle(fontSize: 17, letterSpacing: 2),
                             ),
                             SizedBox(
                               height: height / 80,
@@ -242,7 +251,7 @@ class _DashboardState extends State<Dashboard> {
                               ),
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                 // _rating = rating;
+                                  // _rating = rating;
                                 });
                               },
                             ),
@@ -267,8 +276,8 @@ class _DashboardState extends State<Dashboard> {
                                             size: 20,
                                           ),
                                           trailing: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 10),
+                                            padding:
+                                                const EdgeInsets.only(left: 10),
                                             child: RatingBar.builder(
                                               initialRating: _rating,
                                               minRating: 1,
@@ -277,14 +286,13 @@ class _DashboardState extends State<Dashboard> {
                                               itemCount: 5,
                                               itemSize: 20.0,
                                               unratedColor: Colors.grey[300],
-                                              itemBuilder: (context, _) =>
-                                                  Icon(
+                                              itemBuilder: (context, _) => Icon(
                                                 Icons.star,
                                                 color: Colors.amber,
                                               ),
                                               onRatingUpdate: (rating) {
                                                 setState(() {
-                                                 // _rating = rating;
+                                                  // _rating = rating;
                                                 });
                                               },
                                             ),
@@ -335,24 +343,25 @@ class _DashboardState extends State<Dashboard> {
                             Positioned(
                               bottom: 0,
                               child: SizedBox(
-                                height: height/3,
-                                width: width-30,
+                                height: height / 3,
+                                width: width - 30,
                                 child: GoogleMap(
-                                            myLocationEnabled: false,
-                                            zoomControlsEnabled: true,
-                                            zoomGesturesEnabled: true,
-                                            mapType: MapType.normal,
-                                            myLocationButtonEnabled: true,
-                                            initialCameraPosition: _kGooglePlex,
-                                            onMapCreated: (GoogleMapController controller) async {
-                                              _controllerGoogleMap.complete(controller);
-                                              _newgoogleMapController = controller;
-                              
-                                              _secondGoogleMap = controller;
-                                              locatePosition();
-                                            },
-                                            markers: mapMarkers,
-                                          ),
+                                  myLocationEnabled: false,
+                                  zoomControlsEnabled: true,
+                                  zoomGesturesEnabled: true,
+                                  mapType: MapType.normal,
+                                  myLocationButtonEnabled: true,
+                                  initialCameraPosition: _kGooglePlex,
+                                  onMapCreated:
+                                      (GoogleMapController controller) async {
+                                    _controllerGoogleMap.complete(controller);
+                                    _newgoogleMapController = controller;
+
+                                    _secondGoogleMap = controller;
+                                    locatePosition();
+                                  },
+                                  markers: mapMarkers,
+                                ),
                               ),
                             ),
                           ],

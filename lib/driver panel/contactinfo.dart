@@ -267,7 +267,7 @@ class _ContactInfoState extends State<ContactInfo> {
                         Padding(
                           padding: EdgeInsets.only(top: circleRadius / 2.0),
                           child: Container(
-                            width: width - 100,
+                            width: width - 70,
                             height: height / 2.5,
                             decoration: BoxDecoration(
                                 color: Colors.white,

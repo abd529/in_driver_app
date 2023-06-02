@@ -1,4 +1,4 @@
-// ignore_for_file: depend_on_referenced_packages, unused_local_variable
+// ignore_for_file: depend_on_referenced_packages, unused_local_variable, prefer_const_constructors
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
@@ -16,13 +16,15 @@ import 'admin panel/admin_login.dart';
 import 'admin panel/admin_panel_screen.dart';
 import 'admin panel/admin_panel.dart';
 import 'driver panel/dashboard.dart';
+import 'driver panel/driver_home.dart';
+import 'driver panel/testscreen.dart';
+import 'driver panel/testscreen2.dart';
 import 'providers/appDataprovider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 Future<void> myBackgroundMessageHandler(RemoteMessage event) async {
-  
   print("activeeeeeeee");
   Map message = event.toMap();
   print('backgroundMessage: message => ${message.toString()}');
@@ -39,9 +41,7 @@ Future<void> myBackgroundMessageHandler(RemoteMessage event) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
   runApp(const MyApp());
 }
@@ -70,8 +70,8 @@ class MyApp extends StatelessWidget {
             ? FirebaseAuth.instance.currentUser!.uid ==
                     "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"
                 ? AdminPanel()
-                : Dashboard()
-            : const SplashScreen(),
+                : DriverScreen()
+            : DriverHome(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           // SignupPage.idScreen: (context) => SignupPage(),
