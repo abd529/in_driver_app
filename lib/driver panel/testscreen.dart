@@ -3,15 +3,16 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-class RideRequestScreen extends StatefulWidget {
+class RideRequestScreen2 extends StatefulWidget {
   @override
-  _RideRequestScreenState createState() => _RideRequestScreenState();
+  _RideRequestScreen2State createState() => _RideRequestScreen2State();
 }
 
-class _RideRequestScreenState extends State<RideRequestScreen> {
+class _RideRequestScreen2State extends State<RideRequestScreen2> {
   late GoogleMapController mapController;
   late DatabaseReference _rideRequestRef;
-  String userId = 'user_id'; // Replace with the actual user ID
+  String userId =
+      'UMyDbh9sbXZXZMieZ41PcxwLhsX2'; // Replace with the actual user ID
 
   @override
   void initState() {

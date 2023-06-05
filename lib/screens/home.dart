@@ -26,6 +26,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/myColors.dart';
 import 'Mywallet.dart';
 import 'language_select.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class HomePage extends StatefulWidget {
   static String idScreen = 'home';
@@ -204,16 +205,91 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void getCurrentPosition() async {
-    Location location = Location();
-    location.getLocation().then((location) {
-      currentLocation = location;
+  void _listenForRideRequests() {
+    _rideRequestRef = _database.child('rideRequests');
+    _rideRequestRef!.onValue.listen((event) {
+      if (event.snapshot.exists) {
+        // Retrieve the latest ride request details
+        Object? rideRequestData = event.snapshot.value;
+
+        // Perform necessary actions based on the updated ride request details
+        // For example, you can update the UI or trigger notifications
+        print('New ride request: $rideRequestData');
+      }
     });
-    // GoogleMapController mapController = await _controllerGoogleMap.future;
-    // location.onLocationChanged.listen((newLoc) {
-    //   currentLocation = newLoc;
-    //   mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(newLoc.latitude as double, newLoc.longitude as double))));
-    // });
+  }
+
+  final _database = FirebaseDatabase.instance.reference();
+  Position? _currentPosition;
+  DatabaseReference? _rideRequestRef;
+
+  void _requestRide() {
+    String pickupLocation = pickUpController.text;
+    String destination = dropOffController.text;
+
+    if (pickupLocation.isNotEmpty && destination.isNotEmpty) {
+      // Store ride request details in Firebase Realtime Database
+      _database.child('rideRequests').push().set({
+        'pickupLocation': pickupLocation,
+        'destination': destination,
+      }).then((value) {
+        // Success, ride request details are stored
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Ride Request'),
+              content: Text('Ride request sent successfully!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }).catchError((error) {
+        // Error occurred while storing ride request details
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Ride Request'),
+              content: Text('Failed to send ride request. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      });
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Ride Request'),
+            content: Text('Please enter both pickup location and destination.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   LatLng currentLatLng = const LatLng(0, 0);
@@ -274,6 +350,15 @@ class _HomePageState extends State<HomePage> {
     polylinePoints = PolylinePoints();
     getCurrentLatLng();
     setCustomMarkerId();
+    _listenForRideRequests();
+  }
+
+  @override
+  void dispose() {
+    pickUpController.dispose();
+    dropOffController.dispose();
+    _rideRequestRef?.onValue.listen((event) {});
+    super.dispose();
   }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -668,154 +753,44 @@ class _HomePageState extends State<HomePage> {
                                                   },
                                                   child: Text("dis")),
                                               ElevatedButton(
-                                                  onPressed: () {
-                                                    if (_formKey.currentState!
-                                                        .validate()) {
-                                                      setPolylines(
-                                                          pickUp, dropOff);
-                                                      setState(() {
-                                                        //  nextCheck = 1;
-                                                      });
-                                                    }
-                                                  },
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  100,
-                                                                  20,
-                                                                  100,
-                                                                  20),
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                                  //to set border radius to button
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              50))),
-                                                  child: const Text(
-                                                    "Find Route",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  )),
+                                                onPressed: () {
+                                                  if (_formKey.currentState!
+                                                      .validate()) {
+                                                    setPolylines(
+                                                        pickUp, dropOff);
+                                                    setState(() {
+                                                      //  nextCheck = 1;
+                                                    });
+                                                  }
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    padding: const EdgeInsets
+                                                            .fromLTRB(
+                                                        10, 20, 10, 20),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            //to set border radius to button
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        50))),
+                                                child: const Text(
+                                                  "Find Route",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  _requestRide();
+                                                },
+                                                child: Text('RR'),
+                                              ),
                                             ],
                                           ),
                                         ],
                                       ),
                                     )
-                              // InkWell(
-                              //   onTap: () async {
-                              //     var res = await Navigator.pushNamed(
-                              //         context, SearchScreen.idScreen);
-                              //     if (res == "obtainDirection") {
-                              //       await getPlaceDirectins();
-                              //     }
-                              //   },
-                              //   child: Container(
-                              //     height: 40,
-                              //     decoration: BoxDecoration(
-                              //       borderRadius: BorderRadius.circular(10),
-                              //       color: Colors.white,
-                              //       boxShadow: [
-                              //         const BoxShadow(
-                              //           blurRadius: 6.0,
-                              //           spreadRadius: 0.3,
-                              //           color: Colors.black54,
-                              //           offset: Offset(0.7, 0.7),
-                              //         ),
-                              //       ],
-                              //     ),
-                              //     child: const Padding(
-                              //       padding: EdgeInsets.all(12.0),
-                              //       child: Row(
-                              //         children: [
-                              //           Icon(
-                              //             Icons.search,
-                              //             color: Colors.red,
-                              //           ),
-                              //           SizedBox(
-                              //             width: 10,
-                              //           ),
-                              //           Text(
-                              //             "Search Drop off",
-                              //             style: TextStyle(fontWeight: FontWeight.bold),
-                              //           )
-                              //         ],
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
-                              // const SizedBox(
-                              //   height: 24,
-                              // ),
-                              // //home row
-                              // Row(
-                              //   children: [
-                              //     const Icon(
-                              //       Icons.home,
-                              //       color: Colors.grey,
-                              //     ),
-                              //     const SizedBox(
-                              //       width: 12,
-                              //     ),
-                              //     Column(
-                              //       crossAxisAlignment: CrossAxisAlignment.start,
-                              //       children: [
-                              //         const Text("Home"),
-                              //         const SizedBox(
-                              //           height: 4,
-                              //         ),
-                              //         Text(
-                              //           //fetchaddress.placeName,
-                              //           Provider.of<AppData>(context).pickuplocation !=
-                              //                   null
-                              //               ? Provider.of<AppData>(context)
-                              //                   .pickuplocation
-                              //                   .placeName
-                              //               : "Add Home Address",
-                              //           style: const TextStyle(
-                              //               fontSize: 13,
-                              //               color: Colors.grey,
-                              //               overflow: TextOverflow.visible),
-                              //         ),
-                              //       ],
-                              //     )
-                              //   ],
-                              // ),
-                              // const SizedBox(
-                              //   height: 10,
-                              // ),
-                              // const DividerWidget(),
-                              // //work row
-                              // const SizedBox(
-                              //   height: 16,
-                              // ),
-                              // const Row(
-                              //   children: [
-                              //     Icon(
-                              //       Icons.work,
-                              //       color: Colors.grey,
-                              //     ),
-                              //     SizedBox(
-                              //       width: 12,
-                              //     ),
-                              //     Column(
-                              //       crossAxisAlignment: CrossAxisAlignment.start,
-                              //       children: [
-                              //         Text("Work"),
-                              //         SizedBox(
-                              //           height: 4,
-                              //         ),
-                              //         Text(
-                              //           "Your office addres",
-                              //           style:
-                              //               TextStyle(fontSize: 13, color: Colors.grey),
-                              //         ),
-                              //       ],
-                              //     )
-                              //   ],
-                              // ),
                             ],
                           ),
                         )
