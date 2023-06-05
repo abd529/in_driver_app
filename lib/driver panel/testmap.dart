@@ -139,7 +139,7 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
     if (pickupLocation.isNotEmpty && destination.isNotEmpty) {
       // Store ride request details in Firebase Realtime Database
       _database.child('rideRequests').push().set({
-        'pickupLocation': pickupLocation,
+        'pickup_location': pickupLocation,
         'destination': destination,
       }).then((value) {
         // Success, ride request details are stored

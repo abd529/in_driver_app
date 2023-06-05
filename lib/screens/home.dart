@@ -730,28 +730,29 @@ class _HomePageState extends State<HomePage> {
                                             height: 20,
                                           ),
                                           Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              ElevatedButton(
-                                                  onPressed: () {
-                                                    double distance =
-                                                        calculateDistance(
-                                                            pickUp.latitude,
-                                                            pickUp.longitude,
-                                                            dropOff.latitude,
-                                                            dropOff.longitude);
+                                              // ElevatedButton(
+                                              //     onPressed: () {
+                                              //       double distance =
+                                              //           calculateDistance(
+                                              //               pickUp.latitude,
+                                              //               pickUp.longitude,
+                                              //               dropOff.latitude,
+                                              //               dropOff.longitude);
 
-                                                    double fare =
-                                                        calculateFare(distance);
+                                              //       double fare =
+                                              //           calculateFare(distance);
 
-                                                    print("fare ${fare}");
-                                                  },
-                                                  child: Text("fare")),
-                                              ElevatedButton(
-                                                  onPressed: () {
-                                                    print(
-                                                        "dissssssssssstanceeeeeeeeee ${calculateDistance(pickUp.latitude, pickUp.longitude, dropOff.latitude, dropOff.longitude)}");
-                                                  },
-                                                  child: Text("dis")),
+                                              //       print("fare ${fare}");
+                                              //     },
+                                              //     child: Text("fare")),
+                                              // ElevatedButton(
+                                              //     onPressed: () {
+                                              //       print(
+                                              //           "dissssssssssstanceeeeeeeeee ${calculateDistance(pickUp.latitude, pickUp.longitude, dropOff.latitude, dropOff.longitude)}");
+                                              //     },
+                                              //     child: Text("dis")),
                                               ElevatedButton(
                                                 onPressed: () {
                                                   if (_formKey.currentState!
@@ -759,14 +760,14 @@ class _HomePageState extends State<HomePage> {
                                                     setPolylines(
                                                         pickUp, dropOff);
                                                     setState(() {
-                                                      //  nextCheck = 1;
+                                                        nextCheck = 1;
                                                     });
                                                   }
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                     padding: const EdgeInsets
                                                             .fromLTRB(
-                                                        10, 20, 10, 20),
+                                                        60, 20, 60, 20),
                                                     shape:
                                                         RoundedRectangleBorder(
                                                             //to set border radius to button
@@ -780,12 +781,12 @@ class _HomePageState extends State<HomePage> {
                                                       color: Colors.white),
                                                 ),
                                               ),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  _requestRide();
-                                                },
-                                                child: Text('RR'),
-                                              ),
+                                              // ElevatedButton(
+                                              //   onPressed: () {
+                                              //     _requestRide();
+                                              //   },
+                                              //   child: Text('RR'),
+                                              // ),
                                             ],
                                           ),
                                         ],

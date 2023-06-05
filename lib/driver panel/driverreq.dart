@@ -8,7 +8,7 @@ class DriverScreen extends StatefulWidget {
 
 class _DriverScreenState extends State<DriverScreen> {
   final _database = FirebaseDatabase.instance.reference();
-  List<Map<dynamic, dynamic>> _rideRequests = [];
+  List<dynamic> _rideRequests = [];
 
   @override
   void initState() {
@@ -26,19 +26,25 @@ class _DriverScreenState extends State<DriverScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Driver Screen'),
+        title: const Text('Driver Screen'),
+        actions: [
+          IconButton(onPressed: (){
+            _listenForRideRequests();
+          }, icon: const Icon(Icons.refresh)),
+
+        ],
       ),
       body: ListView.builder(
         itemCount: _rideRequests.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(_rideRequests[index]['pickupLocation']),
+            title: Text(_rideRequests[index]["pickup_location"]),
             subtitle: Text(_rideRequests[index]['destination']),
             trailing: ElevatedButton(
               onPressed: () {
                 _acceptRideRequest(index);
               },
-              child: Text('Accept'),
+              child: const Text('Accept'),
             ),
           );
         },
@@ -47,16 +53,19 @@ class _DriverScreenState extends State<DriverScreen> {
   }
 
   void _listenForRideRequests() {
-    _database.child('rideRequests').onChildAdded.listen((event) {
+    _database.child('rideRequests').onValue.listen((event) {
       if (event.snapshot.exists) {
         // Retrieve the latest ride request details
         Map<dynamic, dynamic> rideRequestData =
             event.snapshot.value as Map<dynamic, dynamic>;
-
+            
         // Perform necessary actions based on the ride request details
         // For example, you can update the UI or trigger notifications
         setState(() {
-          _rideRequests.add(rideRequestData);
+          print(rideRequestData);
+          List newList = rideRequestData.values.toList();
+          _rideRequests = newList;
+          print(_rideRequests);
         });
       }
     });
@@ -75,14 +84,14 @@ class _DriverScreenState extends State<DriverScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Ride Request'),
-            content: Text('You have accepted the ride request.'),
+            title: const Text('Ride Request'),
+            content: const Text('You have accepted the ride request.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -94,15 +103,15 @@ class _DriverScreenState extends State<DriverScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Ride Request'),
+            title: const Text('Ride Request'),
             content:
-                Text('Failed to accept the ride request. Please try again.'),
+                const Text('Failed to accept the ride request. Please try again.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
