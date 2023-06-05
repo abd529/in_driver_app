@@ -25,29 +25,27 @@ Future<void> myBackgroundMessageHandler(RemoteMessage event) async {
   Map message = event.toMap();
   print('backgroundMessage: message => ${message.toString()}');
   AwesomeNotifications().createNotification(
-    
-    content: NotificationContent(
-        id: 10,
-        channelKey: 'basic_channel',
-        title: message["notification"]["title"],
-        body: message["notification"]["body"],
-        wakeUpScreen: true,
-        fullScreenIntent: true),
-    actionButtons: [
-      NotificationActionButton(
-        label: 'Accept',
-        enabled: true,
-        actionType: ActionType.Default,
-        key: 'accept',
-      ),
-      NotificationActionButton(
-        label: 'Reject',
-        enabled: true,
-        actionType: ActionType.Default,
-        key: 'reject',
-      ),
-    ]    
-  );
+      content: NotificationContent(
+          id: 10,
+          channelKey: 'basic_channel',
+          title: message["notification"]["title"],
+          body: message["notification"]["body"],
+          wakeUpScreen: true,
+          fullScreenIntent: true),
+      actionButtons: [
+        NotificationActionButton(
+          label: 'Accept',
+          enabled: true,
+          actionType: ActionType.Default,
+          key: 'accept',
+        ),
+        NotificationActionButton(
+          label: 'Reject',
+          enabled: true,
+          actionType: ActionType.Default,
+          key: 'reject',
+        ),
+      ]);
 }
 
 void main() async {
