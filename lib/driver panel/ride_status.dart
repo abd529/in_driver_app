@@ -28,13 +28,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/myColors.dart';
 
 class RideStatus extends StatefulWidget {
-  const RideStatus({super.key});
+  final String amount;
+  const RideStatus({super.key, required this.amount});
 
   @override
   State<RideStatus> createState() => _RideStatusState();
 }
 
 class _RideStatusState extends State<RideStatus> {
+  late int bidAmount;
   LatLng current = const LatLng(0, 0);
   Address fetchaddress = Address();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -146,6 +148,9 @@ class _RideStatusState extends State<RideStatus> {
     polylinePoints = PolylinePoints();
     getCurrentLatLng();
     setCustomMarkerId();
+    print("bodyyy: ${widget.amount}");
+    bidAmount = int.parse(widget.amount);
+
   }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -153,6 +158,7 @@ class _RideStatusState extends State<RideStatus> {
     zoom: 14.4746,
   );
   double negotiate = 5;
+  
   farenegplus() {
     setState(() {
       negotiate = negotiate + 5;
@@ -168,10 +174,10 @@ class _RideStatusState extends State<RideStatus> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-
+    
+    
     final width = MediaQuery.of(context).size.width;
-    final double circleRadius = 80.0;
-    final double circleBorderWidth = 8.0;
+    const double circleRadius = 80.0;
     Set<Marker> mapMarkers = {
       Marker(
           markerId: const MarkerId("current_position"),
@@ -348,7 +354,11 @@ class _RideStatusState extends State<RideStatus> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(45))),
                           onPressed: () {
-                            farenegpminus();
+                            //farenegpminus();
+                            setState(() {
+                              bidAmount = bidAmount-5; 
+                              print(bidAmount);
+                            });
                           },
                           child: Text(
                             "-5",
@@ -363,7 +373,7 @@ class _RideStatusState extends State<RideStatus> {
                                   TextStyle(fontSize: 16, color: Colors.black),
                             ),
                             Text(
-                              "\$${negotiate.toString()}",
+                              "\$$bidAmount",
                               style:
                                   TextStyle(fontSize: 20, color: Colors.grey),
                             ),
@@ -374,7 +384,11 @@ class _RideStatusState extends State<RideStatus> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(45))),
                             onPressed: () {
-                              farenegplus();
+                              //farenegplus();
+                              setState(() {
+                                bidAmount = bidAmount+5; 
+                                print(bidAmount);
+                              });
                             },
                             child: Text(
                               "+5",

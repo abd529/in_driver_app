@@ -10,34 +10,42 @@ import 'package:in_driver_app/auth/forgot.dart';
 import 'package:in_driver_app/firebase_options.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
-import 'package:in_driver_app/screens/splash_screen.dart';
 import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
 import 'admin panel/admin_panel_screen.dart';
 import 'admin panel/admin_panel.dart';
-import 'driver panel/dashboard.dart';
 import 'driver panel/driver_home.dart';
-import 'driver panel/testmap.dart';
-import 'driver panel/tests3.dart';
-import 'driver panel/testscreen.dart';
-import 'driver panel/testscreen2.dart';
 import 'providers/appDataprovider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 Future<void> myBackgroundMessageHandler(RemoteMessage event) async {
-  print("activeeeeeeee");
   Map message = event.toMap();
   print('backgroundMessage: message => ${message.toString()}');
   AwesomeNotifications().createNotification(
+    
     content: NotificationContent(
         id: 10,
         channelKey: 'basic_channel',
-        title: 'notii',
-        body: "userNumber",
+        title: message["notification"]["title"],
+        body: message["notification"]["body"],
         wakeUpScreen: true,
         fullScreenIntent: true),
+    actionButtons: [
+      NotificationActionButton(
+        label: 'Accept',
+        enabled: true,
+        actionType: ActionType.Default,
+        key: 'accept',
+      ),
+      NotificationActionButton(
+        label: 'Reject',
+        enabled: true,
+        actionType: ActionType.Default,
+        key: 'reject',
+      ),
+    ]    
   );
 }
 
@@ -72,8 +80,8 @@ class MyApp extends StatelessWidget {
             ? FirebaseAuth.instance.currentUser!.uid ==
                     "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"
                 ? AdminPanel()
-                : RideRequestScreen()
-            : RideRequestScreen(),
+                : DriverHome()
+            : DriverHome(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           // SignupPage.idScreen: (context) => SignupPage(),

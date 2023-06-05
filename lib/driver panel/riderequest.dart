@@ -93,9 +93,9 @@ class _RidesHistoryState extends State<RidesHistory> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20))),
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => RideStatus(),
-                      ));
+                      // Navigator.of(context).push(MaterialPageRoute(
+                      //   builder: (context) => RideStatus(),
+                      // ));
                     },
                     child: Text(
                       "Continue",

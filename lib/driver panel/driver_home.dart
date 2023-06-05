@@ -7,8 +7,10 @@ import 'package:in_driver_app/auth/auth_home.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
+import 'package:in_driver_app/driver%20panel/testscreen2.dart';
 
 import '../main.dart';
+import 'notify_controller.dart';
 
 
 class DriverHome extends StatefulWidget {
@@ -21,6 +23,7 @@ class DriverHome extends StatefulWidget {
 class _DriverHomeState extends State<DriverHome> {
   late FirebaseMessaging _messaging;
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  String uid = "";
 
   void requestPermission()async{
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -49,7 +52,7 @@ class _DriverHomeState extends State<DriverHome> {
             'notification': <String, dynamic>{
               'body': body,
               'title': title,
-              'token':token
+              'token':token,
             },
             'priority': 'high',
             'data': <String, dynamic>{
@@ -73,6 +76,7 @@ class _DriverHomeState extends State<DriverHome> {
     
     AwesomeNotifications().initialize(
   // set the icon to null if you want to use the default app icon
+  //"assets/images/logo.png"
   null,
   [
     NotificationChannel(
@@ -83,7 +87,6 @@ class _DriverHomeState extends State<DriverHome> {
         defaultColor: const Color(0xFF9D50DD),
         ledColor: Colors.white)
   ],
-  // Channel groups are only visual and are not required
   channelGroups: [
     NotificationChannelGroup(
         channelGroupKey: 'basic_channel_group',
@@ -91,9 +94,9 @@ class _DriverHomeState extends State<DriverHome> {
   ],
   debug: true
 );
-  // AwesomeNotifications().setListeners(onActionReceivedMethod:(receivedAction) {
-  //     return NotificationController.onActionReceivedMethod(receivedAction, context, userEM);
-  //   } );
+  AwesomeNotifications().setListeners(onActionReceivedMethod:(receivedAction) {
+      return NotificationController.onActionReceivedMethod(receivedAction, context,);
+    } );
     
     super.initState();
   }
@@ -123,9 +126,15 @@ class _DriverHomeState extends State<DriverHome> {
     });
       }, child: const Text("toooooooken")),
       ElevatedButton(onPressed: (){
-        sendPushMessage("This is body","title","eLb2mwmgTIWm2IU1mfB9eW:APA91bFTrepiW_yhd5VgBrFsmqi1kI4Dy1hbJhfm5vzY7kp61abVci8h8GsYIMv_A-NK9Dn-xTT7-pk1WbqRmT1CxDM-q4kncAff7gfWvKJuRE2D5L8k_yeRUxXHjusR5YMLWwsDlQYi");
-      }, child: const Text("send ride request"))
-      
+        sendPushMessage("A customer is waiting for your response","100","eWEE_ZnFTz6IRzjN3fgjI7:APA91bEDZsvdC-0ldxBvzAJy5s0dfxBO4GsMN2ZqmEKiIlKIOC4nTw3Vgy4fm2TxKicNItDjLtptmSUTSIQXbBIkIpWwYZkBrakjgm9yUjjluGZLV7ApXm-Xd20CXkoW-X2frl16v0gz");
+      }, child: const Text("send ride request")),
+       ElevatedButton(onPressed: (){
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => DriverScreen())) ;
+      }, child: const Text("Driver screen")),
+       ElevatedButton(onPressed: (){
+       uid = FirebaseAuth.instance.currentUser!.uid;
+       print(uid);
+      }, child: const Text("Uid"))
       ]),
     );
   }
