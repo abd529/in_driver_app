@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
+import '../constants.dart';
+
 class RideRequestScreen extends StatefulWidget {
   @override
   _RideRequestScreenState createState() => _RideRequestScreenState();
@@ -20,6 +22,9 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
   List<LatLng> _polylineCoordinates = [];
   Polyline? _polyline;
   DatabaseReference? _rideRequestRef;
+  DatabaseReference? _driverRef;
+  String _driverName = '';
+  String _driverProfilePicture = '';
 
   @override
   void initState() {
@@ -33,6 +38,7 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
     _pickupLocationController.dispose();
     _destinationController.dispose();
     _rideRequestRef?.onValue.listen((event) {});
+    _driverRef?.onValue.listen((event) {});
     super.dispose();
   }
 
@@ -93,6 +99,12 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
                 _showLocation();
               },
               child: Text('Show Location'),
+            ),
+            SizedBox(height: 16.0),
+            Text('Driver Name: $_driverName'),
+            SizedBox(height: 8.0),
+            CircleAvatar(
+              backgroundImage: NetworkImage(_driverProfilePicture),
             ),
           ],
         ),
@@ -225,7 +237,7 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
   void _createPolylines(double startLatitude, double startLongitude,
       double endLatitude, double endLongitude) async {
     PolylineResult result = await _polylinePoints.getRouteBetweenCoordinates(
-      'API_KEY', // Replace with your Google Maps API key
+      map, // Replace with your Google Maps API key
       PointLatLng(startLatitude, startLongitude),
       PointLatLng(endLatitude, endLongitude),
     );
@@ -248,14 +260,31 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
 
   void _listenForRideRequests() {
     _rideRequestRef = _database.child('rideRequests');
-    _rideRequestRef!.onValue.listen((event) {
-      if (event.snapshot.exists) {
+    _rideRequestRef!.onChildAdded.listen((event) {
+      DataSnapshot snapshot = event.snapshot;
+      if (snapshot.value != null) {
         // Retrieve the latest ride request details
-        Object? rideRequestData = event.snapshot.value;
+        String? rideRequestId = snapshot.key;
+        Map<dynamic, dynamic> rideRequestData =
+            snapshot.value as Map<dynamic, dynamic>;
 
         // Perform necessary actions based on the updated ride request details
         // For example, you can update the UI or trigger notifications
         print('New ride request: $rideRequestData');
+
+        // Retrieve driver details from the Firebase Realtime Database
+        _driverRef = _database.child('drivers').child(rideRequestId!);
+        _driverRef!.once().then((snapshot) {
+          DataSnapshot driverSnapshot = snapshot as DataSnapshot;
+          if (driverSnapshot.value != null) {
+            Map<dynamic, dynamic> driverData =
+                driverSnapshot.value as Map<dynamic, dynamic>;
+            // Update the UI with the driver details
+            setState(() {
+              _driverName = driverData['name'];
+            });
+          }
+        });
       }
     });
   }
