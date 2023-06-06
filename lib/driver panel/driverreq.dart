@@ -38,7 +38,7 @@ class _DriverScreenState extends State<DriverScreen> {
         itemCount: _rideRequests.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(_rideRequests[index]["pickup_location"]),
+            title: Text(_rideRequests[index]["pickupLocation"]),
             subtitle: Text(_rideRequests[index]['destination']),
             trailing: ElevatedButton(
               onPressed: () {
@@ -58,9 +58,6 @@ class _DriverScreenState extends State<DriverScreen> {
         // Retrieve the latest ride request details
         Map<dynamic, dynamic> rideRequestData =
             event.snapshot.value as Map<dynamic, dynamic>;
-            
-        // Perform necessary actions based on the ride request details
-        // For example, you can update the UI or trigger notifications
         setState(() {
           print(rideRequestData);
           List newList = rideRequestData.values.toList();
@@ -74,10 +71,10 @@ class _DriverScreenState extends State<DriverScreen> {
   void _acceptRideRequest(int index) {
     // Perform actions to accept the ride request
     // For example, you can update the ride request status in the database
-    String rideRequestId = _rideRequests[index]['rideRequestId'];
-    _database
-        .child('rideRequests/$rideRequestId/status')
-        .set('accepted')
+    String rideRequestId = _rideRequests[index]["rideRequestId"];
+    DatabaseReference nodeRef = _database.child('rideRequests').child(rideRequestId) ;
+    nodeRef
+        .update({"status":"accepted"})
         .then((value) {
       // Ride request accepted
       showDialog(

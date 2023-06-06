@@ -45,10 +45,10 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ride Request'),
+        title: const Text('Ride Request'),
       ),
       body: Container(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Expanded(
@@ -58,7 +58,7 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
                     _mapController = controller;
                   });
                 },
-                initialCameraPosition: CameraPosition(
+                initialCameraPosition: const CameraPosition(
                   target: LatLng(
                       37.7749, -122.4194), // Initial map center coordinates
                   zoom: 13.0, // Initial map zoom level
@@ -69,37 +69,37 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
                 ]),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextFormField(
               controller: _pickupLocationController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Pickup Location',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextFormField(
               controller: _destinationController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Destination',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 _requestRide();
               },
-              child: Text('Request Ride'),
+              child: const Text('Request Ride'),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 _showLocation();
               },
-              child: Text('Show Location'),
+              child: const Text('Show Location'),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text('Driver Name: $_driverName'),
             SizedBox(height: 8.0),
           ],
@@ -127,7 +127,7 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
   void _updateCurrentLocationMarker() {
     if (_currentPosition != null) {
       final marker = Marker(
-        markerId: MarkerId('currentLocation'),
+        markerId: const MarkerId('currentLocation'),
         position:
             LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
       );
@@ -146,7 +146,7 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
 
     if (pickupLocation.isNotEmpty && destination.isNotEmpty) {
       // Store ride request details in Firebase Realtime Database
-      _database.child('rideRequests').push().set({
+      _database.child('rideRequests').child("123").set({
         'pickup_location': pickupLocation,
         'destination': destination,
       }).then((value) {
@@ -155,14 +155,14 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Ride Request'),
-              content: Text('Ride request sent successfully!'),
+              title: const Text('Ride Request'),
+              content: const Text('Ride request sent successfully!'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -174,14 +174,14 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Ride Request'),
-              content: Text('Failed to send ride request. Please try again.'),
+              title: const Text('Ride Request'),
+              content: const Text('Failed to send ride request. Please try again.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -193,14 +193,14 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Ride Request'),
-            content: Text('Please enter both pickup location and destination.'),
+            title: const Text('Ride Request'),
+            content: const Text('Please enter both pickup location and destination.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -246,7 +246,7 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
         }
 
         _polyline = Polyline(
-          polylineId: PolylineId('polyline'),
+          polylineId: const PolylineId('polyline'),
           color: Colors.blue,
           points: _polylineCoordinates,
         );

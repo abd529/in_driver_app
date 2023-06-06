@@ -10,6 +10,7 @@ import 'package:in_driver_app/auth/forgot.dart';
 import 'package:in_driver_app/auth/login.dart';
 import 'package:in_driver_app/firebase_options.dart';
 import 'package:in_driver_app/screens/home.dart';
+import 'package:in_driver_app/screens/live_location.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
 import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
@@ -82,7 +83,7 @@ class MyApp extends StatelessWidget {
             ? FirebaseAuth.instance.currentUser!.uid ==
                     "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"
                 ? AdminPanel()
-                : MyTestMap()
+                : LiveLocation()
             : AuthHome(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),

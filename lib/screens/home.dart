@@ -259,14 +259,14 @@ class _HomePageState extends State<HomePage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Ride Request'),
-              content: Text('Ride request sent successfully!'),
+              title: const Text('Ride Request'),
+              content: const Text('Ride request sent successfully!'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -278,14 +278,14 @@ class _HomePageState extends State<HomePage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Ride Request'),
-              content: Text('Failed to send ride request. Please try again.'),
+              title: const Text('Ride Request'),
+              content: const Text('Failed to send ride request. Please try again.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -297,14 +297,14 @@ class _HomePageState extends State<HomePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Ride Request'),
-            content: Text('Please enter both pickup location and destination.'),
+            title: const Text('Ride Request'),
+            content: const Text('Please enter both pickup location and destination.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -540,7 +540,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   FirebaseAuth.instance.signOut();
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AuthHome(),
+                    builder: (context) => const AuthHome(),
                   ));
                 },
               ),
@@ -561,7 +561,6 @@ class _HomePageState extends State<HomePage> {
               onMapCreated: (GoogleMapController controller) async {
                 _controllerGoogleMap.complete(controller);
                 _newgoogleMapController = controller;
-
                 _secondGoogleMap = controller;
                 locatePosition();
                 setState(() {
@@ -775,6 +774,18 @@ class _HomePageState extends State<HomePage> {
                                               //           "dissssssssssstanceeeeeeeeee ${calculateDistance(pickUp.latitude, pickUp.longitude, dropOff.latitude, dropOff.longitude)}");
                                               //     },
                                               //     child: Text("dis")),
+                                              ElevatedButton(onPressed: ()async{
+                                                GoogleMapController controller = await _controllerGoogleMap.future;
+                                                controller.animateCamera(CameraUpdate.newCameraPosition(
+                                                  const CameraPosition(
+                                                    target: LatLng(
+                                                      38.4237,27.1428
+                                                    ),
+                                                    zoom: 14,
+                                                  ),
+                                                ));
+                                                setState(() {}); 
+                                              }, child: const Text("animate")),
                                               ElevatedButton(
                                                 onPressed: () {
                                                   if (_formKey.currentState!
@@ -826,7 +837,7 @@ class _HomePageState extends State<HomePage> {
                                     elevation: 2,
                                     color: Colors.grey[100],
                                     child: Padding(
-                                      padding: EdgeInsets.all(5.0),
+                                      padding: const EdgeInsets.all(5.0),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
