@@ -24,7 +24,6 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
   DatabaseReference? _rideRequestRef;
   DatabaseReference? _driverRef;
   String _driverName = '';
-  String _driverProfilePicture = '';
 
   @override
   void initState() {
@@ -103,9 +102,6 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
             SizedBox(height: 16.0),
             Text('Driver Name: $_driverName'),
             SizedBox(height: 8.0),
-            CircleAvatar(
-              backgroundImage: NetworkImage(_driverProfilePicture),
-            ),
           ],
         ),
       ),

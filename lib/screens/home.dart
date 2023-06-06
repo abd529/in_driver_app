@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> {
   TextEditingController fareController = TextEditingController();
   final Set<Polyline> _polylines = <Polyline>{};
   int check = 0;
+  final String userId = FirebaseAuth.instance.currentUser!.uid;
   List<PlacesPredictions> placespredictionlist = [];
   List<LatLng> polyLineCordinates = [];
   late PolylinePoints polylinePoints;
@@ -207,7 +208,7 @@ class _HomePageState extends State<HomePage> {
 
   void _listenForRideRequests() {
     _rideRequestRef = _database.child('rideRequests');
-    _rideRequestRef!.onValue.listen((event) {
+    _rideRequestRef!.onChildChanged.listen((event) {
       if (event.snapshot.exists) {
         // Retrieve the latest ride request details
         Object? rideRequestData = event.snapshot.value;
@@ -215,6 +216,23 @@ class _HomePageState extends State<HomePage> {
         // Perform necessary actions based on the updated ride request details
         // For example, you can update the UI or trigger notifications
         print('New ride request: $rideRequestData');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Ride Request'),
+              content: Text('New ride request: $rideRequestData'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       }
     });
   }
@@ -226,12 +244,15 @@ class _HomePageState extends State<HomePage> {
   void _requestRide() {
     String pickupLocation = pickUpController.text;
     String destination = dropOffController.text;
-
+    String id = userId;
+    String status = "pending";
     if (pickupLocation.isNotEmpty && destination.isNotEmpty) {
       // Store ride request details in Firebase Realtime Database
-      _database.child('rideRequests').push().set({
+      _database.child('rideRequests').child(id).set({
         'pickupLocation': pickupLocation,
         'destination': destination,
+        'rideRequestId': id,
+        'status': status
       }).then((value) {
         // Success, ride request details are stored
         showDialog(
@@ -730,7 +751,8 @@ class _HomePageState extends State<HomePage> {
                                             height: 20,
                                           ),
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: [
                                               // ElevatedButton(
                                               //     onPressed: () {
@@ -760,7 +782,7 @@ class _HomePageState extends State<HomePage> {
                                                     setPolylines(
                                                         pickUp, dropOff);
                                                     setState(() {
-                                                        nextCheck = 1;
+                                                      // nextCheck = 1;
                                                     });
                                                   }
                                                 },
@@ -781,12 +803,12 @@ class _HomePageState extends State<HomePage> {
                                                       color: Colors.white),
                                                 ),
                                               ),
-                                              // ElevatedButton(
-                                              //   onPressed: () {
-                                              //     _requestRide();
-                                              //   },
-                                              //   child: Text('RR'),
-                                              // ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  _requestRide();
+                                                },
+                                                child: Text('RR'),
+                                              ),
                                             ],
                                           ),
                                         ],
