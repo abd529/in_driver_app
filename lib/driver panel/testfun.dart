@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 
 class MyTestMap extends StatefulWidget {
   const MyTestMap({super.key});
@@ -22,6 +26,8 @@ class _MyTestMapState extends State<MyTestMap> {
   TextEditingController dropOffController = TextEditingController();
   TextEditingController fareController = TextEditingController();
   final String userId = FirebaseAuth.instance.currentUser!.uid;
+  final Completer<GoogleMapController> _controllerGoogleMap =
+      Completer<GoogleMapController>();
 
   void _requestRide() {
     String pickupLocation = pickUpController.text;
@@ -41,33 +47,32 @@ class _MyTestMapState extends State<MyTestMap> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Ride Request'),
-              content: Text('Ride request sent successfully!'),
+              title: const Text('Ride Request'),
+              content: const Text('Ride request sent successfully!'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
           },
         );
       }).catchError((error) {
-        // Error occurred while storing ride request details
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Ride Request'),
-              content: Text('Failed to send ride request. Please try again.'),
+              title: const Text('Ride Request'),
+              content: const Text('Failed to send ride request. Please try again.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -79,14 +84,14 @@ class _MyTestMapState extends State<MyTestMap> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Ride Request'),
-            content: Text('Please enter both pickup location and destination.'),
+            title: const Text('Ride Request'),
+            content: const Text('Please enter both pickup location and destination.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -95,44 +100,49 @@ class _MyTestMapState extends State<MyTestMap> {
     }
   }
 
+  void animateLocation(double lat, double lng)async{
+      GoogleMapController controller = await _controllerGoogleMap.future;
+        controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+        target: LatLng(
+        lat,lng
+        ),
+        zoom: 14,
+        ),
+      ));
+      setState(() {}); 
+    }
+
   void _listenForRideRequests() {
     _rideRequestRef = _database.child('liveLocation').child("location");
     _rideRequestRef!.onValue.listen((event) {
       if (event.snapshot.exists) {
         // Retrieve the latest ride request details
-        Object? rideRequestData = event.snapshot.value;
         Map<dynamic, dynamic>? ridedata =
             event.snapshot.value as Map<dynamic, dynamic>;
-        print(ridedata);
-        // Perform necessary actions based on the updated ride request details
-        // For example, you can update the UI or trigger notifications
-        // print(' $rideRequestData');
-        // showDialog(
-        //   context: context,
-        //   builder: (BuildContext context) {
-        //     return AlertDialog(
-        //       title: Text('Ride Request'),
-        //       content: Text('New ride request: $rideRequestData'),
-        //       actions: [
-        //         TextButton(
-        //           onPressed: () {
-        //             Navigator.pop(context);
-        //           },
-        //           child: Text('OK'),
-        //         ),
-        //       ],
-        //     );
-        //   },
-        //);
+        print("${ridedata["Latitude"]},${ridedata["Longitude"]}");
+        animateLocation(ridedata["Latitude"],ridedata["Longitude"]);
+       
       }
     });
   }
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [],
+      body: Stack(
+        children: [
+          GoogleMap(
+              initialCameraPosition: _kGooglePlex,
+                onMapCreated: (GoogleMapController controller) async {
+                _controllerGoogleMap.complete(controller);
+              },
+            ),
+        ],
       ),
     );
   }
