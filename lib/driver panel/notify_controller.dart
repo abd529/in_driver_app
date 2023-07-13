@@ -1,5 +1,6 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:in_driver_app/driver%20panel/driverreq.dart';
 import 'package:in_driver_app/driver%20panel/ride_status.dart';
 
 import '../main.dart';
@@ -30,7 +31,7 @@ class NotificationController {
    if(message.buttonKeyPressed.startsWith("accept")){
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => RideStatus(amount:message.title as String)
+            builder: (context) => DriverScreen()
             ));
         print("Accepteddddddddd");
       }else if(message.buttonKeyPressed == "decline"){

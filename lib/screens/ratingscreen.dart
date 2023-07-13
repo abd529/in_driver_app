@@ -7,6 +7,7 @@ import 'package:in_driver_app/screens/ridehistory.dart';
 import '../widgets/myColors.dart';
 
 class RatingScreen extends StatefulWidget {
+  static const routeName = "rating-screen";
   @override
   _RatingScreenState createState() => _RatingScreenState();
 }

@@ -1,12 +1,16 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, unrelated_type_equality_checks, unnecessary_null_comparison, use_build_context_synchronously, avoid_print, cast_from_null_always_fails, unused_field
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
-
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:in_driver_app/Models/addressModel.dart';
 import 'package:in_driver_app/assistants/assistantmethods.dart';
 import 'package:in_driver_app/auth/auth_home.dart';
@@ -15,9 +19,12 @@ import 'package:in_driver_app/models/ride.dart';
 import 'package:in_driver_app/providers/appDataprovider.dart';
 import 'package:in_driver_app/constants.dart';
 import 'package:in_driver_app/screens/paymentmethod.dart';
+import 'package:in_driver_app/screens/ratingscreen.dart';
 import 'package:location/location.dart' hide LocationAccuracy;
 import '../assistants/requestassistant.dart';
 import '../auth/login.dart';
+import '../driver panel/notify_controller.dart';
+import '../main.dart';
 import '../models/placeprediction.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +43,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   LatLng current = const LatLng(0, 0);
+  int bidAmount = 0;
   Address fetchaddress = Address();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController pickUpController = TextEditingController();
@@ -53,8 +61,8 @@ class _HomePageState extends State<HomePage> {
   Set<Polyline> polylineset = {};
   late GoogleMapController _newgoogleMapController;
   Position? currentPosition;
-  late Position pickUp;
-  late Position dropOff;
+  // late Position pickUp;
+  // late Position dropOff;
   var geoLocator = Geolocator();
   double bottomPadding = 0;
   final geolocator =
@@ -107,7 +115,7 @@ class _HomePageState extends State<HomePage> {
     return fare;
   }
 
-  int index = 0;
+  int index = 1;
   final List<Ride> rides = [
     Ride(
         type: "Luxury",
@@ -148,30 +156,30 @@ class _HomePageState extends State<HomePage> {
       Address address = Address();
       if (check == 0) {
         setState(() {
-          pickUp = Position(
-            latitude: res["result"]["geometry"]["location"]["lat"],
-            longitude: res["result"]["geometry"]["location"]["lng"],
-            accuracy: 1.0,
-            altitude: 1.0,
-            heading: 1.0,
-            speed: 50,
-            speedAccuracy: 1.0,
-            timestamp: DateTime.now(),
-          );
+          // pickUp = Position(
+          //   latitude: res["result"]["geometry"]["location"]["lat"],
+          //   longitude: res["result"]["geometry"]["location"]["lng"],
+          //   accuracy: 1.0,
+          //   altitude: 1.0,
+          //   heading: 1.0,
+          //   speed: 50,
+          //   speedAccuracy: 1.0,
+          //   timestamp: DateTime.now(),
+          // );
         });
       }
       if (check == 1) {
         setState(() {
-          dropOff = Position(
-            latitude: res["result"]["geometry"]["location"]["lat"],
-            longitude: res["result"]["geometry"]["location"]["lng"],
-            accuracy: 1.0,
-            altitude: 1.0,
-            heading: 1.0,
-            speed: 50,
-            speedAccuracy: 1.0,
-            timestamp: DateTime.now(),
-          );
+          // dropOff = Position(
+          //   latitude: res["result"]["geometry"]["location"]["lat"],
+          //   longitude: res["result"]["geometry"]["location"]["lng"],
+          //   accuracy: 1.0,
+          //   altitude: 1.0,
+          //   heading: 1.0,
+          //   speed: 50,
+          //   speedAccuracy: 1.0,
+          //   timestamp: DateTime.now(),
+          // );
         });
       }
 
@@ -206,7 +214,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _listenForRideRequests() {
+  void _listenForAcceptedRides() {
     _rideRequestRef = _database.child('rideRequests');
     _rideRequestRef!.onChildChanged.listen((event) {
       if (event.snapshot.exists) {
@@ -220,14 +228,34 @@ class _HomePageState extends State<HomePage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Ride Request'),
-              content: Text('New ride request: $rideRequestData'),
+              content: SizedBox(
+                height: 250,
+                child: Column(
+                  children: [
+                    Icon(Icons.check_circle, color: Theme.of(context).primaryColor, size: 82,),
+                    Text("Booking Successful", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor,),),
+                    const Text("Your ride request has been accepted by a driver, please accept or decline the ride and the rider will pick you up in 5 minutes", textAlign: TextAlign.center,)
+                  ],
+                ),
+              ),
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.of(context).pop();
+                    // setState(() {
+                    //   nextCheck = 3;
+                    // });
                   },
-                  child: Text('OK'),
+                  child: const Text('Decline Offer', style: TextStyle(color: Colors.red)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      nextCheck = 3;
+                    });
+                  },
+                  child: Text('Accept', style: TextStyle(color: Theme.of(context).primaryColor),),
                 ),
               ],
             );
@@ -241,7 +269,7 @@ class _HomePageState extends State<HomePage> {
   Position? _currentPosition;
   DatabaseReference? _rideRequestRef;
 
-  void _requestRide() {
+  void _requestRide(int fare) {
     String pickupLocation = pickUpController.text;
     String destination = dropOffController.text;
     String id = userId;
@@ -251,6 +279,7 @@ class _HomePageState extends State<HomePage> {
       _database.child('rideRequests').child(id).set({
         'pickupLocation': pickupLocation,
         'destination': destination,
+        'fare':fare,
         'rideRequestId': id,
         'status': status
       }).then((value) {
@@ -273,7 +302,6 @@ class _HomePageState extends State<HomePage> {
           },
         );
       }).catchError((error) {
-        // Error occurred while storing ride request details
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -292,6 +320,7 @@ class _HomePageState extends State<HomePage> {
           },
         );
       });
+      
     } else {
       showDialog(
         context: context,
@@ -311,6 +340,7 @@ class _HomePageState extends State<HomePage> {
         },
       );
     }
+    
   }
 
   LatLng currentLatLng = const LatLng(0, 0);
@@ -363,6 +393,59 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void sendPushMessage(String body, String title, String token) async {
+    try {
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAAQdieV_0:APA91bHZqyu50fe_VqgkFnzr2R0aGtaeckWueKLTtzsCTt5mjXWYRigAhDHpMK2VzvA8jDN_R3EKJ7-jwXAyuZensUGhbDS6mVmcC8ZRM-nfKP5sR29xPBZx4tDoR62F3L_FCMjGr0Vo',
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            'notification': <String, dynamic>{
+              'body': body,
+              'title': title,
+              'token': token,
+            },
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'id': '1',
+              'status': 'done'
+            },
+            "to": token,
+          },
+        ),
+      );
+      print('doneeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+    } catch (e) {
+      print("error push notification");
+    }
+  }
+  void requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true);
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
+    print(
+        "permission okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+  }
+
   Set<Marker> mapMarkers = {};
 
   @override
@@ -371,7 +454,33 @@ class _HomePageState extends State<HomePage> {
     polylinePoints = PolylinePoints();
     getCurrentLatLng();
     setCustomMarkerId();
-    _listenForRideRequests();
+    requestPermission();
+    _listenForAcceptedRides();
+    AwesomeNotifications().initialize(
+        null,
+        [
+          NotificationChannel(
+              channelGroupKey: 'basic_channel_group',
+              channelKey: 'basic_channel',
+              channelName: 'Basic notifications',
+              channelDescription: 'Notification channel for basic tests',
+              defaultColor: const Color(0xFF9D50DD),
+              ledColor: Colors.white)
+        ],
+        channelGroups: [
+          NotificationChannelGroup(
+              channelGroupKey: 'basic_channel_group',
+              channelGroupName: 'Basic group')
+        ],
+        debug: true);
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: (receivedAction) {
+      return NotificationController.onActionReceivedMethod(
+        receivedAction,
+        context,
+      );
+    });
+    
   }
 
   @override
@@ -388,6 +497,10 @@ class _HomePageState extends State<HomePage> {
   );
   @override
   Widget build(BuildContext context) {
+     WidgetsBinding.instance.addPostFrameCallback(
+        (_) => FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+              myBackgroundMessageHandler(message);
+            }));
     Set<Marker> mapMarkers = {
       Marker(
           markerId: const MarkerId("current_position"),
@@ -579,8 +692,8 @@ class _HomePageState extends State<HomePage> {
                     : sizeCheck == 2
                         ? 500
                         : sizeCheck == 0
-                            ? 380
-                            : 380,
+                            ? 420
+                            : 420,
                 decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -629,7 +742,7 @@ class _HomePageState extends State<HomePage> {
                                   sizeCheck = 1;
                                 },
                                 decoration:
-                                    textFeildDecore("Enter Pickup Location"),
+                                    textFeildDecore("Pickup"),
                               ),
                               const SizedBox(
                                 height: 5,
@@ -647,7 +760,7 @@ class _HomePageState extends State<HomePage> {
                                   sizeCheck = 2;
                                 },
                                 decoration:
-                                    textFeildDecore("Enter Drop off Location"),
+                                    textFeildDecore("Drop off"),
                               ),
                               const SizedBox(
                                 height: 5,
@@ -666,7 +779,7 @@ class _HomePageState extends State<HomePage> {
                                 },
                                 keyboardType: TextInputType.number,
                                 decoration:
-                                    textFeildDecore("Enter Fare in PKR"),
+                                    textFeildDecore("Fare"),
                               ),
                               (placespredictionlist.isNotEmpty)
                                   ? Padding(
@@ -687,11 +800,11 @@ class _HomePageState extends State<HomePage> {
                                                     pickUpController.text =
                                                         fetchaddress.placeName
                                                             .toString();
-                                                    pickUp = await Geolocator
-                                                        .getCurrentPosition(
-                                                            desiredAccuracy:
-                                                                LocationAccuracy
-                                                                    .high);
+                                                    // pickUp = await Geolocator
+                                                    //     .getCurrentPosition(
+                                                    //         desiredAccuracy:
+                                                    //             LocationAccuracy
+                                                    //                 .high);
                                                     setState(() {
                                                       placespredictionlist = [];
                                                     });
@@ -774,26 +887,27 @@ class _HomePageState extends State<HomePage> {
                                               //           "dissssssssssstanceeeeeeeeee ${calculateDistance(pickUp.latitude, pickUp.longitude, dropOff.latitude, dropOff.longitude)}");
                                               //     },
                                               //     child: Text("dis")),
-                                              ElevatedButton(onPressed: ()async{
-                                                GoogleMapController controller = await _controllerGoogleMap.future;
-                                                controller.animateCamera(CameraUpdate.newCameraPosition(
-                                                  const CameraPosition(
-                                                    target: LatLng(
-                                                      38.4237,27.1428
-                                                    ),
-                                                    zoom: 14,
-                                                  ),
-                                                ));
-                                                setState(() {}); 
-                                              }, child: const Text("animate")),
+                                              // ElevatedButton(onPressed: ()async{
+                                              //   GoogleMapController controller = await _controllerGoogleMap.future;
+                                              //   controller.animateCamera(CameraUpdate.newCameraPosition(
+                                              //     const CameraPosition(
+                                              //       target: LatLng(
+                                              //         38.4237,27.1428
+                                              //       ),
+                                              //       zoom: 14,
+                                              //     ),
+                                              //   ));
+                                              //   setState(() {}); 
+                                              // }, child: const Text("animate")),
                                               ElevatedButton(
                                                 onPressed: () {
                                                   if (_formKey.currentState!
                                                       .validate()) {
-                                                    setPolylines(
-                                                        pickUp, dropOff);
+                                                    // setPolylines(
+                                                    //     pickUp, dropOff);
                                                     setState(() {
-                                                      // nextCheck = 1;
+                                                       nextCheck = 1;
+                                                       bidAmount = int.parse(fareController.text);
                                                     });
                                                   }
                                                 },
@@ -814,12 +928,12 @@ class _HomePageState extends State<HomePage> {
                                                       color: Colors.white),
                                                 ),
                                               ),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  _requestRide();
-                                                },
-                                                child: Text('RR'),
-                                              ),
+                                              // ElevatedButton(
+                                              //   onPressed: () {
+                                              //     _requestRide();
+                                              //   },
+                                              //   child: Text('RR'),
+                                              // ),
                                             ],
                                           ),
                                         ],
@@ -845,23 +959,23 @@ class _HomePageState extends State<HomePage> {
                                           InkWell(
                                               onTap: () {
                                                 setState(() {
-                                                  index = 0;
-                                                });
-                                              },
-                                              child: const ImageIcon(
-                                                AssetImage(
-                                                    "assets/images/luxury.png"),
-                                                size: 40,
-                                              )),
-                                          InkWell(
-                                              onTap: () {
-                                                setState(() {
                                                   index = 1;
                                                 });
                                               },
                                               child: const ImageIcon(
                                                 AssetImage(
                                                     "assets/images/car-icon.png"),
+                                                size: 40,
+                                              )),
+                                              InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  index = 0;
+                                                });
+                                              },
+                                              child: const ImageIcon(
+                                                AssetImage(
+                                                    "assets/images/luxury.png"),
                                                 size: 40,
                                               )),
                                           InkWell(
@@ -901,11 +1015,10 @@ class _HomePageState extends State<HomePage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Radio(
-                                          value: true,
-                                          activeColor: Colors.grey[800],
-                                          groupValue: true,
-                                          onChanged: (boolean) {}),
+                                      const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Icon(Icons.location_on, color: Colors.white,)
+                                      ),
                                       Container(
                                           height: 50,
                                           child: Text(
@@ -927,11 +1040,10 @@ class _HomePageState extends State<HomePage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Radio(
-                                          value: true,
-                                          activeColor: Colors.grey[800],
-                                          groupValue: true,
-                                          onChanged: (boolean) {}),
+                                      const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Icon(Icons.location_on, color: Colors.white,),
+                                      ),
                                       Container(
                                           height: 50,
                                           child: Text(
@@ -951,17 +1063,29 @@ class _HomePageState extends State<HomePage> {
                                       color: Theme.of(context).primaryColor,
                                       borderRadius: BorderRadius.circular(5)),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
                                       Text(
-                                        "Your proposed budget: PKR ${fareController.text}",
+                                        "Your proposed bid: PKR ${fareController.text}",
                                         style: const TextStyle(
                                           color: Colors.white,
                                         ),
                                       ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5,),
+                                Container(
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor,
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.chat, color: Colors.white,),
+                                      SizedBox(width: 5),
+                                      Text("Any Comments", style: TextStyle(color: Colors.white, fontSize: 15),), 
                                     ],
                                   ),
                                 ),
@@ -973,6 +1097,9 @@ class _HomePageState extends State<HomePage> {
                                     onPressed: () {
                                       setState(() {
                                         nextCheck = 2;
+                                        _requestRide( bidAmount );
+                                        
+
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -987,29 +1114,270 @@ class _HomePageState extends State<HomePage> {
                                       style: TextStyle(color: Colors.white),
                                     ))
                               ],
-                            )
-                          : Column(children: [
-                              const Text("All Rides near you"),
-                              Container(
-                                height: 300,
-                                child: ListView.builder(
-                                  itemCount: rides.length,
-                                  itemBuilder: (context, index) {
-                                    Ride ride = rides[index];
-                                    return Card(
-                                      elevation: 3,
-                                      child: ListTile(
-                                        leading:
-                                            ImageIcon(AssetImage(ride.imgUrl)),
-                                        title: Text(ride.type),
-                                        subtitle: Text(ride.distance),
-                                        trailing: Text("PKR ${ride.money}"),
-                                      ),
-                                    );
+                            ):
+                          nextCheck == 2? Column(children: [
+                              const Text("All Rides near you are infromed about your ride request"),
+                              SizedBox(
+              //height: 280,
+              child: Container(
+                width: double.infinity,
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text(
+                      "Negotiate",
+                      style: TextStyle(fontSize: 20, color: Colors.grey),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(45))),
+                          onPressed: () {
+                            //farenegpminus();
+                            setState(() {
+                              bidAmount = bidAmount-5; 
+                              print(bidAmount);
+                            });
+                          },
+                          child: const Text(
+                            "-5",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            const Text(
+                              "Current Bid",
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.black),
+                            ),
+                            Text(
+                              "\$$bidAmount",
+                              style:
+                                  const TextStyle(fontSize: 20, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(45))),
+                            onPressed: () {
+                              //farenegplus();
+                              setState(() {
+                                bidAmount = bidAmount+5; 
+                                print(bidAmount);
+                              });
+                            },
+                            child: const Text(
+                              "+5",
+                              style: TextStyle(color: Colors.white),
+                            ))
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    SizedBox(
+                      height: 50,
+                      width: 240,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(45))),
+                          onPressed: () {
+                            _requestRide(bidAmount);
+                            sendPushMessage(
+                      "A customer is waiting for your response",
+                      "100",
+                      "eWEE_ZnFTz6IRzjN3fgjI7:APA91bEDZsvdC-0ldxBvzAJy5s0dfxBO4GsMN2ZqmEKiIlKIOC4nTw3Vgy4fm2TxKicNItDjLtptmSUTSIQXbBIkIpWwYZkBrakjgm9yUjjluGZLV7ApXm-Xd20CXkoW-X2frl16v0gz");
+                            
+                          },
+                          child: const Text(
+                            "Request Again",
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          )),
+                    ),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    // SizedBox(
+                    //   height: 50,
+                    //   width: 240,
+                    //   child: ElevatedButton(
+                    //       style: ElevatedButton.styleFrom(
+                    //           shape: RoundedRectangleBorder(
+                    //               borderRadius: BorderRadius.circular(45))),
+                    //       onPressed: () {
+                    //         showDialog(
+                    //           context: context,
+                    //           builder: (BuildContext context) {
+                    //             return AlertDialog(
+                    //               content: Container(
+                    //                 decoration: BoxDecoration(
+                    //                     borderRadius:
+                    //                         BorderRadius.circular(50)),
+                    //                 height: 300,
+                    //                 child: Column(
+                    //                   mainAxisAlignment:
+                    //                       MainAxisAlignment.center,
+                    //                   crossAxisAlignment:
+                    //                       CrossAxisAlignment.center,
+                    //                   children: [
+                    //                     Icon(
+                    //                       Icons.remove_done_sharp,
+                    //                       color: Colors.red,
+                    //                       size: 100,
+                    //                     ),
+                    //                     SizedBox(
+                    //                       height: 30,
+                    //                     ),
+                    //                     Text(
+                    //                       'Booking Cancelled',
+                    //                       style: TextStyle(
+                    //                           fontSize: 20,
+                    //                           fontWeight: FontWeight.bold),
+                    //                     ),
+                    //                     SizedBox(
+                    //                       height: 10,
+                    //                     ),
+                    //                     Text(
+                    //                       'Your booking has been  successfully cancelled.',
+                    //                       textAlign: TextAlign.center,
+                    //                       style: TextStyle(
+                    //                           fontSize: 12,
+                    //                           fontWeight: FontWeight.normal),
+                    //                     ),
+                    //                   ],
+                    //                 ),
+                    //               ),
+                    //               actions: [
+                    //                 Row(
+                    //                   mainAxisAlignment:
+                    //                       MainAxisAlignment.spaceBetween,
+                    //                   children: [
+                    //                     MaterialButton(
+                    //                       child: Text('Cancel'),
+                    //                       onPressed: () {
+                    //                         Navigator.of(context).pop();
+                    //                       },
+                    //                     ),
+                    //                     MaterialButton(
+                    //                       child: Text(
+                    //                         'Done',
+                    //                         style:
+                    //                             TextStyle(color: Colors.green),
+                    //                       ),
+                    //                       onPressed: () {},
+                    //                     ),
+                    //                   ],
+                    //                 ),
+                    //               ],
+                    //             );
+                    //           },
+                    //         );
+                    //       },
+                    //       child: Text(
+                    //         "Decline",
+                    //         style: TextStyle(color: Colors.white, fontSize: 20),
+                    //       )),
+                    // ),
+                  ],
+                ),
+              ),
+            )
+                            ]):Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const CircleAvatar(),
+                                    const SizedBox(width: 20,),
+                                    Column(
+                                    children: [
+                                      const Text("Rider Name"),
+                                      Row(
+                                        children: [
+                                          RatingBar.builder(
+                                  initialRating: 3,
+                                  minRating: 1,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: true,
+                                  itemCount: 5,
+                                  itemSize: 10,
+                                  unratedColor: Colors.grey[300],
+                                  itemBuilder: (context, _) => const Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                  ),
+                                  onRatingUpdate: (rating) {
+                                    setState(() {
+                                    //  _rating = rating;
+                                    });
                                   },
                                 ),
+                                const SizedBox(width:5),
+                                const Text("3.0")
+                                        ],
+                                      ), 
+                                    ],
+                                  )
+                                    ],
+                                  ),
+                                  CircleAvatar(
+                                    child: IconButton(onPressed: (){}, icon: const Icon(Icons.call)),
+                                  ),
+                                ],
                               ),
-                            ]),
+                              const SizedBox(height: 10,),
+                              const Card(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                  ImageIcon(AssetImage("assets/images/car-icon.png"), size: 40,),
+                                  Column(
+                                    children: [
+                                      Text("Distance"),
+                                      Text("0.2km")
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text("Time"),
+                                      Text("2 min")
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text("Fare"),
+                                      Text("\$568")
+                                    ],
+                                  ),
+                                  ],
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: (){
+                                  Navigator.of(context).pushNamed(RatingScreen.routeName);
+                                },
+                                style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
+                          shape: RoundedRectangleBorder( //to set border radius to button
+                    borderRadius: BorderRadius.circular(50)
+                              ),
+                      ), 
+                                child: const Text("Let's Go", style: TextStyle(color: Colors.white)),
+                                )
+                            ],)
                 ),
               ),
             )
@@ -1021,27 +1389,27 @@ class _HomePageState extends State<HomePage> {
     return InputDecoration(
       contentPadding:
           const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        borderSide: const BorderSide(
-          color: Colors.grey,
-          width: 1.0,
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        borderSide: const BorderSide(
-          color: Colors.grey,
-          width: 1.0,
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        borderSide: const BorderSide(
-          color: Colors.blue,
-          width: 1.5,
-        ),
-      ),
+      // border: OutlineInputBorder(
+      //   borderRadius: BorderRadius.circular(8.0),
+      //   borderSide: const BorderSide(
+      //     color: Colors.grey,
+      //     width: 1.0,
+      //   ),
+      // ),
+      // enabledBorder: OutlineInputBorder(
+      //   borderRadius: BorderRadius.circular(8.0),
+      //   borderSide: const BorderSide(
+      //     color: Colors.grey,
+      //     width: 1.0,
+      //   ),
+      // ),
+      // focusedBorder: OutlineInputBorder(
+      //   borderRadius: BorderRadius.circular(8.0),
+      //   borderSide: const BorderSide(
+      //     color: Colors.blue,
+      //     width: 1.5,
+      //   ),
+      // ),
       hintText: hint,
     );
   }

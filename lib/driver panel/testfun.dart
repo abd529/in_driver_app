@@ -137,6 +137,7 @@ class _MyTestMapState extends State<MyTestMap> {
       body: Stack(
         children: [
           GoogleMap(
+            myLocationButtonEnabled: true,
               initialCameraPosition: _kGooglePlex,
                 onMapCreated: (GoogleMapController controller) async {
                 _controllerGoogleMap.complete(controller);
