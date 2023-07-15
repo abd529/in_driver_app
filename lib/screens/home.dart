@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> {
       address.longitude = res["result"]["geometry"]["location"]["lng"];
       Provider.of<AppData>(context, listen: false)
           .updatedropofflocation(address as Address);
-      print("This is a dropofflocation::");
+      print("This is a dropofflocation:: $address");
       return address;
     }
     return null;
