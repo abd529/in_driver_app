@@ -83,8 +83,8 @@ class MyApp extends StatelessWidget {
         home: FirebaseAuth.instance.currentUser != null
             ? FirebaseAuth.instance.currentUser!.uid ==
                     "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"
-                ? AdminPanel()
-                : HomePage()
+                ? LiveLocation()
+                : LiveLocation()
             : MyTestMap(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),

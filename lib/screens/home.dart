@@ -232,9 +232,23 @@ class _HomePageState extends State<HomePage> {
                 height: 250,
                 child: Column(
                   children: [
-                    Icon(Icons.check_circle, color: Theme.of(context).primaryColor, size: 82,),
-                    Text("Booking Successful", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor,),),
-                    const Text("Your ride request has been accepted by a driver, please accept or decline the ride and the rider will pick you up in 5 minutes", textAlign: TextAlign.center,)
+                    Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).primaryColor,
+                      size: 82,
+                    ),
+                    Text(
+                      "Booking Successful",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    const Text(
+                      "Your ride request has been accepted by a driver, please accept or decline the ride and the rider will pick you up in 5 minutes",
+                      textAlign: TextAlign.center,
+                    )
                   ],
                 ),
               ),
@@ -246,7 +260,8 @@ class _HomePageState extends State<HomePage> {
                     //   nextCheck = 3;
                     // });
                   },
-                  child: const Text('Decline Offer', style: TextStyle(color: Colors.red)),
+                  child: const Text('Decline Offer',
+                      style: TextStyle(color: Colors.red)),
                 ),
                 TextButton(
                   onPressed: () {
@@ -255,7 +270,10 @@ class _HomePageState extends State<HomePage> {
                       nextCheck = 3;
                     });
                   },
-                  child: Text('Accept', style: TextStyle(color: Theme.of(context).primaryColor),),
+                  child: Text(
+                    'Accept',
+                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  ),
                 ),
               ],
             );
@@ -279,7 +297,7 @@ class _HomePageState extends State<HomePage> {
       _database.child('rideRequests').child(id).set({
         'pickupLocation': pickupLocation,
         'destination': destination,
-        'fare':fare,
+        'fare': fare,
         'rideRequestId': id,
         'status': status
       }).then((value) {
@@ -307,7 +325,8 @@ class _HomePageState extends State<HomePage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Ride Request'),
-              content: const Text('Failed to send ride request. Please try again.'),
+              content:
+                  const Text('Failed to send ride request. Please try again.'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -320,14 +339,14 @@ class _HomePageState extends State<HomePage> {
           },
         );
       });
-      
     } else {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Ride Request'),
-            content: const Text('Please enter both pickup location and destination.'),
+            content: const Text(
+                'Please enter both pickup location and destination.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -340,7 +359,6 @@ class _HomePageState extends State<HomePage> {
         },
       );
     }
-    
   }
 
   LatLng currentLatLng = const LatLng(0, 0);
@@ -424,6 +442,7 @@ class _HomePageState extends State<HomePage> {
       print("error push notification");
     }
   }
+
   void requestPermission() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     NotificationSettings settings = await messaging.requestPermission(
@@ -480,7 +499,6 @@ class _HomePageState extends State<HomePage> {
         context,
       );
     });
-    
   }
 
   @override
@@ -497,7 +515,7 @@ class _HomePageState extends State<HomePage> {
   );
   @override
   Widget build(BuildContext context) {
-     WidgetsBinding.instance.addPostFrameCallback(
+    WidgetsBinding.instance.addPostFrameCallback(
         (_) => FirebaseMessaging.onMessage.listen((RemoteMessage message) {
               myBackgroundMessageHandler(message);
             }));
@@ -707,678 +725,748 @@ class _HomePageState extends State<HomePage> {
                           offset: Offset(0.7, 0.7))
                     ]),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                  child: nextCheck == 0
-                      ? Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 6.0,
-                              ),
-                              const Text(
-                                "Hi,there",
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              const Text(
-                                "Where to?",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              const SizedBox(
-                                height: 20.0,
-                              ),
-                              TextFormField(
-                                controller: pickUpController,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return "pickup location is required";
-                                  }
-                                },
-                                onChanged: (val) {
-                                  findplaceName(val);
-                                  check = 0;
-                                  sizeCheck = 1;
-                                },
-                                decoration:
-                                    textFeildDecore("Pickup"),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              TextFormField(
-                                controller: dropOffController,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return "drop off location is required";
-                                  }
-                                },
-                                onChanged: (val) {
-                                  findplaceName(val);
-                                  check = 1;
-                                  sizeCheck = 2;
-                                },
-                                decoration:
-                                    textFeildDecore("Drop off"),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              TextFormField(
-                                controller: fareController,
-                                onChanged: (val) {
-                                  setState(() {
-                                    sizeCheck = 0;
-                                  });
-                                },
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return "fare is required";
-                                  }
-                                },
-                                keyboardType: TextInputType.number,
-                                decoration:
-                                    textFeildDecore("Fare"),
-                              ),
-                              (placespredictionlist.isNotEmpty)
-                                  ? Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 8),
-                                      child: Column(
-                                        children: [
-                                          check == 0
-                                              ? ListTile(
-                                                  leading: const Icon(
-                                                    Icons
-                                                        .location_searching_rounded,
-                                                    color: Colors.green,
-                                                  ),
-                                                  title: const Text(
-                                                      "Get your current location"),
-                                                  onTap: () async {
-                                                    pickUpController.text =
-                                                        fetchaddress.placeName
-                                                            .toString();
-                                                    // pickUp = await Geolocator
-                                                    //     .getCurrentPosition(
-                                                    //         desiredAccuracy:
-                                                    //             LocationAccuracy
-                                                    //                 .high);
-                                                    setState(() {
-                                                      placespredictionlist = [];
-                                                    });
-                                                  },
-                                                )
-                                              : const SizedBox(),
-                                          SizedBox(
-                                            height: 180,
-                                            child: ListView.builder(
-                                              scrollDirection: Axis.vertical,
-                                              itemBuilder: (context, index) {
-                                                PlacesPredictions place =
-                                                    placespredictionlist[index];
-                                                return ListTile(
-                                                  leading: const Icon(Icons
-                                                      .location_on_outlined),
-                                                  title: Text(place.main_text
-                                                      .toString()),
-                                                  onTap: () async {
-                                                    Address? add =
-                                                        await getPlacesDetails(
-                                                            place.place_id
-                                                                .toString(),
-                                                            check,
-                                                            context);
-                                                    if (check == 0) {
-                                                      pickUpController.text =
-                                                          add!.placeName
-                                                              .toString();
-                                                    } else if (check == 1) {
-                                                      dropOffController.text =
-                                                          add!.placeName
-                                                              .toString();
-                                                    }
-                                                    setState(() {
-                                                      placespredictionlist = [];
-                                                    });
-                                                  },
-                                                );
-                                              },
-                                              itemCount:
-                                                  placespredictionlist.length,
-                                              shrinkWrap: true,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : SizedBox(
-                                      width: double.infinity,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const SizedBox(
-                                            height: 20,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              // ElevatedButton(
-                                              //     onPressed: () {
-                                              //       double distance =
-                                              //           calculateDistance(
-                                              //               pickUp.latitude,
-                                              //               pickUp.longitude,
-                                              //               dropOff.latitude,
-                                              //               dropOff.longitude);
-
-                                              //       double fare =
-                                              //           calculateFare(distance);
-
-                                              //       print("fare ${fare}");
-                                              //     },
-                                              //     child: Text("fare")),
-                                              // ElevatedButton(
-                                              //     onPressed: () {
-                                              //       print(
-                                              //           "dissssssssssstanceeeeeeeeee ${calculateDistance(pickUp.latitude, pickUp.longitude, dropOff.latitude, dropOff.longitude)}");
-                                              //     },
-                                              //     child: Text("dis")),
-                                              // ElevatedButton(onPressed: ()async{
-                                              //   GoogleMapController controller = await _controllerGoogleMap.future;
-                                              //   controller.animateCamera(CameraUpdate.newCameraPosition(
-                                              //     const CameraPosition(
-                                              //       target: LatLng(
-                                              //         38.4237,27.1428
-                                              //       ),
-                                              //       zoom: 14,
-                                              //     ),
-                                              //   ));
-                                              //   setState(() {}); 
-                                              // }, child: const Text("animate")),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  if (_formKey.currentState!
-                                                      .validate()) {
-                                                    // setPolylines(
-                                                    //     pickUp, dropOff);
-                                                    setState(() {
-                                                       nextCheck = 1;
-                                                       bidAmount = int.parse(fareController.text);
-                                                    });
-                                                  }
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                    padding: const EdgeInsets
-                                                            .fromLTRB(
-                                                        60, 20, 60, 20),
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            //to set border radius to button
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        50))),
-                                                child: const Text(
-                                                  "Find Route",
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                              // ElevatedButton(
-                                              //   onPressed: () {
-                                              //     _requestRide();
-                                              //   },
-                                              //   child: Text('RR'),
-                                              // ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                            ],
-                          ),
-                        )
-                      : nextCheck == 1
-                          ? Column(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 18),
+                    child: nextCheck == 0
+                        ? Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(
-                                  height: 50,
-                                  child: Card(
-                                    elevation: 2,
-                                    color: Colors.grey[100],
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  index = 1;
-                                                });
-                                              },
-                                              child: const ImageIcon(
-                                                AssetImage(
-                                                    "assets/images/car-icon.png"),
-                                                size: 40,
-                                              )),
-                                              InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  index = 0;
-                                                });
-                                              },
-                                              child: const ImageIcon(
-                                                AssetImage(
-                                                    "assets/images/luxury.png"),
-                                                size: 40,
-                                              )),
-                                          InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  index = 2;
-                                                });
-                                              },
-                                              child: const ImageIcon(
-                                                AssetImage(
-                                                    "assets/images/bike.png"),
-                                                size: 40,
-                                              )),
-                                          InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  index = 3;
-                                                });
-                                              },
-                                              child: const ImageIcon(
-                                                AssetImage(
-                                                    "assets/images/taxi.png"),
-                                                size: 40,
-                                              )),
-                                        ],
+                                const SizedBox(
+                                  height: 6.0,
+                                ),
+                                const Text(
+                                  "Hi,there",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                const Text(
+                                  "Where to?",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                const SizedBox(
+                                  height: 20.0,
+                                ),
+                                TextFormField(
+                                  controller: pickUpController,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "pickup location is required";
+                                    }
+                                  },
+                                  onChanged: (val) {
+                                    findplaceName(val);
+                                    check = 0;
+                                    sizeCheck = 1;
+                                  },
+                                  decoration: textFeildDecore("Pickup"),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: dropOffController,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "drop off location is required";
+                                    }
+                                  },
+                                  onChanged: (val) {
+                                    findplaceName(val);
+                                    check = 1;
+                                    sizeCheck = 2;
+                                  },
+                                  decoration: textFeildDecore("Drop off"),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: fareController,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      sizeCheck = 0;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "fare is required";
+                                    }
+                                  },
+                                  keyboardType: TextInputType.number,
+                                  decoration: textFeildDecore("Fare"),
+                                ),
+                                (placespredictionlist.isNotEmpty)
+                                    ? Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 8),
+                                        child: Column(
+                                          children: [
+                                            check == 0
+                                                ? ListTile(
+                                                    leading: const Icon(
+                                                      Icons
+                                                          .location_searching_rounded,
+                                                      color: Colors.green,
+                                                    ),
+                                                    title: const Text(
+                                                        "Get your current location"),
+                                                    onTap: () async {
+                                                      pickUpController.text =
+                                                          fetchaddress.placeName
+                                                              .toString();
+                                                      // pickUp = await Geolocator
+                                                      //     .getCurrentPosition(
+                                                      //         desiredAccuracy:
+                                                      //             LocationAccuracy
+                                                      //                 .high);
+                                                      setState(() {
+                                                        placespredictionlist =
+                                                            [];
+                                                      });
+                                                    },
+                                                  )
+                                                : const SizedBox(),
+                                            SizedBox(
+                                              height: 180,
+                                              child: ListView.builder(
+                                                scrollDirection: Axis.vertical,
+                                                itemBuilder: (context, index) {
+                                                  PlacesPredictions place =
+                                                      placespredictionlist[
+                                                          index];
+                                                  return ListTile(
+                                                    leading: const Icon(Icons
+                                                        .location_on_outlined),
+                                                    title: Text(place.main_text
+                                                        .toString()),
+                                                    onTap: () async {
+                                                      Address? add =
+                                                          await getPlacesDetails(
+                                                              place.place_id
+                                                                  .toString(),
+                                                              check,
+                                                              context);
+                                                      if (check == 0) {
+                                                        pickUpController.text =
+                                                            add!.placeName
+                                                                .toString();
+                                                      } else if (check == 1) {
+                                                        dropOffController.text =
+                                                            add!.placeName
+                                                                .toString();
+                                                      }
+                                                      setState(() {
+                                                        placespredictionlist =
+                                                            [];
+                                                      });
+                                                    },
+                                                  );
+                                                },
+                                                itemCount:
+                                                    placespredictionlist.length,
+                                                shrinkWrap: true,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        width: double.infinity,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                // ElevatedButton(
+                                                //     onPressed: () {
+                                                //       double distance =
+                                                //           calculateDistance(
+                                                //               pickUp.latitude,
+                                                //               pickUp.longitude,
+                                                //               dropOff.latitude,
+                                                //               dropOff.longitude);
+
+                                                //       double fare =
+                                                //           calculateFare(distance);
+
+                                                //       print("fare ${fare}");
+                                                //     },
+                                                //     child: Text("fare")),
+                                                // ElevatedButton(
+                                                //     onPressed: () {
+                                                //       print(
+                                                //           "dissssssssssstanceeeeeeeeee ${calculateDistance(pickUp.latitude, pickUp.longitude, dropOff.latitude, dropOff.longitude)}");
+                                                //     },
+                                                //     child: Text("dis")),
+                                                // ElevatedButton(onPressed: ()async{
+                                                //   GoogleMapController controller = await _controllerGoogleMap.future;
+                                                //   controller.animateCamera(CameraUpdate.newCameraPosition(
+                                                //     const CameraPosition(
+                                                //       target: LatLng(
+                                                //         38.4237,27.1428
+                                                //       ),
+                                                //       zoom: 14,
+                                                //     ),
+                                                //   ));
+                                                //   setState(() {});
+                                                // }, child: const Text("animate")),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    if (_formKey.currentState!
+                                                        .validate()) {
+                                                      // setPolylines(
+                                                      //     pickUp, dropOff);
+                                                      setState(() {
+                                                        nextCheck = 1;
+                                                        bidAmount = int.parse(
+                                                            fareController
+                                                                .text);
+                                                      });
+                                                    }
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  60,
+                                                                  20,
+                                                                  60,
+                                                                  20),
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                                  //to set border radius to button
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              50))),
+                                                  child: const Text(
+                                                    "Find Route",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                ),
+                                                // ElevatedButton(
+                                                //   onPressed: () {
+                                                //     _requestRide();
+                                                //   },
+                                                //   child: Text('RR'),
+                                                // ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                              ],
+                            ),
+                          )
+                        : nextCheck == 1
+                            ? Column(
+                                children: [
+                                  SizedBox(
+                                    height: 50,
+                                    child: Card(
+                                      elevation: 2,
+                                      color: Colors.grey[100],
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    index = 1;
+                                                  });
+                                                },
+                                                child: const ImageIcon(
+                                                  AssetImage(
+                                                      "assets/images/car-icon.png"),
+                                                  size: 40,
+                                                )),
+                                            InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    index = 0;
+                                                  });
+                                                },
+                                                child: const ImageIcon(
+                                                  AssetImage(
+                                                      "assets/images/luxury.png"),
+                                                  size: 40,
+                                                )),
+                                            InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    index = 2;
+                                                  });
+                                                },
+                                                child: const ImageIcon(
+                                                  AssetImage(
+                                                      "assets/images/bike.png"),
+                                                  size: 40,
+                                                )),
+                                            InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    index = 3;
+                                                  });
+                                                },
+                                                child: const ImageIcon(
+                                                  AssetImage(
+                                                      "assets/images/taxi.png"),
+                                                  size: 40,
+                                                )),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: Theme.of(context).primaryColor,
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Icon(Icons.location_on, color: Colors.white,)
-                                      ),
-                                      Container(
-                                          height: 50,
-                                          child: Text(
-                                            "Pickup Location:\n${pickUpController.text}",
-                                            style: const TextStyle(
-                                                color: Colors.white),
-                                            softWrap: true,
-                                          )),
-                                    ],
+                                  const SizedBox(
+                                    height: 10,
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: Theme.of(context).primaryColor,
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Icon(Icons.location_on, color: Colors.white,),
-                                      ),
-                                      Container(
-                                          height: 50,
-                                          child: Text(
-                                            "Destination Location: \n${dropOffController.text}",
-                                            style: const TextStyle(
-                                                color: Colors.white),
-                                          )),
-                                    ],
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius: BorderRadius.circular(5)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.location_on,
+                                              color: Colors.white,
+                                            )),
+                                        Container(
+                                            height: 50,
+                                            child: Text(
+                                              "Pickup Location:\n${pickUpController.text}",
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                              softWrap: true,
+                                            )),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Container(
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                      color: Theme.of(context).primaryColor,
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Your proposed bid: PKR ${fareController.text}",
-                                        style: const TextStyle(
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius: BorderRadius.circular(5)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Icon(
+                                            Icons.location_on,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Container(
+                                            height: 50,
+                                            child: Text(
+                                              "Destination Location: \n${dropOffController.text}",
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius: BorderRadius.circular(5)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Your proposed bid: PKR ${fareController.text}",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius: BorderRadius.circular(5)),
+                                    child: const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.chat,
                                           color: Colors.white,
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(width: 5),
+                                        Text(
+                                          "Any Comments",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 5,),
-                                Container(
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                      color: Theme.of(context).primaryColor,
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.chat, color: Colors.white,),
-                                      SizedBox(width: 5),
-                                      Text("Any Comments", style: TextStyle(color: Colors.white, fontSize: 15),), 
-                                    ],
+                                  Text("Selected Vehical: ${vehicals[index]}"),
+                                  const SizedBox(
+                                    height: 20,
                                   ),
-                                ),
-                                Text("Selected Vehical: ${vehicals[index]}"),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        nextCheck = 2;
-                                        _requestRide( bidAmount );
-                                        
-
-                                      });
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            100, 20, 100, 20),
-                                        shape: RoundedRectangleBorder(
-                                            //to set border radius to button
-                                            borderRadius:
-                                                BorderRadius.circular(50))),
-                                    child: const Text(
-                                      "Find Riders",
-                                      style: TextStyle(color: Colors.white),
-                                    ))
-                              ],
-                            ):
-                          nextCheck == 2? Column(children: [
-                              const Text("All Rides near you are infromed about your ride request"),
-                              SizedBox(
-              //height: 280,
-              child: Container(
-                width: double.infinity,
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      "Negotiate",
-                      style: TextStyle(fontSize: 20, color: Colors.grey),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(45))),
-                          onPressed: () {
-                            //farenegpminus();
-                            setState(() {
-                              bidAmount = bidAmount-5; 
-                              print(bidAmount);
-                            });
-                          },
-                          child: const Text(
-                            "-5",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        Column(
-                          children: [
-                            const Text(
-                              "Current Bid",
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.black),
-                            ),
-                            Text(
-                              "\$$bidAmount",
-                              style:
-                                  const TextStyle(fontSize: 20, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(45))),
-                            onPressed: () {
-                              //farenegplus();
-                              setState(() {
-                                bidAmount = bidAmount+5; 
-                                print(bidAmount);
-                              });
-                            },
-                            child: const Text(
-                              "+5",
-                              style: TextStyle(color: Colors.white),
-                            ))
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    SizedBox(
-                      height: 50,
-                      width: 240,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(45))),
-                          onPressed: () {
-                            _requestRide(bidAmount);
-                            sendPushMessage(
-                      "A customer is waiting for your response",
-                      "100",
-                      "eWEE_ZnFTz6IRzjN3fgjI7:APA91bEDZsvdC-0ldxBvzAJy5s0dfxBO4GsMN2ZqmEKiIlKIOC4nTw3Vgy4fm2TxKicNItDjLtptmSUTSIQXbBIkIpWwYZkBrakjgm9yUjjluGZLV7ApXm-Xd20CXkoW-X2frl16v0gz");
-                            
-                          },
-                          child: const Text(
-                            "Request Again",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          )),
-                    ),
-                    // SizedBox(
-                    //   height: 10,
-                    // ),
-                    // SizedBox(
-                    //   height: 50,
-                    //   width: 240,
-                    //   child: ElevatedButton(
-                    //       style: ElevatedButton.styleFrom(
-                    //           shape: RoundedRectangleBorder(
-                    //               borderRadius: BorderRadius.circular(45))),
-                    //       onPressed: () {
-                    //         showDialog(
-                    //           context: context,
-                    //           builder: (BuildContext context) {
-                    //             return AlertDialog(
-                    //               content: Container(
-                    //                 decoration: BoxDecoration(
-                    //                     borderRadius:
-                    //                         BorderRadius.circular(50)),
-                    //                 height: 300,
-                    //                 child: Column(
-                    //                   mainAxisAlignment:
-                    //                       MainAxisAlignment.center,
-                    //                   crossAxisAlignment:
-                    //                       CrossAxisAlignment.center,
-                    //                   children: [
-                    //                     Icon(
-                    //                       Icons.remove_done_sharp,
-                    //                       color: Colors.red,
-                    //                       size: 100,
-                    //                     ),
-                    //                     SizedBox(
-                    //                       height: 30,
-                    //                     ),
-                    //                     Text(
-                    //                       'Booking Cancelled',
-                    //                       style: TextStyle(
-                    //                           fontSize: 20,
-                    //                           fontWeight: FontWeight.bold),
-                    //                     ),
-                    //                     SizedBox(
-                    //                       height: 10,
-                    //                     ),
-                    //                     Text(
-                    //                       'Your booking has been  successfully cancelled.',
-                    //                       textAlign: TextAlign.center,
-                    //                       style: TextStyle(
-                    //                           fontSize: 12,
-                    //                           fontWeight: FontWeight.normal),
-                    //                     ),
-                    //                   ],
-                    //                 ),
-                    //               ),
-                    //               actions: [
-                    //                 Row(
-                    //                   mainAxisAlignment:
-                    //                       MainAxisAlignment.spaceBetween,
-                    //                   children: [
-                    //                     MaterialButton(
-                    //                       child: Text('Cancel'),
-                    //                       onPressed: () {
-                    //                         Navigator.of(context).pop();
-                    //                       },
-                    //                     ),
-                    //                     MaterialButton(
-                    //                       child: Text(
-                    //                         'Done',
-                    //                         style:
-                    //                             TextStyle(color: Colors.green),
-                    //                       ),
-                    //                       onPressed: () {},
-                    //                     ),
-                    //                   ],
-                    //                 ),
-                    //               ],
-                    //             );
-                    //           },
-                    //         );
-                    //       },
-                    //       child: Text(
-                    //         "Decline",
-                    //         style: TextStyle(color: Colors.white, fontSize: 20),
-                    //       )),
-                    // ),
-                  ],
-                ),
-              ),
-            )
-                            ]):Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const CircleAvatar(),
-                                    const SizedBox(width: 20,),
-                                    Column(
-                                    children: [
-                                      const Text("Rider Name"),
-                                      Row(
-                                        children: [
-                                          RatingBar.builder(
-                                  initialRating: 3,
-                                  minRating: 1,
-                                  direction: Axis.horizontal,
-                                  allowHalfRating: true,
-                                  itemCount: 5,
-                                  itemSize: 10,
-                                  unratedColor: Colors.grey[300],
-                                  itemBuilder: (context, _) => const Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                  ),
-                                  onRatingUpdate: (rating) {
-                                    setState(() {
-                                    //  _rating = rating;
-                                    });
-                                  },
-                                ),
-                                const SizedBox(width:5),
-                                const Text("3.0")
-                                        ],
-                                      ), 
-                                    ],
-                                  )
-                                    ],
-                                  ),
-                                  CircleAvatar(
-                                    child: IconButton(onPressed: (){}, icon: const Icon(Icons.call)),
-                                  ),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          nextCheck = 2;
+                                          _requestRide(bidAmount);
+                                        });
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              100, 20, 100, 20),
+                                          shape: RoundedRectangleBorder(
+                                              //to set border radius to button
+                                              borderRadius:
+                                                  BorderRadius.circular(50))),
+                                      child: const Text(
+                                        "Find Riders",
+                                        style: TextStyle(color: Colors.white),
+                                      ))
                                 ],
-                              ),
-                              const SizedBox(height: 10,),
-                              const Card(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                  ImageIcon(AssetImage("assets/images/car-icon.png"), size: 40,),
-                                  Column(
+                              )
+                            : nextCheck == 2
+                                ? Column(children: [
+                                    const Text(
+                                        "All Rides near you are infromed about your ride request"),
+                                    SizedBox(
+                                      //height: 280,
+                                      child: Container(
+                                        width: double.infinity,
+                                        color: Colors.white,
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            const Text(
+                                              "Negotiate",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.grey),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          45))),
+                                                  onPressed: () {
+                                                    //farenegpminus();
+                                                    setState(() {
+                                                      bidAmount = bidAmount - 5;
+                                                      print(bidAmount);
+                                                    });
+                                                  },
+                                                  child: const Text(
+                                                    "-5",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                ),
+                                                Column(
+                                                  children: [
+                                                    const Text(
+                                                      "Current Bid",
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors.black),
+                                                    ),
+                                                    Text(
+                                                      "\$$bidAmount",
+                                                      style: const TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.grey),
+                                                    ),
+                                                  ],
+                                                ),
+                                                ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        45))),
+                                                    onPressed: () {
+                                                      //farenegplus();
+                                                      setState(() {
+                                                        bidAmount =
+                                                            bidAmount + 5;
+                                                        print(bidAmount);
+                                                      });
+                                                    },
+                                                    child: const Text(
+                                                      "+5",
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ))
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 30,
+                                            ),
+                                            SizedBox(
+                                              height: 50,
+                                              width: 240,
+                                              child: ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          45))),
+                                                  onPressed: () {
+                                                    _requestRide(bidAmount);
+                                                    sendPushMessage(
+                                                        "A customer is waiting for your response",
+                                                        "100",
+                                                        "eWEE_ZnFTz6IRzjN3fgjI7:APA91bEDZsvdC-0ldxBvzAJy5s0dfxBO4GsMN2ZqmEKiIlKIOC4nTw3Vgy4fm2TxKicNItDjLtptmSUTSIQXbBIkIpWwYZkBrakjgm9yUjjluGZLV7ApXm-Xd20CXkoW-X2frl16v0gz");
+                                                  },
+                                                  child: const Text(
+                                                    "Request Again",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20),
+                                                  )),
+                                            ),
+                                            // SizedBox(
+                                            //   height: 10,
+                                            // ),
+                                            // SizedBox(
+                                            //   height: 50,
+                                            //   width: 240,
+                                            //   child: ElevatedButton(
+                                            //       style: ElevatedButton.styleFrom(
+                                            //           shape: RoundedRectangleBorder(
+                                            //               borderRadius: BorderRadius.circular(45))),
+                                            //       onPressed: () {
+                                            //         showDialog(
+                                            //           context: context,
+                                            //           builder: (BuildContext context) {
+                                            //             return AlertDialog(
+                                            //               content: Container(
+                                            //                 decoration: BoxDecoration(
+                                            //                     borderRadius:
+                                            //                         BorderRadius.circular(50)),
+                                            //                 height: 300,
+                                            //                 child: Column(
+                                            //                   mainAxisAlignment:
+                                            //                       MainAxisAlignment.center,
+                                            //                   crossAxisAlignment:
+                                            //                       CrossAxisAlignment.center,
+                                            //                   children: [
+                                            //                     Icon(
+                                            //                       Icons.remove_done_sharp,
+                                            //                       color: Colors.red,
+                                            //                       size: 100,
+                                            //                     ),
+                                            //                     SizedBox(
+                                            //                       height: 30,
+                                            //                     ),
+                                            //                     Text(
+                                            //                       'Booking Cancelled',
+                                            //                       style: TextStyle(
+                                            //                           fontSize: 20,
+                                            //                           fontWeight: FontWeight.bold),
+                                            //                     ),
+                                            //                     SizedBox(
+                                            //                       height: 10,
+                                            //                     ),
+                                            //                     Text(
+                                            //                       'Your booking has been  successfully cancelled.',
+                                            //                       textAlign: TextAlign.center,
+                                            //                       style: TextStyle(
+                                            //                           fontSize: 12,
+                                            //                           fontWeight: FontWeight.normal),
+                                            //                     ),
+                                            //                   ],
+                                            //                 ),
+                                            //               ),
+                                            //               actions: [
+                                            //                 Row(
+                                            //                   mainAxisAlignment:
+                                            //                       MainAxisAlignment.spaceBetween,
+                                            //                   children: [
+                                            //                     MaterialButton(
+                                            //                       child: Text('Cancel'),
+                                            //                       onPressed: () {
+                                            //                         Navigator.of(context).pop();
+                                            //                       },
+                                            //                     ),
+                                            //                     MaterialButton(
+                                            //                       child: Text(
+                                            //                         'Done',
+                                            //                         style:
+                                            //                             TextStyle(color: Colors.green),
+                                            //                       ),
+                                            //                       onPressed: () {},
+                                            //                     ),
+                                            //                   ],
+                                            //                 ),
+                                            //               ],
+                                            //             );
+                                            //           },
+                                            //         );
+                                            //       },
+                                            //       child: Text(
+                                            //         "Decline",
+                                            //         style: TextStyle(color: Colors.white, fontSize: 20),
+                                            //       )),
+                                            // ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ])
+                                : Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
                                     children: [
-                                      Text("Distance"),
-                                      Text("0.2km")
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              const CircleAvatar(),
+                                              const SizedBox(
+                                                width: 20,
+                                              ),
+                                              Column(
+                                                children: [
+                                                  const Text("Rider Name"),
+                                                  Row(
+                                                    children: [
+                                                      RatingBar.builder(
+                                                        initialRating: 3,
+                                                        minRating: 1,
+                                                        direction:
+                                                            Axis.horizontal,
+                                                        allowHalfRating: true,
+                                                        itemCount: 5,
+                                                        itemSize: 10,
+                                                        unratedColor:
+                                                            Colors.grey[300],
+                                                        itemBuilder:
+                                                            (context, _) =>
+                                                                const Icon(
+                                                          Icons.star,
+                                                          color: Colors.amber,
+                                                        ),
+                                                        onRatingUpdate:
+                                                            (rating) {
+                                                          setState(() {
+                                                            //  _rating = rating;
+                                                          });
+                                                        },
+                                                      ),
+                                                      const SizedBox(width: 5),
+                                                      const Text("3.0")
+                                                    ],
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                          CircleAvatar(
+                                            child: IconButton(
+                                                onPressed: () {},
+                                                icon: const Icon(Icons.call)),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      const Card(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            ImageIcon(
+                                              AssetImage(
+                                                  "assets/images/car-icon.png"),
+                                              size: 40,
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text("Distance"),
+                                                Text("0.2km")
+                                              ],
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text("Time"),
+                                                Text("2 min")
+                                              ],
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text("Fare"),
+                                                Text("\$568")
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pushNamed(
+                                              RatingScreen.routeName);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              100, 20, 100, 20),
+                                          shape: RoundedRectangleBorder(
+                                              //to set border radius to button
+                                              borderRadius:
+                                                  BorderRadius.circular(50)),
+                                        ),
+                                        child: const Text("Let's Go",
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      )
                                     ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      Text("Time"),
-                                      Text("2 min")
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      Text("Fare"),
-                                      Text("\$568")
-                                    ],
-                                  ),
-                                  ],
-                                ),
-                              ),
-                              ElevatedButton(
-                                onPressed: (){
-                                  Navigator.of(context).pushNamed(RatingScreen.routeName);
-                                },
-                                style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
-                          shape: RoundedRectangleBorder( //to set border radius to button
-                    borderRadius: BorderRadius.circular(50)
-                              ),
-                      ), 
-                                child: const Text("Let's Go", style: TextStyle(color: Colors.white)),
-                                )
-                            ],)
-                ),
+                                  )),
               ),
             )
           ],

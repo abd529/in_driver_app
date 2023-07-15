@@ -175,7 +175,8 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Ride Request'),
-              content: const Text('Failed to send ride request. Please try again.'),
+              content:
+                  const Text('Failed to send ride request. Please try again.'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -194,7 +195,8 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Ride Request'),
-            content: const Text('Please enter both pickup location and destination.'),
+            content: const Text(
+                'Please enter both pickup location and destination.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -231,6 +233,30 @@ class _RideRequestScreenState extends State<RideRequestScreen> {
   }
 
   void _createPolylines(double startLatitude, double startLongitude,
+      double endLatitude, double endLongitude) async {
+    PolylineResult result = await _polylinePoints.getRouteBetweenCoordinates(
+      map, // Replace with your Google Maps API key
+      PointLatLng(startLatitude, startLongitude),
+      PointLatLng(endLatitude, endLongitude),
+    );
+
+    if (result.points.isNotEmpty) {
+      setState(() {
+        _polylineCoordinates.clear();
+        for (PointLatLng point in result.points) {
+          _polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+        }
+
+        _polyline = Polyline(
+          polylineId: const PolylineId('polyline'),
+          color: Colors.blue,
+          points: _polylineCoordinates,
+        );
+      });
+    }
+  }
+
+  void _createPolylines1(double startLatitude, double startLongitude,
       double endLatitude, double endLongitude) async {
     PolylineResult result = await _polylinePoints.getRouteBetweenCoordinates(
       map, // Replace with your Google Maps API key
