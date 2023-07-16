@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:in_driver_app/screens/home.dart';
 
 import '../Models/loginviewmodel.dart';
+import '../driver panel/dashboard.dart';
 import '../driver panel/driver_home.dart';
 import '../widgets/myColors.dart';
 import '../widgets/myTextField.dart';
@@ -399,7 +400,7 @@ class _LoginPageState extends State<LoginPage> {
                           });
                            bool isLoggedIn = await _loginVM.login(_emailController.text, _passwordController.text);
                            if(isLoggedIn){
-                             Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (ctx) => widget.role == "Rider"? DriverHome():HomePage()),
+                             Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (ctx) => widget.role == "Driver"? Dashboard():HomePage()),
                                 (Route<dynamic> route) => false);
                            }
                         }

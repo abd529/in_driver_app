@@ -240,7 +240,7 @@ class _Tab2WidgetState extends State<Tab2Widget> {
         width: double.infinity,
         child:  Column(
          children: [ 
-          const Text("Drivers/Riders", style: TextStyle(fontSize: 18),),
+          const Text("Drivers", style: TextStyle(fontSize: 18),),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(

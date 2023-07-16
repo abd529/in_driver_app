@@ -19,14 +19,15 @@ class AssitantMethods {
     String url =
         "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$map";
     var response = await RequestAssistant.getRequest(url);
+    print(response);
     if (response != "Failed") {
-      //placeAddress = response["results"][0]["formatted_address"];
+      placeAddress = response["results"][0]["formatted_address"];
 
-      // st1 = response["results"][0]["address_components"][0]["long_name"];
-      // st2 = response["results"][0]["address_components"][1]["long_name"];
-      // st3 = response["results"][0]["address_components"][5]["long_name"];
-      // st4 = response["results"][0]["address_components"][6]["long_name"];
-      // placeAddress = "st1,$st2,$st3,$st4";
+      st1 = response["results"][0]["address_components"][0]["long_name"];
+      st2 = response["results"][0]["address_components"][1]["long_name"];
+      st3 = response["results"][0]["address_components"][5]["long_name"];
+      st4 = response["results"][0]["address_components"][6]["long_name"];
+      placeAddress = "st1,$st2,$st3,$st4";
       Address userpickupAddress = Address();
       userpickupAddress.lattitude = position.latitude;
       userpickupAddress.longitude = position.longitude;

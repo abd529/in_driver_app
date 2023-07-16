@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:in_driver_app/driver%20panel/ride_status.dart';
 import 'package:in_driver_app/driver%20panel/riderequest.dart';
 import 'package:in_driver_app/screens/ridehistory.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -13,6 +14,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../assistants/assistantmethods.dart';
 import '../models/addressModel.dart';
 import '../widgets/myColors.dart';
+import 'driver_live_location.dart';
+import 'driverreq.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -128,7 +131,7 @@ class _DashboardState extends State<Dashboard> {
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
-                  //  Navigator.of(context).push(MaterialPageRoute(builder: (context) => RidesHistory(),));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => DriverScreen(),));
                 },
               ),
               ListTile(
@@ -146,35 +149,66 @@ class _DashboardState extends State<Dashboard> {
                   ));
                 },
               ),
+              ListTile(
+                leading: Icon(
+                  Icons.track_changes,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  "Live Tracking",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => DriverScreenLive(),
+                  ));
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.watch_later_rounded,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  "Bus Ride Status",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => RideStatus(amount:"545"),
+                  ));
+                },
+              ),
             ],
           ),
         ),
         appBar: AppBar(
+          title: Text("Bus Driver Panel"),
           elevation: 0,
           backgroundColor: Colors.white,
-          leading: InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Icon(
-              CupertinoIcons.left_chevron,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: InkWell(
-                onTap: () {
-                  _scaffoldKey.currentState?.openDrawer();
-                },
-                child: ImageIcon(
-                  AssetImage("assets/images/menu.png"),
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            ),
-          ],
+          // leading: InkWell(
+          //   onTap: () {
+          //   //  Navigator.pop(context);
+          //   },
+          //   child: Icon(
+          //     CupertinoIcons.left_chevron,
+          //     color: Theme.of(context).primaryColor,
+          //   ),
+          // ),
+          // actions: [
+          //   Padding(
+          //     padding: const EdgeInsets.all(15.0),
+          //     child: InkWell(
+          //       onTap: () {
+          //         _scaffoldKey.currentState?.openDrawer();
+          //       },
+          //       child: ImageIcon(
+          //         AssetImage("assets/images/menu.png"),
+          //         color: Theme.of(context).primaryColor,
+          //       ),
+          //     ),
+          //   ),
+          // ],
         ),
         backgroundColor: IconColor,
         body: SingleChildScrollView(

@@ -35,6 +35,8 @@ import 'Mywallet.dart';
 import 'language_select.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+import 'live_location.dart';
+
 class HomePage extends StatefulWidget {
   static String idScreen = 'home';
   @override
@@ -61,8 +63,8 @@ class _HomePageState extends State<HomePage> {
   Set<Polyline> polylineset = {};
   late GoogleMapController _newgoogleMapController;
   Position? currentPosition;
-  // late Position pickUp;
-  // late Position dropOff;
+  late Position pickUp;
+  late Position dropOff;
   var geoLocator = Geolocator();
   double bottomPadding = 0;
   final geolocator =
@@ -156,30 +158,30 @@ class _HomePageState extends State<HomePage> {
       Address address = Address();
       if (check == 0) {
         setState(() {
-          // pickUp = Position(
-          //   latitude: res["result"]["geometry"]["location"]["lat"],
-          //   longitude: res["result"]["geometry"]["location"]["lng"],
-          //   accuracy: 1.0,
-          //   altitude: 1.0,
-          //   heading: 1.0,
-          //   speed: 50,
-          //   speedAccuracy: 1.0,
-          //   timestamp: DateTime.now(),
-          // );
+          pickUp = Position(
+            latitude: res["result"]["geometry"]["location"]["lat"],
+            longitude: res["result"]["geometry"]["location"]["lng"],
+            accuracy: 1.0,
+            altitude: 1.0,
+            heading: 1.0,
+            speed: 50,
+            speedAccuracy: 1.0,
+            timestamp: DateTime.now(),
+          );
         });
       }
       if (check == 1) {
         setState(() {
-          // dropOff = Position(
-          //   latitude: res["result"]["geometry"]["location"]["lat"],
-          //   longitude: res["result"]["geometry"]["location"]["lng"],
-          //   accuracy: 1.0,
-          //   altitude: 1.0,
-          //   heading: 1.0,
-          //   speed: 50,
-          //   speedAccuracy: 1.0,
-          //   timestamp: DateTime.now(),
-          // );
+          dropOff = Position(
+            latitude: res["result"]["geometry"]["location"]["lat"],
+            longitude: res["result"]["geometry"]["location"]["lng"],
+            accuracy: 1.0,
+            altitude: 1.0,
+            heading: 1.0,
+            speed: 50,
+            speedAccuracy: 1.0,
+            timestamp: DateTime.now(),
+          );
         });
       }
 
@@ -256,18 +258,17 @@ class _HomePageState extends State<HomePage> {
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    // setState(() {
-                    //   nextCheck = 3;
-                    // });
+                    
                   },
                   child: const Text('Decline Offer',
                       style: TextStyle(color: Colors.red)),
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    //Navigator.of(context).pop();
                     setState(() {
                       nextCheck = 3;
+                      //Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LiveLocation()));
                     });
                   },
                   child: Text(
@@ -392,6 +393,8 @@ class _HomePageState extends State<HomePage> {
       String autoComplete =
           "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&location=37.76999%2C-122.44696&radius=500&types=establishment&key=$map&components=country:pk";
       var res = await RequestAssistant.getRequest(autoComplete);
+      
+      print(res);
       if (res == "failed") {
         return;
       }
@@ -542,18 +545,22 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           title: const Text(
-            "inDriver",
+            "University Bus Tracking",
             style: TextStyle(color: Colors.white),
           ),
-          actions: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.settings,
-                color: Colors.white,
-              ),
-            )
-          ],
+          // actions: [
+          //    Padding(
+          //     padding: const EdgeInsets.all(8.0),
+          //     child: IconButton(
+          //       onPressed: (){
+          //         print(userId);
+          //       },
+          //       icon: const Icon(Icons.settings,
+          //       color: Colors.white,),
+                
+          //     ),
+          //   )
+          // ],
         ),
 
         // bottomSheet: Container(height: 500,),
@@ -815,11 +822,11 @@ class _HomePageState extends State<HomePage> {
                                                       pickUpController.text =
                                                           fetchaddress.placeName
                                                               .toString();
-                                                      // pickUp = await Geolocator
-                                                      //     .getCurrentPosition(
-                                                      //         desiredAccuracy:
-                                                      //             LocationAccuracy
-                                                      //                 .high);
+                                                      pickUp = await Geolocator
+                                                          .getCurrentPosition(
+                                                              desiredAccuracy:
+                                                                  LocationAccuracy
+                                                                      .high);
                                                       setState(() {
                                                         placespredictionlist =
                                                             [];
@@ -921,8 +928,8 @@ class _HomePageState extends State<HomePage> {
                                                   onPressed: () {
                                                     if (_formKey.currentState!
                                                         .validate()) {
-                                                      // setPolylines(
-                                                      //     pickUp, dropOff);
+                                                      setPolylines(
+                                                          pickUp, dropOff);
                                                       setState(() {
                                                         nextCheck = 1;
                                                         bidAmount = int.parse(
@@ -1268,6 +1275,29 @@ class _HomePageState extends State<HomePage> {
                                                         fontSize: 20),
                                                   )),
                                             ),
+                                            SizedBox(height: 30,),
+                                            SizedBox(
+                                              height: 50,
+                                              width: 240,
+                                              child: ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          45))),
+                                                  onPressed: () {
+                                                    
+                                                    },
+                                                  child: const Text(
+                                                    "Rate Driver",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20),
+                                                  )),
+                                            ),
+                                            
                                             // SizedBox(
                                             //   height: 10,
                                             // ),
@@ -1464,7 +1494,19 @@ class _HomePageState extends State<HomePage> {
                                         child: const Text("Let's Go",
                                             style:
                                                 TextStyle(color: Colors.white)),
-                                      )
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              100, 20, 100, 20),
+                                          shape: RoundedRectangleBorder(
+                                              //to set border radius to button
+                                              borderRadius:
+                                                  BorderRadius.circular(50)),
+                                        ),
+                                        onPressed: (){
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => LiveLocation(),));
+                                      }, child: Text("Track Driver", style: TextStyle(color: Colors.white),))
                                     ],
                                   )),
               ),
@@ -1578,7 +1620,7 @@ class _HomePageState extends State<HomePage> {
       polyLineCordinates = [];
     });
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        "AIzaSyATM0ok3Nn_739JDsbyMO8KFTdD4jgU85Q",
+        "AIzaSyBUOPRnIBThORPGz-26PjR2YBxymMy5Rdo",
         PointLatLng(current.latitude, current.longitude),
         PointLatLng(dropOff.latitude, dropOff.longitude));
     if (result.status == "OK") {

@@ -14,7 +14,7 @@ class AuthHome extends StatefulWidget {
 
 class _AuthHomeState extends State<AuthHome> {
   bool roleValue = true;
-  String role = "Customer";
+  String role = "Student";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,19 +33,19 @@ class _AuthHomeState extends State<AuthHome> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Rider"),
+                const Text("Driver"),
                 Switch(value: roleValue, onChanged: (value){
                   setState(() {
                     roleValue = !roleValue;
                     if(roleValue == true){
-                      role = "Customer";
+                      role = "Student";
                     }
                     else{
-                      role = "Rider";
+                      role = "Driver";
                     }
                   });
                 }),
-                const Text("Customer"),
+                const Text("Student"),
               ],
             ),
             const SizedBox(height: 50,),

@@ -7,20 +7,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:in_driver_app/auth/auth_home.dart';
 import 'package:in_driver_app/auth/auth_verifiy.dart';
 import 'package:in_driver_app/auth/forgot.dart';
-import 'package:in_driver_app/auth/login.dart';
 import 'package:in_driver_app/firebase_options.dart';
 import 'package:in_driver_app/screens/home.dart';
 import 'package:in_driver_app/screens/live_location.dart';
 import 'package:in_driver_app/screens/ratingscreen.dart';
 import 'package:in_driver_app/screens/searchscreen.dart';
+import 'package:in_driver_app/screens/splash_screen.dart';
 import 'package:in_driver_app/widgets/materialColor.dart';
 import 'admin panel/admin_login.dart';
 import 'admin panel/admin_panel_screen.dart';
 import 'admin panel/admin_panel.dart';
-import 'driver panel/driver_home.dart';
-import 'driver panel/driverreq.dart';
-import 'driver panel/testfun.dart';
-import 'driver panel/testmap.dart';
+import 'driver panel/driver_live_location.dart';
 import 'providers/appDataprovider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -83,9 +80,9 @@ class MyApp extends StatelessWidget {
         home: FirebaseAuth.instance.currentUser != null
             ? FirebaseAuth.instance.currentUser!.uid ==
                     "ZUTdZDhTTBXhQqnTXHQsqZdtJJH3"
-                ? LiveLocation()
-                : LiveLocation()
-            : MyTestMap(),
+                ? AdminPanel()
+                : HomePage()
+            : SplashScreen(),
         routes: {
           AuthHome.idScreen: (context) => const AuthHome(),
           // SignupPage.idScreen: (context) => SignupPage(),
